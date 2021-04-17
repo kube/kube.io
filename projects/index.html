@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+</head>
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KUBE - Projects</title>
+
+
+
+<link rel="modulepreload" href="/./_app/start-36d8fee9.js">
+			<link rel="modulepreload" href="/./_app/chunks/vendor-29114a38.js">
+			<link rel="modulepreload" href="/./_app/pages/projects.svelte-c37053d8.js">
+			<link rel="modulepreload" href="/./_app/chunks/Github-7e09389d.js">
+			<link rel="modulepreload" href="/./_app/chunks/marked-48ce9fa6.js">
+			<link rel="modulepreload" href="/./_app/chunks/index-5658a734.js">
+			<link rel="stylesheet" href="/./_app/assets/start-066eda45.css">
+			<link rel="stylesheet" href="/./_app/assets/pages/projects.svelte-5cc30d7e.css">
+
+
+		<script type="module">
+			import { start } from "/./_app/start-36d8fee9.js";
+			start({
+				target: document.querySelector("#svelte"),
+				paths: {"base":"","assets":"/."},
+				session: {},
+				host: location.host,
+				route: true,
+				hydrate: {
+					status: 200,
+					error: null,
+					nodes: [
+						import("/./_app/pages/projects.svelte-c37053d8.js")
+					],
+					page: {
+						host: location.host, // TODO this is redundant
+						path: "/projects",
+						query: new URLSearchParams(""),
+						params: {}
+					}
+				}
+			});
+		</script>
+</head>
+
+<body>
+	<div id="svelte">
+
+
+<main class="svelte-bttirr"><nav class="svelte-10u1za0"><ul class="svelte-10u1za0"><li class="svelte-10u1za0"><a href="/" class="svelte-1k7c9lj">Hello
+</a></li>
+<li class="svelte-10u1za0"><a href="/projects" class="svelte-1k7c9lj active">Projects
+</a></li>
+<li class="svelte-10u1za0"><a href="/cv" class="svelte-1k7c9lj">CV
+</a></li></ul>
+</nav>
+	<svg width="81" height="81" viewBox="-40.5,-40.5,81,81"><path fill="#7160b7" d="M-16.5,32.25L18.5,32.25L22.75,25L-12.25,25Z M-9.75,20.75L25.25,20.75L29.75,13.25L-5.25,13.25Z M-3,9.25L32,9.25L36.5,1.75L1.5,1.75Z M-19.75,-30.75L-37.75,-0.25L-33.5,7.25L-15.5,-23.25Z M-13,-19.25L-31,11.5L-26.5,19L-8.5,-11.75Z M-6.25,-7.5L-24.25,23L-19.75,30.5L-1.75,0Z M-16.5,-32.5L1.5,-2L10,-2L-8,-32.5Z M-3.25,-32.5L14.75,-2L23.25,-2L5.25,-32.5Z M10,-32.5L28,-2L36.5,-2L18.5,-32.5Z"></path></svg>
+
+	
+
+<main class="svelte-1ivj86j"><h1 class="svelte-1ivj86j">Projects.</h1>
+	<h2 class="svelte-1ivj86j">Some Code Stuff.</h2>
+	<div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Monolite</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>Monolite</strong> is a simple, type-safe,
+<a href="https://www.youtube.com/watch?v=pLvrZPSzHxo&amp;feature=youtu.be&amp;t=1390">Structural-Sharing</a>
+library.</p>
+<p>It was originally written for usage in Redux reducers,
+but can be used anywhere you want to preserve an object immutability.</p>
+<p><strong>ImmutableJS</strong> is
+<a href="https://github.com/facebook/immutable-js/issues/1462">not able to infer type</a>
+on sub-state-trees as it uses strings to define sub-tree to update:</p>
+<pre><code class="language-js">state<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'some'</span><span class="token punctuation">,</span> <span class="token string">'nested'</span><span class="token punctuation">,</span> <span class="token string">'property'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Monolite, on its side, uses accessor functions to get the target node
+of the state tree to update:</p>
+<pre><code class="language-js"><span class="token function">set</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> <span class="token parameter">_</span> <span class="token operator">=></span> _<span class="token punctuation">.</span>some<span class="token punctuation">.</span>nested<span class="token punctuation">.</span>property<span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This allows TypeScript to do static analysis and
+completion on the sub-state type, and type of the updated value.</p>
+<p>The library uses ES6 Proxies under-the-hood to analyze the
+accessor function.
+These functions, though, can be statically resolved, using
+<a href="https://github.com/kube/babel-plugin-monolite">a Babel Plugin</a>,
+permitting to target older browsers not supporting <code>Proxy</code>.</p>
+</div>
+
+	<a href="https://github.com/kube/monolite" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">ReturnOf</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>ReturnOf</strong> was a workaround solution permitting type inference
+on function returns in TypeScript.</p>
+<p>Getting the return type of a function is something particularly
+interesting, in case of Redux Action Creators or React-Redux
+containers, to prevent code duplication, for example.</p>
+<p>I had also opened a proposal on TypeScript
+<a href="https://github.com/Microsoft/TypeScript/issues/14400">static type inference</a>,
+enabling a static-only solution for return type inference.</p>
+<p>TypeScript 2.8 finally introduced
+<a href="https://github.com/Microsoft/TypeScript/pull/21316">Conditional Types</a>,
+and added a new <a href="https://github.com/Microsoft/TypeScript/pull/21496"><code>ReturnType</code></a>
+using a new <code>infer</code> keyword.</p>
+</div>
+
+	<a href="https://github.com/kube/returnof" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">WhenSwitch</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>WhenSwitch</strong> adds Ruby-like <code>case/when</code> statements in JavaScript,
+through a single <code>when</code> function.</p>
+<p>Ternary expressions become too much nested when handling too much cases,
+and switch statements are
+<a href="https://medium.com/chrisburgin/rewriting-javascript-replacing-the-switch-statement-cfff707cf045">error-prone and block-only</a>,
+WhenSwitch enables simple function conditional flows, as expressions:</p>
+<pre><code class="language-js"><span class="token keyword">const</span> <span class="token function-variable function">getDrinkPrice</span> <span class="token operator">=</span> <span class="token parameter">drink</span> <span class="token operator">=></span>
+  <span class="token function">when</span><span class="token punctuation">(</span>drink<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Coke'</span><span class="token punctuation">,</span> <span class="token number">1.50</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Pepsi'</span><span class="token punctuation">,</span> <span class="token number">1.80</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">else</span><span class="token punctuation">(</span><span class="token number">2.00</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is useful for conditional components in React for example:</p>
+<pre><code class="language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><span class="token plain-text">
+  </span><span class="token punctuation">{</span>
+    <span class="token function">when</span><span class="token punctuation">(</span>props<span class="token punctuation">.</span>page<span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Hello'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">HelloPage</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'World'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">WorldPage</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">else</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Page404</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token plain-text">
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>JavaScript not being lazily evaluated though,
+it adds some overhead on expressions, needing to wrap them in thunks.</p>
+<p>Another issue is with TypeScript: The goal here was to have something
+completely type-safe, but as it was impossible at the moment to define
+generic <a href="https://basarat.gitbooks.io/typescript/docs/types/typeGuard.html">type guards</a>,
+I left this library as it was, and for now only use it for simple cases.</p>
+</div>
+
+	<a href="https://github.com/kube/when-switch" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Kay Theme</h3>
+	
+
+	<img alt="Kay Theme picture" src="https://github.com/kube/vscode-kay-theme/raw/master/images/theme-dark.png" class="svelte-10cuk4q">
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>Kay</strong> is my personal code editor theme.</p>
+<p>It was designed to be colored,
+with an <strong>80&#39;s-inspired color palette</strong>, without losing <strong>focus on code</strong>.</p>
+<p>Comments and all non-code text are nearly invisible. It also includes a Light Theme.</p>
+</div>
+
+	<a href="https://github.com/kube/vscode-kay-theme" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Redux Electron Global Dispatch</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>This library provides a simple way to have <strong>Redux actions globally dispatched</strong>
+through all processes of an Electron application, thanks to a middleware.</p>
+<p>It permits to define easily which actions will be dispatched globally,
+by configuring the middleware:</p>
+<pre><code class="language-js"><span class="token function">applyMiddleware</span><span class="token punctuation">(</span>
+  <span class="token function">createGlobalDispatchMiddleware</span><span class="token punctuation">(</span><span class="token parameter">action</span> <span class="token operator">=></span>
+    action<span class="token punctuation">.</span>type <span class="token operator">===</span> <span class="token string">'INCREMENT'</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+</code></pre>
+<p>Or if using the default already-specialized middleware, just
+define actions with a <code>global</code> property set to <code>true</code>:</p>
+<pre><code class="language-js"><span class="token keyword">const</span> <span class="token function-variable function">globalIncrement</span> <span class="token operator">=</span> <span class="token parameter">x</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
+  global<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  type<span class="token operator">:</span> <span class="token string">'INCREMENT'</span><span class="token punctuation">,</span>
+  payload<span class="token operator">:</span> x
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+</div>
+
+	<a href="https://github.com/kube/redux-electron-global-dispatch" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">React Electron</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>Just a proof-of-concept, but already in production usage in
+PandaNote.</p>
+<p><strong>React Electron</strong> provides a simple driver for BrowserWindow
+declaration in Electron, using React.</p>
+<pre><code class="language-jsx"><span class="token function">render</span><span class="token punctuation">(</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">App</span></span><span class="token punctuation">></span></span><span class="token plain-text">
+    </span><span class="token punctuation">{</span>
+      state<span class="token punctuation">.</span>notes<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">note</span> <span class="token operator">=></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">BrowserWindow</span></span>
+          <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>note<span class="token punctuation">.</span>id<span class="token punctuation">}</span></span>
+          <span class="token attr-name">url</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token constant">NOTE_RENDERER_PATH</span><span class="token punctuation">}</span></span>
+          <span class="token attr-name">height</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token number">640</span><span class="token punctuation">}</span></span>
+          <span class="token attr-name">width</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token number">480</span><span class="token punctuation">}</span></span>
+          <span class="token attr-name">onClose</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span>
+            <span class="token function">closeNoteRequest</span><span class="token punctuation">(</span>note<span class="token punctuation">.</span>id<span class="token punctuation">)</span>
+          <span class="token punctuation">)</span><span class="token punctuation">}</span></span>
+        <span class="token punctuation">/></span></span>
+      <span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token plain-text">
+  </span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">App</span></span><span class="token punctuation">></span></span>
+<span class="token punctuation">)</span>
+</code></pre>
+<p>No more manual management of window properties, all is reactive.
+Needs to be re-written with a cleaner API though.</p>
+</div>
+
+	<a href="https://github.com/kube/react-electron" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">42 GraphQL</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>42 GraphQL</strong> was a Façade of the 42 REST API, using
+<a href="http://graphql.org/">GraphQL</a>.</p>
+<p>42 REST API was very slow and not easily understable.
+The idea here was to wrap it in a
+<a href="https://github.com/kube/42GraphQL/tree/master/src/Schema">GraphQL Schema</a>,
+and cache resources in a Redis cache for faster responses.</p>
+<p>GraphQL permits to reduce heavily number of REST API calls,
+as server response maps the client query, which resulted in a really
+fast API.</p>
+<p>This was done without access to the database, only upon the public REST API.</p>
+</div>
+
+	<a href="https://github.com/kube/42graphql" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">42 Scalizer</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>When creating exercises for the <strong>42 JavaScript Piscine</strong>
+(a 2-week programming bootcamp), I had to create validation scales
+using a Yaml Schema really difficult to change once written:</p>
+<ul>
+<li>100 points were dispatched between each exercise manually.</li>
+<li>Each exercise had to be numbered by its index by hand.</li>
+</ul>
+<p>If an exercise was modified or added anywhere, this had to be done
+again for all exercises.</p>
+<p><strong>42 Scalizer</strong> was a simple CLI permitting to automatically harmonize
+exercise points, and allowing float values.</p>
+<p>It also used a much more simple schema, permitted exportation
+to the legacy format for compatibility, and visualized points progression
+in a simple chart.</p>
+</div>
+
+	<a href="https://github.com/kube/scalizer" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">VSCode ClangComplete</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>When VSCode opened third-party extensions I took a look at their Language Server
+implementation.</p>
+<p><strong>C/C++ Completion</strong> was not offered at this time, so I dediced to
+port the simple <a href="https://github.com/Rip-Rip/clang_complete"><strong>Clang Complete</strong></a>,
+respecting the VSCode Language Server architecture.</p>
+</div>
+
+	<a href="https://github.com/kube/vscode-clang-complete" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">VSCode 42 Header</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>A <strong>VSCode extension</strong> for 42 Students.</p>
+<p>42 projects need to include a 42 header in all source files.
+This extension provides this header, with automatic refresh on save.</p>
+</div>
+
+	<a href="https://github.com/kube/vscode-42header" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">CUT</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>CUT</strong> is for C Unit Testing.</p>
+<p>It was an attempt to create a simple way to write unit tests
+for C programs.</p>
+<p>It included <strong>CutRun</strong>, a CLI written in Ruby in charge of compiling
+and running automatically the tests.</p>
+<p>This permitted to reduce need of test-specific configuration in the project.
+Comment-based directives could be added in top of test files, to
+provide more compilation flags to CutRun.</p>
+<p>The idea was to try to offer a programming experience close from
+what could be found with <strong>Jest</strong> in the JavaScript world.</p>
+<p>The project was abandonned as I was not sure of the architecture
+and I was not programming anymore with C at the time.</p>
+</div>
+
+	<a href="https://github.com/kube/cut" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Kuji</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>Kuji</strong> was a simple library for NodeJS, simplifying asynchronous tasks.</p>
+<p>It was a more generic version of a previous MongoDB-specific library
+<a href="https://github.com/kube/mongoAsyncMultiRequest">MongoAsyncMultiRequest</a>.</p>
+<p>Its goal was to easily create a <strong>control-flow graph</strong> for asynchronous tasks,
+by providing dependencies between them.
+This permitted to optimize the execution timeline.</p>
+<p>It was abandonned once I realized that the <code>graph</code> feature, which was the
+real added-value, was already included in <strong>Async</strong> as
+<a href="https://caolan.github.io/async/docs.html#auto"><code>auto</code></a>.</p>
+</div>
+
+	<a href="https://github.com/kube/kuji" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Zappy</h3>
+	
+
+	
+
+	<iframe class="youtubeIframe svelte-10cuk4q" title="Zappy YouTube video" src="https://youtube.com/embed/F2R2BoDBg5Y" allowFullScreen></iframe>
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>Zappy</strong> is a game composed by three programs:</p>
+<ul>
+<li><p>A <strong>Server</strong>, written in C, emulating a map containing different resources.</p>
+</li>
+<li><p>An <strong>AI</strong>, written in CoffeeScript/NodeJS, connecting to the server, and trying to evolve by taking resources which permits it to level up.</p>
+<p>Elevation is only permitted after a group incantation. AI need to group themselves on the same cell before being able to do the incantation.</p>
+<p>The tricky part is that AI are not able to know locations nor level of other AI on the map.
+All they are able to do is to broadcast a sound saying that they are waiting for other AI for elevation incantation,
+which permits to know in which direction AI has to go to find others.</p>
+<p>Each new AI is a fork of its parent.</p>
+</li>
+<li><p>A <strong>Graphic Visualizer</strong>, written in NodeWebkit/ThreeJS, which shows in real-time what happens on the map.</p>
+</li>
+</ul>
+<p>All inter-process communication was achieved through TCP.</p>
+</div>
+
+	<a href="https://github.com/kubekhrm/zappy" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">RayTracer</h3>
+	
+
+	
+
+	<iframe class="youtubeIframe svelte-10cuk4q" title="RayTracer YouTube video" src="https://www.youtube.com/embed/1JoTZg4Ulo0" allowFullScreen></iframe>
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>RayTracer</strong> was 42 first-semester Graphics final group project.</p>
+<p>The imperative was to create a basic
+<a href="https://en.wikipedia.org/wiki/Ray_tracing_(graphics)">raytracer</a>
+with some simple geometric shapes.</p>
+<p>We decided to differentiate from other projects on the UX, by adding an
+embedded editor usable with mouse/keyboard, a post-render adjustable diaphragm,
+and some other commands.</p>
+<p>This implied performance optimization, so we decided to make the renderer asynchronous
+from the scene-edition events, and to use multithreading for faster computation.</p>
+<p>All this project was written in pure C, upon our LibFt and a subset of LibX called
+<a href="https://github.com/abouvier/minilibx">MiniLibX</a>.</p>
+</div>
+
+	<a href="https://github.com/kubekhrm/RT" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">FdF</h3>
+	
+
+	
+
+	<iframe class="youtubeIframe svelte-10cuk4q" title="FdF YouTube video" src="https://youtube.com/embed/X3pcTRCgQF4" allowFullScreen></iframe>
+
+	<div class="marked-description svelte-10cuk4q"><p><strong>FdF</strong> was 42 first Graphics project.</p>
+<p>It&#39;s a <strong>basic <a href="https://en.wikipedia.org/wiki/Rasterisation">rasterizer</a></strong>,
+which takes a map of altitudes as input, and needs to render
+a 3D view of it.</p>
+<p>No helper library are allowed, so each part
+(color blend, line-drawing, antialias, camera, projection...)
+had to be recoded from scratch.</p>
+<p>My project added as bonuses:</p>
+<ul>
+<li>Antialiased lines</li>
+<li>Movement blur</li>
+<li>Parallel/One-point perspective switch</li>
+<li>Adjustable perspective point.</li>
+</ul>
+<p>All this project was written in pure C, upon our LibFt and a subset of LibX called
+<a href="https://github.com/abouvier/minilibx">MiniLibX</a>.</p>
+</div>
+
+	
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">LibFt</h3>
+	
+
+	
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>42 first project.</p>
+<p><strong>LibFt</strong> is a recode of a subset the
+<a href="https://en.wikipedia.org/wiki/C_standard_library">C Standard Library</a>,
+which is the first block of all other C projects at 42.</p>
+<p>Usage of <strong>LibC is prohibited</strong> in 42 C Projects, so each project needs to use only
+functions from our own LibFt.</p>
+<p>With the time, multiple functions were added, to include Color Manipulation,
+Data-Structures, Trigonometry, Infinite Numbers, Hash Function, and a basic Test Framework.</p>
+</div>
+
+	<a href="https://github.com/kube/libft" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div><div class="project svelte-10cuk4q"><h3 class="svelte-10cuk4q">Sudoku</h3>
+	
+
+	<img alt="Sudoku picture" src="https://cloud.githubusercontent.com/assets/2991143/25461505/b3c40da0-2ae9-11e7-8e2b-7a02515d4991.gif" class="svelte-10cuk4q">
+
+	
+
+	<div class="marked-description svelte-10cuk4q"><p>This <strong>Sudoku</strong> was my first C project, when at <strong>Faculty of Science of Luminy</strong>.</p>
+<p>The subject was to create a <strong>Sudoku Solver</strong>, with a simple graphical interface,
+using a simple Façade library for LibX/Win32 named
+<a href="https://pageperso.lif.univ-mrs.fr/~edouard.thiel/ez-draw/index.html">EZ-Draw</a>.</p>
+<p>Skeleton of the project was given with most of code structure, with program state already defined,
+the goal was to add a simple <strong>back-tracking algorithm</strong> to check if the user-given grid was valid and
+solve it if possible.</p>
+<p>My project added a grid generator, with multiple available levels, and some
+work has been done on the UI to have something responsive and clean.</p>
+</div>
+
+	<a href="https://github.com/kube/luminy-sudoku" target="_blank" class="svelte-10cuk4q"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a>
+</div>
+</main>
+</main>
+
+
+
+	
+</div>
+</body>
+
+</html>
