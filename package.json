@@ -1,17 +1,19 @@
 {
-	"name": "kubeIO",
+	"name": "kubeio",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
 		"start": "svelte-kit start",
 		"lint": "prettier --check .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"deploy": "gh-pages -d build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "next",
 		"@sveltejs/adapter-static": "^1.0.0-next.4",
 		"@sveltejs/kit": "next",
+		"gh-pages": "^3.1.0",
 		"mdsvex": "^0.8.9",
 		"prettier": "~2.2.1",
 		"prettier-plugin-svelte": "^2.2.0",
