@@ -26,6 +26,8 @@ module.exports = {
 		// specifying a different adapter
 		adapter: staticAdapter(),
 
+		appDir: 'dist',
+
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
 
