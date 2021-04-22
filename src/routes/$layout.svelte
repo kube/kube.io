@@ -24,6 +24,7 @@
 		main {
 			width: auto;
 			margin-bottom: 0;
+			max-width: none;
 		}
 	}
 </style>

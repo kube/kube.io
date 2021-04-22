@@ -72,3 +72,11 @@
 >
 	<path fill="#7160b7" {d} />
 </svg>
+
+<style>
+	@media print {
+		svg {
+			display: none;
+		}
+	}
+</style>

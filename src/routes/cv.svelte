@@ -14,3 +14,9 @@
 
 	<CV />
 </main>
+
+<style>
+	main {
+		position: absolute;
+	}
+</style>

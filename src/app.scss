@@ -36,6 +36,10 @@ body {
 	margin-top: 110px;
 	font-family: var(--palette-fonts-text);
 
+	@media print {
+		margin: 0;
+	}
+
 	background-repeat: repeat;
 	background-attachment: fixed;
 	background-position: center center;
@@ -92,6 +96,10 @@ h1 {
 	margin: 0;
 	padding: 0;
 	margin-top: 16px;
+
+	@media print {
+		display: none;
+	}
 }
 
 h2 {

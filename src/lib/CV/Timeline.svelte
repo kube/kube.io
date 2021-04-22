@@ -57,6 +57,7 @@
 			padding: 0;
 			margin-top: 13px;
 			margin-bottom: 31px;
+			break-inside: avoid;
 
 			.date {
 				float: left;

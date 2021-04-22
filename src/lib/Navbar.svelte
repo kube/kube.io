@@ -12,6 +12,10 @@
 
 <style lang="scss">
 	nav {
+		@media print {
+			display: none;
+		}
+
 		position: fixed;
 		display: inline-block;
 		transform: rotate(90deg);

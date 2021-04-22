@@ -16,10 +16,14 @@
 			}
 		}
 	});
+
+	const sectionId = project.title.toLowerCase().replace(/\s+/g, '-');
 </script>
 
 <div class="project">
-	<h3>{project.title}</h3>
+	<a href={`#${sectionId}`}>
+		<h3 id={sectionId}>{project.title}</h3>
+	</a>
 	{#if project.subtitle}
 		<blockquote>{project.subtitle}</blockquote>
 	{/if}
@@ -59,11 +63,12 @@
 
 	.project {
 		margin: 0;
-		margin-bottom: 94px;
+		margin-bottom: 65px;
 		text-align: 'justify';
 		font-weight: 400;
 		font-size: 16px;
 		line-height: 21px;
+		break-inside: avoid;
 
 		h3 {
 			font-family: var(--palette-fonts-sans);
@@ -75,7 +80,7 @@
 			text-transform: uppercase;
 			margin: 0;
 			padding: 0;
-			margin-top: 54px;
+			padding-top: 58px;
 			padding-bottom: 24px;
 			opacity: 0.7;
 		}

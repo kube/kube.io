@@ -27,7 +27,9 @@
 
 	<div class="InfoColumnsStyle">
 		<div class="column">
-			<h3>Code</h3>
+			<a href="#code">
+				<h3 id="code">Code</h3>
+			</a>
 			<ul>
 				{#each cv.languages as language}
 					<li>{language}</li>
@@ -36,7 +38,9 @@
 		</div>
 
 		<div class="column">
-			<h3>Stack</h3>
+			<a href="#stack">
+				<h3 id="stack">Stack</h3>
+			</a>
 			<ul>
 				{#each cv.frameworks as framework}
 					<li>{framework}</li>
@@ -45,7 +49,9 @@
 		</div>
 
 		<div class="column">
-			<h3>Tools</h3>
+			<a href="#tools">
+				<h3 id="tools">Tools</h3>
+			</a>
 			<ul>
 				{#each cv.tools as tool}
 					<li>{tool}</li>
@@ -55,10 +61,14 @@
 	</div>
 
 	<div class="PrincipalColumnStyle">
-		<h3>Cursus</h3>
+		<a href="#cursus">
+			<h3 id="cursus">Cursus</h3>
+		</a>
 		<Timeline timeline={cv.cursus} />
 
-		<h3>Work Experience</h3>
+		<a href="#experience">
+			<h3 id="experience">Work Experience</h3>
+		</a>
 		<Timeline timeline={cv.work} />
 	</div>
 </section>
@@ -68,22 +78,12 @@
 		margin: 0 auto;
 		margin-bottom: 130px;
 
-		h1 {
-			font-family: var(--palette-fonts-sans);
-			font-weight: 700;
-			font-size: 74px;
-			margin: 0;
-			padding: 0;
-			margin-top: 27px;
-			line-height: 67px;
-		}
-
 		h3 {
 			font-size: 25px;
 			font-weight: 300;
 			font-family: var(--palette-fonts-sans);
 			text-transform: uppercase;
-			margin-top: 54px;
+			padding-top: 54px;
 			margin-bottom: 13px;
 		}
 

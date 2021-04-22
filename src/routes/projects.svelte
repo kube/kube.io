@@ -21,6 +21,7 @@
 <style lang="scss">
 	main {
 		margin: 0 auto;
+		position: absolute;
 	}
 
 	@media (max-width: 400) {

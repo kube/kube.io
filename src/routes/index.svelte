@@ -18,3 +18,9 @@
 
 	<Social />
 </main>
+
+<style>
+	main {
+		position: absolute;
+	}
+</style>
