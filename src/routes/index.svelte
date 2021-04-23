@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Intro from './intro.svx';
+	import Intro from './intro.md';
 	import Social from '../lib/Social.svelte';
 	import { fly, fade } from 'svelte/transition';
 

@@ -2,51 +2,40 @@
 	import './Project.scss';
 	import type { Project } from '../data/projects';
 	import GithubIcon from './Icons/Github.svelte';
-	import marked from 'marked';
-	import prismjs from 'prismjs';
-	import 'prismjs/components/prism-jsx';
 
 	export let project: Project;
-	const textHtml = marked(project.text, {
-		highlight(code, lang) {
-			if (lang in prismjs.languages) {
-				return prismjs.highlight(code, prismjs.languages[lang], lang);
-			} else {
-				return code;
-			}
-		}
-	});
 
-	const sectionId = project.title.toLowerCase().replace(/\s+/g, '-');
+	const { metadata } = project;
+	const sectionId = metadata.title.toLowerCase().replace(/\s+/g, '-');
 </script>
 
 <div class="project">
 	<a href={`#${sectionId}`}>
-		<h3 id={sectionId}>{project.title}</h3>
+		<h3 id={sectionId}>{metadata.title}</h3>
 	</a>
-	{#if project.subtitle}
-		<blockquote>{project.subtitle}</blockquote>
+	{#if metadata.subtitle}
+		<blockquote>{metadata.subtitle}</blockquote>
 	{/if}
 
-	{#if project.picture}
-		<img alt={`${project.title} picture`} src={project.picture} />
+	{#if metadata.picture}
+		<img alt={`${metadata.title} picture`} src={metadata.picture} />
 	{/if}
 
-	{#if project.youtube}
+	{#if metadata.youtube}
 		<iframe
 			class="youtubeIframe"
-			title={`${project.title} YouTube video`}
-			src={project.youtube}
+			title={`${metadata.title} YouTube video`}
+			src={metadata.youtube}
 			allowFullScreen
 		/>
 	{/if}
 
 	<div class="marked-description">
-		{@html textHtml}
+		<svelte:component this={project.default} />
 	</div>
 
-	{#if project.github}
-		<a href={project.github} target="_blank">
+	{#if metadata.github}
+		<a href={metadata.github} target="_blank">
 			<GithubIcon class="github-link" />
 		</a>
 	{/if}
@@ -64,7 +53,7 @@
 	.project {
 		margin: 0;
 		margin-bottom: 65px;
-		text-align: 'justify';
+		text-align: justify;
 		font-weight: 400;
 		font-size: 16px;
 		line-height: 21px;

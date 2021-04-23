@@ -20,8 +20,9 @@
 
 <style lang="scss">
 	main {
-		margin: 0 auto;
 		position: absolute;
+		left: 0;
+		right: 0;
 	}
 
 	@media (max-width: 400) {

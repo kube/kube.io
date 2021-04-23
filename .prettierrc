@@ -1,7 +1,16 @@
 {
-	"useTabs": true,
-	"singleQuote": true,
-	"trailingComma": "none",
-	"printWidth": 100,
-	"arrowParens": "avoid"
+  "tabWidth": 2,
+  "useTabs": false,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "printWidth": 80,
+  "arrowParens": "avoid",
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "printWidth": 50
+      }
+    }
+  ]
 }
