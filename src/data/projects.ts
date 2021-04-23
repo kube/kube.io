@@ -1,5 +1,4 @@
-
-      /*#######.
+/*#######.
      ########",#:
    #########',##".
   ##'##'## .##',##.
@@ -27,34 +26,34 @@ import * as libft from './projects/libft.md';
 import * as sudoku from './projects/sudoku.md';
 
 export type Project = {
-	default: any;
-	metadata: {
-		title: string;
-		subtitle?: string;
-		text?: string;
-		picture?: string;
-		youtube?: string;
-		github?: string;
-		npm?: string;
-	};
+  default: any;
+  metadata: {
+    title: string;
+    subtitle?: string;
+    text?: string;
+    picture?: string;
+    youtube?: string;
+    github?: string;
+    npm?: string;
+  };
 };
 
 export const PROJECTS: Project[] = [
-	monolite,
-	returnof,
-	whenswitch,
-	kaytheme,
-	reduxelectronglobaldispatch,
-	reactelectron,
-	_42graphql,
-	_42scalizer,
-	vscodeclangcomplete,
-	vscode42header,
-	cut,
-	kuji,
-	zappy,
-	raytracer,
-	fdf,
-	libft,
-	sudoku
+  monolite,
+  returnof,
+  whenswitch,
+  kaytheme,
+  reduxelectronglobaldispatch,
+  reactelectron,
+  _42graphql,
+  _42scalizer,
+  vscodeclangcomplete,
+  vscode42header,
+  cut,
+  kuji,
+  zappy,
+  raytracer,
+  fdf,
+  libft,
+  sudoku
 ];

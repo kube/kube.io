@@ -1,26 +1,26 @@
 <script lang="ts">
-	import Intro from './intro.md';
-	import Social from '../lib/Social.svelte';
-	import { fly, fade } from 'svelte/transition';
+  import Intro from './intro.md';
+  import Social from '../lib/Social.svelte';
+  import { fly, fade } from 'svelte/transition';
 
-	const TITLE = 'Hello';
+  const TITLE = 'Hello';
 </script>
 
 <svelte:head>
-	<title>KUBE - {TITLE}</title>
+  <title>KUBE - {TITLE}</title>
 </svelte:head>
 
 <main in:fade={{ duration: 320 }} out:fade={{ duration: 160 }}>
-	<h1 in:fly={{ y: 100, duration: 290 }}>{TITLE}.</h1>
-	<h2>I'm a Software Developer.</h2>
+  <h1 in:fly={{ y: 100, duration: 290 }}>{TITLE}.</h1>
+  <h2>I'm a Software Developer.</h2>
 
-	<Intro />
+  <Intro />
 
-	<Social />
+  <Social />
 </main>
 
 <style>
-	main {
-		position: absolute;
-	}
+  main {
+    position: absolute;
+  }
 </style>
