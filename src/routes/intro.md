@@ -11,7 +11,7 @@ Graphic Design is also something I care about. I've been working by the past on 
 <style>
 	p {
 		text-align: justify;
-		font-size: 18px;
-		line-height: 25px;
+		font-size: 1.4rem;
+		line-height: 1.9rem;
 	}
 </style>

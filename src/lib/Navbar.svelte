@@ -30,7 +30,7 @@
     }
 
     li {
-      font-size: 22px;
+      font-size: 1.7rem;
       font-weight: 700;
       font-family: var(--palette-fonts-sans);
       text-transform: uppercase;

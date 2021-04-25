@@ -64,8 +64,8 @@
         text-align: right;
         padding-top: 6px;
         margin-right: 11px;
-        width: 79px;
-        font-size: 16px;
+        width: 6rem;
+        font-size: 1.25rem;
         font-weight: 400;
         font-family: var(--palette-fonts-text);
         opacity: 0.7;
@@ -75,12 +75,12 @@
         overflow: hidden;
 
         .title {
-          font-size: 21px;
+          font-size: 1.6rem;
           font-weight: 700;
           font-family: var(--palette-fonts-sans);
         }
         .place {
-          font-size: 18px;
+          font-size: 1.4rem;
           font-family: var(--palette-fonts-text);
 
           &::before {
@@ -91,10 +91,10 @@
           display: block;
           margin-top: 2px;
           font-family: var(--palette-fonts-text);
-          font-size: 18px;
+          font-size: 1.4rem;
         }
         .description {
-          font-size: 14px;
+          font-size: 1.05rem;
 
           :global(p) {
             margin: 7px 0;
@@ -107,7 +107,7 @@
           li {
             border: 1px solid #cccccc;
             border-radius: 3px;
-            font-size: 9px;
+            font-size: 0.7rem;
             display: inline-block;
             margin: 2px;
             padding: 2px 3px;

@@ -24,16 +24,4 @@
     left: 0;
     right: 0;
   }
-
-  @media (max-width: 400) {
-    main {
-      h1 {
-        font-size: 65px;
-      }
-      h2 {
-        font-size: 38px;
-        line-height: 38px;
-      }
-    }
-  }
 </style>

@@ -55,16 +55,16 @@
     margin-bottom: 65px;
     text-align: justify;
     font-weight: 400;
-    font-size: 16px;
-    line-height: 21px;
+    font-size: 1.2rem;
+    line-height: 1.6rem;
     break-inside: avoid;
 
     h3 {
       font-family: var(--palette-fonts-sans);
       font-weight: 700;
-      font-size: 27px;
       text-align: left;
-      line-height: 1.1;
+      font-size: 2.1rem;
+      line-height: 1.3rem;
       width: 54%;
       text-transform: uppercase;
       margin: 0;

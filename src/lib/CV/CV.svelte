@@ -81,7 +81,7 @@
     margin-bottom: 130px;
 
     h3 {
-      font-size: 25px;
+      font-size: 1.9rem;
       font-weight: 300;
       font-family: var(--palette-fonts-sans);
       text-transform: uppercase;
@@ -93,20 +93,20 @@
       margin-top: 36px;
       h2 {
         font-family: var(--palette-fonts-sans);
-        font-size: 34px;
+        font-size: 2.6rem;
         margin: 0;
         padding: 0;
       }
       .job {
         font-family: var(--palette-fonts-sans);
-        font-size: 24px;
+        font-size: 1.85rem;
         margin: 0;
         padding: 0;
       }
       .address {
         margin: 9px 0;
         .city {
-          font-size: 18px;
+          font-size: 1.4rem;
           font-weight: 500;
         }
         .country {
@@ -116,7 +116,7 @@
         }
       }
       .email {
-        font-size: 17px;
+        font-size: 1.3rem;
         .domain::before {
           content: quote('@');
         }
@@ -134,7 +134,7 @@
             padding: 0;
             margin: 3px 0;
             list-style: none;
-            font-size: 18px;
+            font-size: 1.4rem;
           }
         }
       }

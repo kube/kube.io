@@ -31,53 +31,69 @@
   --palette-dark-link-active: #98cce6;
 }
 
+html {
+  @media print {
+    font-size: 9pt;
+  }
+  @media screen {
+    font-size: 13px;
+  }
+}
+
 body {
   margin: 42px;
   margin-top: 110px;
   font-family: var(--palette-fonts-text);
 
-  @media print {
-    margin: 0;
+  a {
+    text-decoration: none;
   }
 
   background-repeat: repeat;
   background-attachment: fixed;
   background-position: center center;
 
-  @media (prefers-color-scheme: light) {
-    // Should redefine palette here too
-    color: var(--palette-dark-grey);
-    background-color: var(--palette-light-grey);
-    background-image: var(--kube-background-light);
-
+  @media print {
+    margin: 0;
+    background-color: white;
+    color: black;
     a {
-      // TODO: Refactor
-      text-decoration: none;
-      color: var(--palette-light-link-normal);
-      &:hover {
-        color: var(--palette-light-link-hover);
-      }
-      &:active {
-        color: var(--palette-light-link-active);
-      }
+      color: black;
     }
   }
 
-  @media (prefers-color-scheme: dark) {
-    // Should redefine palette here too
-    color: var(--palette-light-grey);
-    background-color: var(--palette-dark-grey);
-    background-image: var(--kube-background-dark);
+  @media screen {
+    @media (prefers-color-scheme: light) {
+      // Should redefine palette here too
+      color: var(--palette-dark-grey);
+      background-color: var(--palette-light-grey);
+      background-image: var(--kube-background-light);
 
-    a {
-      // TODO: Refactor
-      text-decoration: none;
-      color: var(--palette-dark-link-normal);
-      &:hover {
-        color: var(--palette-dark-link-hover);
+      a {
+        color: var(--palette-light-link-normal);
+        &:hover {
+          color: var(--palette-light-link-hover);
+        }
+        &:active {
+          color: var(--palette-light-link-active);
+        }
       }
-      &:active {
-        color: var(--palette-dark-link-active);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      // Should redefine palette here too
+      color: var(--palette-light-grey);
+      background-color: var(--palette-dark-grey);
+      background-image: var(--kube-background-dark);
+
+      a {
+        color: var(--palette-dark-link-normal);
+        &:hover {
+          color: var(--palette-dark-link-hover);
+        }
+        &:active {
+          color: var(--palette-dark-link-active);
+        }
       }
     }
   }
@@ -92,7 +108,7 @@ h3 {
 h1 {
   font-family: var(--palette-fonts-sans);
   font-weight: bolder;
-  font-size: 74px;
+  font-size: 5.7rem;
   margin: 0;
   padding: 0;
   margin-top: 16px;
@@ -105,7 +121,7 @@ h1 {
 h2 {
   font-family: var(--palette-fonts-sans);
   font-weight: normal;
-  font-size: 40px;
+  font-size: 3rem;
   margin: 0;
   padding: 0;
   margin-bottom: 18px;
