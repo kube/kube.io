@@ -33,7 +33,7 @@
 
 html {
   @media print {
-    font-size: 9pt;
+    font-size: 8.5pt;
   }
   @media screen {
     font-size: 13px;
@@ -44,6 +44,10 @@ body {
   margin: 42px;
   margin-top: 110px;
   font-family: var(--palette-fonts-text);
+
+  @media print {
+    margin: 20pt;
+  }
 
   a {
     text-decoration: none;

@@ -4,15 +4,18 @@
   import Navbar from '../lib/Navbar.svelte';
 </script>
 
-<main>
+<div class="website-wrapper">
+  <header>
+    <Logo />
+  </header>
+
   <Navbar />
-  <Logo />
 
   <slot />
-</main>
+</div>
 
 <style>
-  main {
+  .website-wrapper {
     position: relative;
     max-width: 490px;
     min-height: 600px;
@@ -21,8 +24,11 @@
   }
 
   @media print {
-    main {
+    .website-wrapper {
       width: auto;
+      margin-top: 1rem;
+      margin-left: 8rem;
+      margin-right: 8rem;
       margin-bottom: 0;
       max-width: none;
     }

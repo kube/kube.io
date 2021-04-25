@@ -9,7 +9,7 @@
   const sectionId = metadata.title.toLowerCase().replace(/\s+/g, '-');
 </script>
 
-<div class="project">
+<article class="project">
   <a href={`#${sectionId}`}>
     <h3 id={sectionId}>{metadata.title}</h3>
   </a>
@@ -39,7 +39,7 @@
       <GithubIcon class="github-link" />
     </a>
   {/if}
-</div>
+</article>
 
 <style lang="scss">
   * :global(.github-link) {
@@ -64,13 +64,13 @@
       font-weight: 700;
       text-align: left;
       font-size: 2.1rem;
-      line-height: 1.3rem;
+      line-height: 2rem;
       width: 54%;
       text-transform: uppercase;
       margin: 0;
       padding: 0;
-      padding-top: 58px;
-      padding-bottom: 24px;
+      padding-top: 4.5rem;
+      padding-bottom: 1.85rem;
       opacity: 0.7;
     }
   }

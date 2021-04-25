@@ -55,21 +55,30 @@
       display: block;
       margin: 0;
       padding: 0;
-      margin-top: 13px;
-      margin-bottom: 31px;
-      break-inside: avoid;
+      margin-top: 1rem;
+      margin-bottom: 2.4rem;
+      @media print {
+        margin-top: 0.8rem;
+        margin-bottom: 1.8rem;
+        break-inside: avoid;
+      }
 
       .date {
         float: left;
         text-align: right;
-        padding-top: 6px;
-        margin-right: 11px;
+        padding-top: 0.35rem;
+        margin-right: 0.85rem;
         width: 6rem;
         font-size: 1.25rem;
         font-weight: 400;
         font-family: var(--palette-fonts-text);
         opacity: 0.7;
+        @media print {
+          width: 5.8rem;
+          font-size: 1.2rem;
+        }
       }
+
       .content {
         width: auto;
         overflow: hidden;
@@ -78,7 +87,12 @@
           font-size: 1.6rem;
           font-weight: 700;
           font-family: var(--palette-fonts-sans);
+          @media print {
+            font-weight: 600;
+            font-size: 1.5rem;
+          }
         }
+
         .place {
           font-size: 1.4rem;
           font-family: var(--palette-fonts-text);
@@ -86,18 +100,35 @@
           &::before {
             content: quote(' ');
           }
+          @media print {
+            font-size: 1.3rem;
+            &::before {
+              content: quote(' – ');
+            }
+          }
         }
+
         .subtitle {
           display: block;
-          margin-top: 2px;
+          margin-top: 0.15rem;
           font-family: var(--palette-fonts-text);
           font-size: 1.4rem;
+          @media print {
+            font-size: 1.3rem;
+          }
         }
         .description {
           font-size: 1.05rem;
 
           :global(p) {
-            margin: 7px 0;
+            margin: 0.55rem 0;
+          }
+          @media print {
+            font-size: 1rem;
+            line-height: 1.1rem;
+            :global(p) {
+              margin: 0.4rem 0;
+            }
           }
         }
         .stack-list {

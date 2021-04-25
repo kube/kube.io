@@ -6,7 +6,7 @@
   import GithubIcon from './Icons/Github.svelte';
 </script>
 
-<main>
+<footer>
   <a href="https://github.com/kube" target="__blank">
     <GithubIcon class="icon" style="fill:#6e5494" />
   </a>
@@ -25,7 +25,7 @@
   <a href="https://twitter.com/KubeKhrm" target="__blank">
     <TwitterIcon class="icon" style="fill:#00aced" />
   </a>
-</main>
+</footer>
 
 <style lang="scss">
   * :global(.icon) {

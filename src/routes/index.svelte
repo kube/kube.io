@@ -10,8 +10,8 @@
   <title>KUBE - {TITLE}</title>
 </svelte:head>
 
-<main in:fade={{ duration: 320 }} out:fade={{ duration: 160 }}>
-  <h1 in:fly={{ y: 100, duration: 290 }}>{TITLE}.</h1>
+<main in:fade={{ duration: 400 }} out:fade={{ duration: 90 }}>
+  <h1 in:fly={{ y: 90, duration: 290 }}>{TITLE}.</h1>
   <h2>I'm a Software Developer.</h2>
 
   <Intro />
