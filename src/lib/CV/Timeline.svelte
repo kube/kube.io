@@ -1,13 +1,11 @@
 <script lang="ts">
-  import marked from 'marked';
-
   type TimelineItem = {
     date: string | number;
     title: string;
     place?: string;
     subtitle: string;
     url?: string;
-    description?: string;
+    description?: string[];
     stack?: string[];
   };
 
@@ -29,7 +27,9 @@
 
         {#if line.description}
           <div class="description">
-            {@html marked(line.description)}
+            {#each line.description as descriptionLine}
+              <p>{descriptionLine}</p>
+            {/each}
           </div>
         {/if}
 

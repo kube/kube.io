@@ -1,4 +1,5 @@
-/*#######.
+
+      /*#######.
      ########",#:
    #########',##".
   ##'##'## .##',##.
@@ -99,8 +100,9 @@ export const cv = {
       date: 'Since April 2015',
       title: 'kube.io',
       subtitle: 'Freelance Software Engineer',
-      description: paddedText`
-            |Frontend & backend web/desktop JavaScript app development.`,
+      description: [
+        `Frontend & backend web/desktop JavaScript app development.`
+      ],
       stack: [
         'TypeScript',
         'React',
@@ -118,13 +120,11 @@ export const cv = {
       place: 'Paris',
       subtitle: 'Software Engineer',
       url: 'https://www.tinyclues.com',
-      description: paddedText`
-      |Worked in Clapps (Client Applications) Team, on the NAF (New Action Foundation) Project.
-      |
-      |We rebuilt the main application (Action) from scratch, with new UX, and using an up-to-date stack.
-      |
-      |Clean Architecture was used with NestJS on the Backend-side, React on the Frontend, and GraphQL for the API.
-      `,
+      description: [
+        `Worked in Clapps (Client Applications) Team, on the NAF (New Action Foundation) Project.`,
+        `We rebuilt the main application (Action) from scratch, with new UX, and using an up-to-date stack.`,
+        `Clean Architecture was used with NestJS on the Backend-side, React on the Frontend, and GraphQL for the API.`
+      ],
       stack: [
         'TypeScript',
         'GraphQL',
@@ -142,15 +142,12 @@ export const cv = {
       place: 'Paris',
       subtitle: 'Software Engineer',
       url: 'https://www.contentsquare.com',
-      description: paddedText`
-      |Worked in U2 Team, in charge of transversal projects (Authentication, Backoffice, Public API, Integrations).
-      |
-      |Worked on new Public API: Authentication, Quota Limiter, Throttling (Concurrent Calls and Rate Limiter).
-      |
-      |Worked on Login Application, allowing internal and external services to connect using Contentsquare account.
-      |
-      |Decentralization of authentication using JWKS.
-      |`,
+      description: [
+        `Worked in U2 Team, in charge of transversal projects (Authentication, Backoffice, Public API, Integrations).`,
+        `Worked on new Public API: Authentication, Quota Limiter, Throttling (Concurrent Calls and Rate Limiter).`,
+        `Worked on Login Application, allowing internal and external services to connect using Contentsquare account.`,
+        `Decentralization of authentication using JWKS.`
+      ],
       stack: [
         'TypeScript',
         'Node.JS',
@@ -167,12 +164,11 @@ export const cv = {
       place: 'Paris',
       subtitle: 'Backend Software Engineer',
       url: 'https://www.iziwork.com',
-      description: paddedText`
-      |Automation of Timesheets Upload and Extraction for Billing and Payments.
-      |
-      |Automation of CV Parsing Data Extraction, for matching workers with companies.
-      |
-      |Setup Unit/E2E Testing environment, and various refactorings.`,
+      description: [
+        `Automation of Timesheets Upload and Extraction for Billing and Payments.`,
+        `Automation of CV Parsing Data Extraction, for matching workers with companies.`,
+        `Setup Unit/E2E Testing environment, and various refactorings.`
+      ],
       stack: ['Flowtype', 'Node.JS', 'MongoDB', 'Parse', 'Jest']
     },
     {
@@ -181,10 +177,10 @@ export const cv = {
       place: 'Montpellier',
       subtitle: 'Frontend Software Engineer',
       url: 'https://www.bazimo.fr',
-      description: paddedText`
-      |Development of new Document Explorer Panel, which centralizes upload and view of all kind of documents in a single view.
-      |
-      |Setup TypeScript, Build Process Improvements.`,
+      description: [
+        `Development of new Document Explorer Panel, which centralizes upload and view of all kind of documents in a single view.`,
+        `Setup TypeScript, Build Process Improvements.`
+      ],
       stack: ['AngularJS', 'TypeScript', 'REST']
     },
     {
@@ -193,12 +189,11 @@ export const cv = {
       place: 'Montpellier',
       subtitle: 'Software Engineer – Format Team',
       url: 'https://www.teads.tv',
-      description: paddedText`
-      |Format Team develops the Ad Player.
-      |
-      |Worked on Video/Display Players, Trackings and A/B Tests.
-      |
-      |Prepared codebase migration to modular JavaScript using Webpack, and various TypeScript enhancements.`,
+      description: [
+        `Format Team develops the Ad Player.`,
+        `Worked on Video/Display Players, Trackings and A/B Tests.`,
+        `Prepared codebase migration to modular JavaScript using Webpack, and various TypeScript enhancements.`
+      ],
       stack: [
         'TypeScript',
         'VAST',
@@ -218,11 +213,10 @@ export const cv = {
       title: 'PandaNote',
       subtitle: 'Code/UI/UX',
       url: 'https://github.com/Pandanote/Releases',
-      description: paddedText`
-      |PandaNote was a minimalist desktop editor destinated to students to build synthesis note from their courses.
-      |
-      |It featured a Test mode permitting to test knowledge on a document.
-      `,
+      description: [
+        `PandaNote was a minimalist desktop editor destinated to students to build synthesis note from their courses.`,
+        `It featured a Test mode permitting to test knowledge on a document.`
+      ],
       stack: ['TypeScript', 'React', 'Redux', 'Electron', 'DraftJS']
     },
     {
@@ -231,11 +225,11 @@ export const cv = {
       place: 'Paris',
       subtitle: 'JavaScript Bootcamp Author',
       url: 'http://www.42.fr/',
-      description: paddedText`
-      |Piscines are two-weeks intensive courses where 42 students discover new concepts/languages with videos and exercises.
-      |
-      |First week introduced all base concepts of JavaScript and TypeScript.
-      |The second week was about web/desktop app development using React/Redux/Electron.`,
+      description: [
+        `Piscines are two-weeks intensive courses where 42 students discover new concepts/languages with videos and exercises.`,
+        `First week introduced all base concepts of JavaScript and TypeScript.`,
+        `The second week was about web/desktop app development using React/Redux/Electron.`
+      ],
       stack: [
         'JavaScript',
         'TypeScript',
@@ -258,12 +252,11 @@ export const cv = {
       title: 'DotID',
       place: 'HEC Digital Entrepreneur, Paris',
       subtitle: 'Co-founder',
-      description: paddedText`
-      |DotId was a project of a mobile password-less authentication system, we worked on with two other 42 students.
-      |
-      |Our goal was to provide the easiest and most secure way to connect anywhere.
-      |
-      |We participated to the 2nd edition of the HEC/42 Startup Launchpad, which helps students create their startup during a 2 months practice-based course.`,
+      description: [
+        `DotId was a project of a mobile password-less authentication system, we worked on with two other 42 students.`,
+        `Our goal was to provide the easiest and most secure way to connect anywhere.`,
+        `We participated to the 2nd edition of the HEC/42 Startup Launchpad, which helps students create their startup during a 2 months practice-based course.`
+      ],
       stack: [
         'Startup Creation',
         'Marketing',
@@ -284,8 +277,9 @@ export const cv = {
       place: 'Paris',
       subtitle: 'Software Engineer Intern',
       url: 'https://www.eatpopchef.com',
-      description: paddedText`
-      |We worked as two engineers with the then-CTO to build the entire frontend & backend of the Food-Delivery application.`,
+      description: [
+        `We worked as two engineers with the then-CTO to build the entire frontend & backend of the Food-Delivery application.`
+      ],
       stack: ['JavaScript', 'AngularJS', 'NodeJS', 'SQL']
     },
     {
@@ -294,9 +288,10 @@ export const cv = {
       place: 'Digne',
       subtitle: 'Graphic Designer / Integrator',
       url: 'http://www.xsalto.com/',
-      description: paddedText`
-      |During Summer 2008, I had the opportunity to work as a Web Designer at XSalto.
-      |I worked on websites like Vallée de la Blanche, Tignes and Pra-Loup Ski Resorts.`,
+      description: [
+        `During Summer 2008, I had the opportunity to work as a Web Designer at XSalto.`,
+        `I worked on websites like Vallée de la Blanche, Tignes and Pra-Loup Ski Resorts.`
+      ],
       stack: ['Photoshop', 'Fireworks', 'HTML', 'CSS', 'Flash']
     }
   ]
