@@ -15,8 +15,11 @@
   <CV />
 </main>
 
-<style>
+<style lang="scss">
   main {
     position: absolute;
+    @media screen {
+      padding-bottom: 9rem;
+    }
   }
 </style>
