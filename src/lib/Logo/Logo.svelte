@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Matrix } from '@kube/math';
+  import { onMount, onDestroy } from 'svelte';
   import { spring } from 'svelte/motion';
   import { facePath, isFaceFacingCamera } from './Face';
   import { STRIPES } from './STRIPES';
@@ -16,6 +17,22 @@
   const INITIAL_ROTATION_X = Math.PI / 4;
   const INITIAL_ROTATION_Y = Math.PI / 5;
 
+  function handleScrollBounce() {
+    console.log('Touch Move!');
+  }
+
+  let mounted = false;
+
+  // TODO: Bounce Effect on Safari (and try Chrome and Edge too)
+  onMount(() => {
+    mounted = true;
+    document.addEventListener('scroll', handleScrollBounce);
+  });
+
+  onDestroy(() => {
+    if (mounted) document.removeEventListener('scroll', handleScrollBounce);
+  });
+
   const rotation = spring(
     { x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y },
     { stiffness: 0.0061, damping: 0.094 }
@@ -23,10 +40,11 @@
 
   let revolutions = 0;
 
-  let previousClientX = 0;
-  let previousClientY = 0;
+  let originClientX = 0;
+  let originClientY = 0;
 
   function revolution() {
+    revolutions = revolutions === 1 ? 0 : 1;
     rotation.set({
       x: INITIAL_ROTATION_X,
       y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
@@ -34,34 +52,36 @@
   }
 
   const handleMouseDown: svelte.JSX.MouseEventHandler<SVGSVGElement> = e => {
-    revolutions = revolutions === 1 ? 0 : 1;
-
-    // rotation.set({ x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions });
-
-    previousClientX = e.clientX;
-    previousClientY = e.clientY;
+    originClientX = e.clientX;
+    originClientY = e.clientY;
 
     function mouseMoveListener(e: MouseEvent) {
+      // TODO: Should be correctly calculated using angle and magnitude
       const delta = {
-        x: e.clientX - previousClientX,
-        y: e.clientY - previousClientY
+        x: (e.clientX - originClientX) / 100,
+        y: (e.clientY - originClientY) / 100
       };
 
-      previousClientX = e.clientX;
-      previousClientY = e.clientY;
+      console.log(delta.x);
+      console.log(delta.y);
 
       rotation.set({
-        x: $rotation.x - delta.y / 10,
-        y: $rotation.y + delta.x / 10
+        x: INITIAL_ROTATION_X - delta.y,
+        y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions + delta.x
+      });
+    }
+
+    function mouseUpListener() {
+      document.removeEventListener('mousemove', mouseMoveListener);
+      document.removeEventListener('mouseup', mouseUpListener);
+      rotation.set({
+        x: INITIAL_ROTATION_X,
+        y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
       });
     }
 
     document.addEventListener('mousemove', mouseMoveListener);
-
-    document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', mouseMoveListener);
-      rotation.set({ x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y });
-    });
+    document.addEventListener('mouseup', mouseUpListener);
 
     e.preventDefault();
   };
@@ -87,7 +107,16 @@
   <path fill="#7160b7" {d} />
 </svg>
 
-<style>
+<style lang="scss">
+  svg {
+    transition: transform ease-in-out 0.2s;
+    &:hover {
+      transform: scale(1.06);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
+  }
   @media print {
     svg {
       display: none;
