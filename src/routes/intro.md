@@ -1,5 +1,3 @@
-I'm an alumni from [42](http://www.42.fr/), a pretty cool computer science school in Paris, France.
-
 During the last four years, I've been working a lot with web technologies, mostly from the JavaScript ecosystem. This brought me to work on JavaScript Piscine for 42, an intensive pedagogical two-week course.
 
 Architecture matters to me. Things have to stay clean and simple, and with this in mind I take time creating modules and boilerplates, trying to bring some purity in my work.
