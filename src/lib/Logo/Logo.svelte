@@ -5,43 +5,25 @@
   import { facePath, isFaceFacingCamera } from './Face';
   import { STRIPES } from './STRIPES';
 
-  const CAMERA_WIDTH = 81;
-  const CAMERA_HEIGHT = 81;
-  const VIEWBOX = [
-    -CAMERA_WIDTH / 2,
-    -CAMERA_HEIGHT / 2,
-    CAMERA_WIDTH,
-    CAMERA_HEIGHT
-  ].toString();
+  type Point = [number, number];
+
+  let svgElement: SVGElement;
+
+  const WIDTH = 76;
+  const HEIGHT = 76;
+  const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
   const INITIAL_ROTATION_X = Math.PI / 4;
   const INITIAL_ROTATION_Y = Math.PI / 5;
 
-  function handleScrollBounce() {
-    console.log('Touch Move!');
-  }
-
-  let mounted = false;
-
-  // TODO: Bounce Effect on Safari (and try Chrome and Edge too)
-  onMount(() => {
-    mounted = true;
-    document.addEventListener('scroll', handleScrollBounce);
-  });
-
-  onDestroy(() => {
-    if (mounted) document.removeEventListener('scroll', handleScrollBounce);
-  });
+  let revolutions = 0;
+  let originClientX = 0;
+  let originClientY = 0;
 
   const rotation = spring(
     { x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y },
     { stiffness: 0.0061, damping: 0.094 }
   );
-
-  let revolutions = 0;
-
-  let originClientX = 0;
-  let originClientY = 0;
 
   function revolution() {
     revolutions = revolutions === 1 ? 0 : 1;
@@ -51,42 +33,87 @@
     });
   }
 
-  const handleMouseDown: svelte.JSX.MouseEventHandler<SVGSVGElement> = e => {
-    originClientX = e.clientX;
-    originClientY = e.clientY;
+  // Agnostic Drag Handlers
 
-    function mouseMoveListener(e: MouseEvent) {
-      // TODO: Should be correctly calculated using angle and magnitude
-      const delta = {
-        x: (e.clientX - originClientX) / 100,
-        y: (e.clientY - originClientY) / 100
-      };
+  function handleCubeDragStart([x, y]: Point) {
+    originClientX = x;
+    originClientY = y;
+  }
 
-      console.log(delta.x);
-      console.log(delta.y);
+  function handleCubeDragMove([x, y]: Point) {
+    const delta = {
+      x: (x - originClientX) / 100,
+      y: (y - originClientY) / 100
+    };
+    rotation.set({
+      x: INITIAL_ROTATION_X - delta.y,
+      y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions + delta.x
+    });
+  }
 
-      rotation.set({
-        x: INITIAL_ROTATION_X - delta.y,
-        y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions + delta.x
-      });
-    }
+  function handleCubeDragEnd() {
+    rotation.set({
+      x: INITIAL_ROTATION_X,
+      y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
+    });
+  }
 
-    function mouseUpListener() {
-      document.removeEventListener('mousemove', mouseMoveListener);
-      document.removeEventListener('mouseup', mouseUpListener);
-      rotation.set({
-        x: INITIAL_ROTATION_X,
-        y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
-      });
-    }
+  // Touch Listeners
 
-    document.addEventListener('mousemove', mouseMoveListener);
-    document.addEventListener('mouseup', mouseUpListener);
+  function handleTouchStart(ev: TouchEvent) {
+    const { clientX, clientY } = ev.touches[0];
+    handleCubeDragStart([clientX, clientY]);
+  }
 
-    e.preventDefault();
-  };
+  function handleTouchMove(ev: TouchEvent) {
+    const { clientX, clientY } = ev.touches[0];
+    handleCubeDragMove([clientX, clientY]);
+    ev.preventDefault();
+  }
 
-  $: cubeTransformations = Matrix.scale(CAMERA_WIDTH * 0.6)
+  function handleTouchEnd() {
+    handleCubeDragEnd();
+  }
+
+  // Mouse Listeners
+
+  function handleMouseMove(ev: MouseEvent) {
+    const { clientX, clientY } = ev;
+    handleCubeDragMove([clientX, clientY]);
+  }
+
+  function handleMouseUp() {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    handleCubeDragEnd();
+  }
+
+  function handleMouseDown(ev: MouseEvent) {
+    const { clientX, clientY } = ev;
+    handleCubeDragStart([clientX, clientY]);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    ev.preventDefault();
+  }
+
+  // Attach Listeners
+
+  onMount(() => {
+    svgElement.addEventListener('mousedown', handleMouseDown);
+    svgElement.addEventListener('touchstart', handleTouchStart);
+    svgElement.addEventListener('touchmove', handleTouchMove);
+    svgElement.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      svgElement.removeEventListener('mousedown', handleMouseDown);
+      svgElement.removeEventListener('touchstart', handleTouchStart);
+      svgElement.removeEventListener('touchmove', handleTouchMove);
+      svgElement.removeEventListener('touchend', handleTouchEnd);
+    };
+  });
+
+  // Cube Calculation
+
+  $: cubeTransformations = Matrix.scale(WIDTH * 0.6)
     .dot(Matrix.rotationX($rotation.x))
     .dot(Matrix.rotationY($rotation.y));
 
@@ -98,10 +125,10 @@
 </script>
 
 <svg
+  bind:this={svgElement}
   on:click={revolution}
-  on:mousedown={handleMouseDown}
-  width={CAMERA_WIDTH}
-  height={CAMERA_HEIGHT}
+  width={WIDTH}
+  height={HEIGHT}
   viewBox={VIEWBOX}
 >
   <path fill="#7160b7" {d} />
