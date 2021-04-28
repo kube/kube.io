@@ -1,5 +1,4 @@
-
-      /*#######.
+/*#######.
      ########",#:
    #########',##".
   ##'##'## .##',##.
@@ -20,7 +19,7 @@ export const paddedText = ([text]: TemplateStringsArray) =>
 export const cv = {
   firstName: 'Chris',
   lastName: 'Feijoo',
-  job: 'Software Developer',
+  job: 'Software Engineer',
   birth: {
     year: 1990,
     month: 11,
