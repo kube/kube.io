@@ -13,25 +13,35 @@
   const HEIGHT = 76;
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
-  const INITIAL_ROTATION_X = Math.PI / 4;
-  const INITIAL_ROTATION_Y = Math.PI / 5;
+  const INITIAL_ROTATION_X = -Math.PI;
+  const INITIAL_ROTATION_Y = -Math.PI;
+  const INITIAL_SCALE = 0.1;
+
+  const BASE_ROTATION_X = Math.PI / 4;
+  const BASE_ROTATION_Y = Math.PI / 5;
+  const BASE_SCALE = 1;
 
   let revolutions = 0;
   let originClientX = 0;
   let originClientY = 0;
 
   const rotation = spring(
-    { x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y },
+    { x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y, scale: INITIAL_SCALE },
     { stiffness: 0.0061, damping: 0.094 }
   );
 
   function revolution() {
     revolutions = revolutions === 1 ? 0 : 1;
     rotation.set({
-      x: INITIAL_ROTATION_X,
-      y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
+      x: BASE_ROTATION_X,
+      y: BASE_ROTATION_Y + Math.PI * 2 * revolutions,
+      scale: BASE_SCALE
     });
   }
+
+  onMount(() => {
+    rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });
+  });
 
   // Agnostic Drag Handlers
 
@@ -46,15 +56,17 @@
       y: (y - originClientY) / 100
     };
     rotation.set({
-      x: INITIAL_ROTATION_X - delta.y,
-      y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions + delta.x
+      x: BASE_ROTATION_X - delta.y,
+      y: BASE_ROTATION_Y + Math.PI * 2 * revolutions + delta.x,
+      scale: BASE_SCALE
     });
   }
 
   function handleCubeDragEnd() {
     rotation.set({
-      x: INITIAL_ROTATION_X,
-      y: INITIAL_ROTATION_Y + Math.PI * 2 * revolutions
+      x: BASE_ROTATION_X,
+      y: BASE_ROTATION_Y + Math.PI * 2 * revolutions,
+      scale: BASE_SCALE
     });
   }
 
@@ -113,7 +125,7 @@
 
   // Cube Calculation
 
-  $: cubeTransformations = Matrix.scale(WIDTH * 0.6)
+  $: cubeTransformations = Matrix.scale(WIDTH * 0.6 * $rotation.scale)
     .dot(Matrix.rotationX($rotation.x))
     .dot(Matrix.rotationY($rotation.y));
 
