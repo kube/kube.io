@@ -16,12 +16,10 @@
       display: none;
     }
 
-    position: fixed;
     display: inline-block;
-    transform: rotate(90deg);
-    transform-origin: 0 51%;
-    margin-left: -61px;
-    margin-top: 13px;
+    padding-left: 9px;
+    line-height: 56px;
+    vertical-align: bottom;
 
     ul {
       list-style: none;

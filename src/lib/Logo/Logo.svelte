@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { useDebugContext } from '$lib/DebugContext/DebugContext';
+
   import { Matrix } from '@kube/math';
   import { onMount, onDestroy } from 'svelte';
   import { spring } from 'svelte/motion';
@@ -9,8 +11,8 @@
 
   let svgElement: SVGElement;
 
-  const WIDTH = 76;
-  const HEIGHT = 76;
+  const WIDTH = 58;
+  const HEIGHT = 58;
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
   const INITIAL_ROTATION_X = -Math.PI;
@@ -38,6 +40,17 @@
       scale: BASE_SCALE
     });
   }
+
+  const { registerCommand } = useDebugContext();
+
+  onMount(() =>
+    registerCommand({
+      id: 'logo-rotate',
+      group: 'Logo',
+      label: 'Revolution',
+      callback: revolution
+    })
+  );
 
   onMount(() => {
     rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });
