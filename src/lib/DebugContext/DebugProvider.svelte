@@ -8,8 +8,15 @@
 
   let isPaletteOpen = false;
 
+  function isMacintosh() {
+  return navigator.platform.indexOf('Mac') > -1
+}
+
   function recordKeyStrokes(event: KeyboardEvent) {
-    if (event.ctrlKey && event.shiftKey && event.code === 'Backslash') {
+    const isControlKeyPressed = isMacintosh() ? event.metaKey : event.ctrlKey;
+    console.log(event.code)
+    if (isControlKeyPressed && event.shiftKey && event.code === 'KeyP') {
+      event.preventDefault();
       isPaletteOpen = !isPaletteOpen;
     }
   }

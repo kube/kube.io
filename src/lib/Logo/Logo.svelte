@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { useDebugContext } from '$lib/DebugContext/DebugContext';
+  import { useRegisterCommand } from '$lib/DebugContext/useRegisterCommand';
 
   import { Matrix } from '@kube/math';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { spring } from 'svelte/motion';
   import { facePath, isFaceFacingCamera } from './Face';
   import { STRIPES } from './STRIPES';
@@ -40,17 +40,27 @@
       scale: BASE_SCALE
     });
   }
+  function verticalRevolution() {
+    revolutions = revolutions === 1 ? 0 : 1;
+    rotation.set({
+      x: BASE_ROTATION_X + Math.PI * 2 * revolutions,
+      y: BASE_ROTATION_Y,
+      scale: BASE_SCALE
+    });
+  }
 
-  const { registerCommand } = useDebugContext();
-
-  onMount(() =>
-    registerCommand({
-      id: 'logo-rotate',
-      group: 'Logo',
-      label: 'Revolution',
-      callback: revolution
-    })
-  );
+  useRegisterCommand({
+    id: 'logo-rotate',
+    group: 'Logo',
+    label: 'Revolution',
+    callback: revolution
+  });
+  useRegisterCommand({
+    id: 'logo-rotate',
+    group: 'Logo',
+    label: 'Vertical Revolution',
+    callback: verticalRevolution
+  });
 
   onMount(() => {
     rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });
