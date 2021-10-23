@@ -9,12 +9,12 @@
   let isPaletteOpen = false;
 
   function isMacintosh() {
-  return navigator.platform.indexOf('Mac') > -1
-}
+    return navigator.platform.indexOf('Mac') > -1;
+  }
 
   function recordKeyStrokes(event: KeyboardEvent) {
     const isControlKeyPressed = isMacintosh() ? event.metaKey : event.ctrlKey;
-    console.log(event.code)
+    console.log(event.code);
     if (isControlKeyPressed && event.shiftKey && event.code === 'KeyP') {
       event.preventDefault();
       isPaletteOpen = !isPaletteOpen;
