@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { useRegisterCommand } from '$lib/DebugContext/useRegisterCommand';
+
   import { Matrix } from '@kube/math';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { spring } from 'svelte/motion';
   import { facePath, isFaceFacingCamera } from './Face';
   import { STRIPES } from './STRIPES';
@@ -9,8 +11,8 @@
 
   let svgElement: SVGElement;
 
-  const WIDTH = 76;
-  const HEIGHT = 76;
+  const WIDTH = 58;
+  const HEIGHT = 58;
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
   const INITIAL_ROTATION_X = -Math.PI;
@@ -38,6 +40,27 @@
       scale: BASE_SCALE
     });
   }
+  function verticalRevolution() {
+    revolutions = revolutions === 1 ? 0 : 1;
+    rotation.set({
+      x: BASE_ROTATION_X + Math.PI * 2 * revolutions,
+      y: BASE_ROTATION_Y,
+      scale: BASE_SCALE
+    });
+  }
+
+  useRegisterCommand({
+    id: 'logo-rotate',
+    group: 'Logo',
+    label: 'Revolution',
+    callback: revolution
+  });
+  useRegisterCommand({
+    id: 'logo-rotate',
+    group: 'Logo',
+    label: 'Vertical Revolution',
+    callback: verticalRevolution
+  });
 
   onMount(() => {
     rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });

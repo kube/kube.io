@@ -4,29 +4,34 @@
 	"scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
-		"start": "svelte-kit start",
+		"preview": "svelte-kit preview",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
 		"deploy": "gh-pages -d build"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-node": "next",
-		"@sveltejs/adapter-static": "^1.0.0-next.4",
-		"@sveltejs/kit": "next",
-		"gh-pages": "^3.1.0",
-		"mdsvex": "^0.8.9",
-		"prettier": "~2.2.1",
-		"prettier-plugin-svelte": "^2.2.0",
-		"rehype-autolink-headings": "^5.0.1",
-		"rehype-slug": "^4.0.1",
+		"@sveltejs/adapter-node": "^1.0.0-next.55",
+		"@sveltejs/adapter-static": "^1.0.0-next.21",
+		"@sveltejs/kit": "^1.0.0-next.188",
+		"gh-pages": "^3.2.3",
+		"mdsvex": "^0.9.8",
+		"prettier": "~2.4.1",
+		"prettier-plugin-svelte": "^2.4.0",
+		"rehype-autolink-headings": "^6.1.0",
+		"rehype-slug": "^5.0.0",
 		"remark-abbr": "^1.4.1",
-		"remark-github": "^10.0.1",
-		"sass": "^1.0.0",
-		"svelte": "^3.29.0",
-		"svelte-preprocess": "^4.0.0",
-		"tslib": "^2.0.0",
-		"typescript": "^4.0.0",
-		"vite": "^2.1.0"
+		"remark-github": "^11.1.1",
+		"sass": "^1.43.3",
+		"svelte": "^3.44.0",
+		"svelte-check": "^2.2.7",
+		"svelte-preprocess": "^4.9.8",
+		"tslib": "^2.3.1",
+		"typescript": "^4.4.4",
+		"vite": "^2.6.10"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@kube/math": "^0.0.3"
+	}
 }

@@ -81,16 +81,14 @@ export const cv = {
       title: 'Faculty of Science of Luminy',
       place: 'Marseille',
       subtitle: 'Computer Science and Mathematics',
-      url:
-        'https://www.google.fr/maps/place/Faculté+des+sciences+de+Luminy/@43.2438261,5.4335531,824a,35y,150.32h,64.64t/data=!3m1!1e3!4m5!3m4!1s0x12c9b9adb8f06c67:0x909b2f1ed0fb048b!8m2!3d43.2314739!4d5.4396339'
+      url: 'https://www.google.fr/maps/place/Faculté+des+sciences+de+Luminy/@43.2438261,5.4335531,824a,35y,150.32h,64.64t/data=!3m1!1e3!4m5!3m4!1s0x12c9b9adb8f06c67:0x909b2f1ed0fb048b!8m2!3d43.2314739!4d5.4396339'
     },
     {
       date: '2005-2009',
       title: 'Lycée Alexandra David-Neel',
       place: 'Digne',
       subtitle: 'Scientific Baccalauréat — European Mention',
-      url:
-        'https://www.google.fr/maps/place/Lyc%C3%A9e+Mixte+Alexandra+David+Neel/@44.0923114,6.2257472,318a,35y,23.75h,75.87t/data=!3m1!1e3!4m5!3m4!1s0x12afc9370459f165:0x74d88d1bf6fd9dfd!8m2!3d44.1002528!4d6.2333813'
+      url: 'https://www.google.fr/maps/place/Lyc%C3%A9e+Mixte+Alexandra+David+Neel/@44.0923114,6.2257472,318a,35y,23.75h,75.87t/data=!3m1!1e3!4m5!3m4!1s0x12afc9370459f165:0x74d88d1bf6fd9dfd!8m2!3d44.1002528!4d6.2333813'
     }
   ],
 
