@@ -4,7 +4,6 @@ import { mdsvex } from 'mdsvex';
 import mdsvexConfig from './mdsvex.config.mjs';
 import sveltePreprocess from 'svelte-preprocess';
 import staticAdapter from '@sveltejs/adapter-static';
-import nodeAdapter from '@sveltejs/adapter-node';
 
 const pkg = JSON.parse(readFileSync('./package.json'));
 
@@ -18,7 +17,7 @@ export default {
     // By default, `npm run build` will create a standard Node app.
     // You can create optimized builds for different platforms by
     // specifying a different adapter
-    adapter: nodeAdapter(),
+    adapter: staticAdapter(),
 
     appDir: 'dist',
 
