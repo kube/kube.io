@@ -14,7 +14,6 @@
 
   function recordKeyStrokes(event: KeyboardEvent) {
     const isControlKeyPressed = isMacintosh() ? event.metaKey : event.ctrlKey;
-    console.log(event.code);
     if (isControlKeyPressed && event.shiftKey && event.code === 'KeyP') {
       event.preventDefault();
       isPaletteOpen = !isPaletteOpen;
@@ -30,10 +29,8 @@
 
   setContext<DebugContext>(DEBUG_CONTEXT_KEY, {
     registerCommand: command => {
-      // console.log(`Registering Command ${command.group}: ${command.label}`);
       commands = [...commands, command];
       return () => {
-        // console.log(`Unregistering ${command.label}`);
         commands = commands.filter(item => item !== command);
       };
     }
