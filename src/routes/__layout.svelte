@@ -1,17 +1,12 @@
 <script lang="ts">
   import DebugProvider from '$lib/DebugContext/DebugProvider.svelte';
   import '../app.scss';
-  import Logo from '../lib/Logo/Logo.svelte';
-  import Navbar from '../lib/Navbar.svelte';
+  import Header from '../lib/Header.svelte';
 </script>
 
 <DebugProvider>
   <div class="website-wrapper">
-    <header>
-      <Logo />
-      <Navbar />
-    </header>
-
+    <Header />
     <slot />
   </div>
 </DebugProvider>
@@ -23,16 +18,7 @@
     min-height: 600px;
     margin: 0 auto;
     margin-bottom: 90px;
-  }
-
-  header {
-    margin-bottom: 31px;
-  }
-
-  @media print {
-    header {
-      display: none;
-    }
+    padding-top: 130px;
   }
 
   @media print {

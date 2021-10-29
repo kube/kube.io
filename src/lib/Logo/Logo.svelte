@@ -11,8 +11,9 @@
 
   let svgElement: SVGElement;
 
-  const WIDTH = 58;
-  const HEIGHT = 58;
+  export let WIDTH = 58;
+  export let HEIGHT = 58;
+
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
   const INITIAL_ROTATION_X = -Math.PI;

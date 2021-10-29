@@ -28,7 +28,7 @@
     }
 
     li {
-      font-size: 1.7rem;
+      font-size: 1.5rem;
       font-weight: 700;
       font-family: var(--palette-fonts-sans);
       text-transform: uppercase;
