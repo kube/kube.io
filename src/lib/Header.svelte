@@ -1,10 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { spring } from 'svelte/motion';
 
   import Logo from '../lib/Logo/Logo.svelte';
   import Navbar from '../lib/Navbar.svelte';
 
   let isScrolled = false;
+
+  const WIDTH = spring(58, { stiffness: 0.0061, damping: 0.1 });
+
+  $: isScrolled ? WIDTH.set(40) : WIDTH.set(58);
 
   onMount(() => {
     function handleDocumentScroll(event: Event) {
@@ -17,7 +22,7 @@
 
 <header class:scrolled={isScrolled}>
   <span>
-    <Logo WIDTH={isScrolled ? 38 : 58} />
+    <Logo WIDTH={$WIDTH} />
     <Navbar />
   </span>
 </header>

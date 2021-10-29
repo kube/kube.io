@@ -11,8 +11,8 @@
 
   let svgElement: SVGElement;
 
-  export let WIDTH = 58;
-  export let HEIGHT = 58;
+  export let WIDTH = 48;
+  export let HEIGHT = 48;
 
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
@@ -33,7 +33,7 @@
     { stiffness: 0.0061, damping: 0.094 }
   );
 
-  function revolution() {
+  export function revolution() {
     revolutions = revolutions === 1 ? 0 : 1;
     rotation.set({
       x: BASE_ROTATION_X,

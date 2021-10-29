@@ -18,7 +18,7 @@
 
     display: inline-block;
     padding-left: 9px;
-    line-height: 56px;
+    line-height: 46px;
     vertical-align: bottom;
 
     ul {
@@ -28,7 +28,7 @@
     }
 
     li {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
       font-family: var(--palette-fonts-sans);
       text-transform: uppercase;
