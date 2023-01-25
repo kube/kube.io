@@ -1,37 +1,37 @@
 {
-	"name": "kubeio",
-	"version": "0.0.1",
-	"scripts": {
-		"dev": "svelte-kit dev",
-		"build": "svelte-kit build",
-		"preview": "svelte-kit preview",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"lint": "prettier --check .",
-		"format": "prettier --write .",
-		"deploy": "gh-pages -d build"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-node": "^1.0.0-next.55",
-		"@sveltejs/adapter-static": "^1.0.0-next.21",
-		"@sveltejs/kit": "^1.0.0-next.188",
-		"gh-pages": "^3.2.3",
-		"mdsvex": "^0.9.8",
-		"prettier": "~2.4.1",
-		"prettier-plugin-svelte": "^2.4.0",
-		"rehype-autolink-headings": "^6.1.0",
-		"rehype-slug": "^5.0.0",
-		"remark-abbr": "^1.4.1",
-		"remark-github": "^11.1.1",
-		"sass": "^1.43.3",
-		"svelte": "^3.44.0",
-		"svelte-check": "^2.2.7",
-		"svelte-preprocess": "^4.9.8",
-		"tslib": "^2.3.1",
-		"typescript": "^4.4.4",
-		"vite": "^2.6.10"
-	},
-	"type": "module",
-	"dependencies": {
-		"@kube/math": "^0.0.3"
-	}
+  "name": "kubeio",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
+    "deploy": "gh-pages -d build"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^1.0.0",
+    "@sveltejs/adapter-static": "^1.0.0",
+    "@sveltejs/kit": "^1.0.0",
+    "gh-pages": "^3.2.3",
+    "mdsvex": "^0.9.8",
+    "prettier": "~2.4.1",
+    "prettier-plugin-svelte": "^2.4.0",
+    "rehype-autolink-headings": "^6.1.0",
+    "rehype-slug": "^5.0.0",
+    "remark-abbr": "^1.4.1",
+    "remark-github": "^11.1.1",
+    "sass": "^1.43.3",
+    "svelte": "^3.54.0",
+    "svelte-check": "^3.0.1",
+    "svelte-preprocess": "^4.9.8",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@kube/math": "^0.0.3"
+  }
 }

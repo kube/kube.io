@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CV from '../lib/CV/CV.svelte';
+  import CV from '../../lib/CV/CV.svelte';
   import { fly, fade } from 'svelte/transition';
 
   let title = 'CV';

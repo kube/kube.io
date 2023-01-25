@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { PROJECTS } from '../data/projects';
-  import Project from '../lib/Project.svelte';
+  import { PROJECTS } from '../../data/projects';
+  import Project from '../../lib/Project.svelte';
   import { fly, fade } from 'svelte/transition';
 
   const TITLE = 'Projects';
