@@ -1,12 +1,7 @@
-import { readFileSync } from 'fs';
-
 import { mdsvex } from 'mdsvex';
 import mdsvexConfig from './mdsvex.config.mjs';
-import sveltePreprocess from 'svelte-preprocess';
 import staticAdapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/kit/vite';
-
-const pkg = JSON.parse(readFileSync('./package.json'));
 
 /** @type {import('@sveltejs/kit').Config} */
 export default {

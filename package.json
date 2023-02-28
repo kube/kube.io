@@ -11,8 +11,7 @@
     "deploy": "gh-pages -d build"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^1.0.0",
-    "@sveltejs/adapter-static": "^1.0.0",
+    "@sveltejs/adapter-static": "^2.0.1",
     "@sveltejs/kit": "^1.0.0",
     "gh-pages": "^3.2.3",
     "mdsvex": "^0.9.8",
@@ -32,6 +31,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@kube/math": "^0.0.3"
+    "@kube/math": "^0.0.6"
   }
 }
