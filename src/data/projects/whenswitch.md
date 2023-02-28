@@ -1,6 +1,7 @@
 ---
 title: WhenSwitch
 github: https://github.com/kube/when-switch
+index: 14
 ---
 
 **WhenSwitch** adds Ruby-like `case/when` statements in JavaScript, through a single `when` function.

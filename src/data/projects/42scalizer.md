@@ -1,6 +1,7 @@
 ---
 title: 42 Scalizer
 github: https://github.com/kube/scalizer
+index: 9
 ---
 
 When creating exercises for the **42 JavaScript Piscine** (a 2-week programming bootcamp), I had to create validation scales using a Yaml Schema really difficult to change once written:

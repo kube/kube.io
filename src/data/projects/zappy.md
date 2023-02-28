@@ -2,6 +2,7 @@
 title: Zappy
 youtube: https://youtube.com/embed/F2R2BoDBg5Y
 github: https://github.com/kubekhrm/zappy
+index: 4
 ---
 
 **Zappy** is a game composed by three programs:

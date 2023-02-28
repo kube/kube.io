@@ -2,6 +2,7 @@
 title: Kay Theme
 picture: https://github.com/kube/vscode-kay-theme/raw/master/images/theme-dark.png
 github: https://github.com/kube/vscode-kay-theme
+index: 13
 ---
 
 **Kay** is my personal code editor theme.

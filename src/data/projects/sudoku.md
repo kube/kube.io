@@ -2,6 +2,7 @@
 title: Sudoku
 github: https://github.com/kube/luminy-sudoku
 picture: https://cloud.githubusercontent.com/assets/2991143/25461505/b3c40da0-2ae9-11e7-8e2b-7a02515d4991.gif
+index: 0
 ---
 
 This **Sudoku** was my first C project, when at **Faculty of Science of Luminy**.

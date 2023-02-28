@@ -1,6 +1,7 @@
 ---
 title: ReturnOf
 github: https://github.com/kube/returnof
+index: 15
 ---
 
 **ReturnOf** was a workaround solution permitting type inference on function returns in TypeScript.

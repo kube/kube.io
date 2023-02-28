@@ -1,6 +1,7 @@
 ---
 title: VSCode 42 Header
 github: https://github.com/kube/vscode-42header
+index: 7
 ---
 
 A **VSCode extension** for 42 Students.

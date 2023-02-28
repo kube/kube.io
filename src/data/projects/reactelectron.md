@@ -1,6 +1,7 @@
 ---
 title: React Electron
 github: https://github.com/kube/react-electron
+index: 11
 ---
 
 Just a proof-of-concept, but already in production usage in PandaNote.

@@ -2,6 +2,7 @@
 title: RayTracer
 youtube: https://www.youtube.com/embed/1JoTZg4Ulo0
 github: https://github.com/kubekhrm/RT
+index: 3
 ---
 
 **RayTracer** was 42 first-semester Graphics final group project.

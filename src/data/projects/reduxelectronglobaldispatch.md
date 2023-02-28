@@ -1,6 +1,7 @@
 ---
 title: Redux Electron Global Dispatch
 github: https://github.com/kube/redux-electron-global-dispatch
+index: 12
 ---
 
 This library provides a simple way to have **Redux actions globally dispatched** through all processes of an Electron application, thanks to a middleware.

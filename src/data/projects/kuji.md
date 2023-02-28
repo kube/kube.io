@@ -2,6 +2,7 @@
 title: Kuji
 github: https://github.com/kube/kuji
 npm: https://www.npmjs.com/package/kuji
+index: 5
 ---
 
 **Kuji** was a simple library for NodeJS, simplifying asynchronous tasks.

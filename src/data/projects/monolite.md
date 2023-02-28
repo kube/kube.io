@@ -2,6 +2,7 @@
 title: Monolite
 github: https://github.com/kube/monolite
 npm: https://npmjs.org/package/monolite
+index: 16
 ---
 
 **Monolite** is a simple, type-safe, [Structural-Sharing](https://www.youtube.com/watch?v=pLvrZPSzHxo&feature=youtu.be&t=1390) library.

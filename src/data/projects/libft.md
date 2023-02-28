@@ -1,6 +1,7 @@
 ---
 title: LibFt
 github: https://github.com/kube/libft
+index: 1
 ---
 
 42 first project.

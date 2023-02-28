@@ -1,6 +1,7 @@
 ---
 title: CUT
 github: https://github.com/kube/cut
+index: 6
 ---
 
 **CUT** is for C Unit Testing.
