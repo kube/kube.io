@@ -14,48 +14,23 @@
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
   </style>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KUBE - CV</title>
-
-		
-
-		<link rel="modulepreload" href="/dist/start-ebc40d93.js">
-		<link rel="modulepreload" href="/dist/chunks/vendor-795e1742.js">
-		<link rel="modulepreload" href="/dist/pages/__layout.svelte-9ecf228e.js">
-		<link rel="modulepreload" href="/dist/pages/cv.svelte-a3556e67.js">
-		<link rel="stylesheet" href="/dist/assets/start-61d1577b.css">
-		<link rel="stylesheet" href="/dist/assets/pages/__layout.svelte-e43a78e3.css">
-		<link rel="stylesheet" href="/dist/assets/pages/cv.svelte-98411240.css">
-
-		<script type="module">
-			import { start } from "/dist/start-ebc40d93.js";
-			start({
-				target: document.querySelector("#svelte"),
-				paths: {"base":"","assets":""},
-				session: {},
-				host: location.host,
-				route: true,
-				spa: false,
-				trailing_slash: "never",
-				hydrate: {
-					status: 200,
-					error: null,
-					nodes: [
-						import("/dist/pages/__layout.svelte-9ecf228e.js"),
-						import("/dist/pages/cv.svelte-a3556e67.js")
-					],
-					page: {
-						host: location.host, // TODO this is redundant
-						path: "\u002Fcv",
-						query: new URLSearchParams(""),
-						params: {}
-					}
-				}
-			});
-		</script>
+  <meta http-equiv="content-security-policy" content="">
+		<link href="./dist/immutable/assets/_layout.ba63d70f.css" rel="stylesheet">
+		<link href="./dist/immutable/assets/_page.762dd6bd.css" rel="stylesheet">
+		<link rel="modulepreload" href="./dist/immutable/entry/start.42e03e45.js">
+		<link rel="modulepreload" href="./dist/immutable/chunks/index.5cd0287d.js">
+		<link rel="modulepreload" href="./dist/immutable/chunks/singletons.127f5476.js">
+		<link rel="modulepreload" href="./dist/immutable/entry/app.69b3444b.js">
+		<link rel="modulepreload" href="./dist/immutable/entry/_layout.svelte.d3ebcfa2.js">
+		<link rel="modulepreload" href="./dist/immutable/chunks/stores.08a4ee90.js">
+		<link rel="modulepreload" href="./dist/immutable/entry/_layout.ts.984db11e.js">
+		<link rel="modulepreload" href="./dist/immutable/chunks/_layout.da46b06b.js">
+		<link rel="modulepreload" href="./dist/immutable/entry/cv-page.svelte.4dd8e3cb.js">
+		<link rel="modulepreload" href="./dist/immutable/chunks/index.4532cce0.js"><title>KUBE - CV</title><!-- HEAD_svelte-xder6r_START --><!-- HEAD_svelte-xder6r_END -->
 </head>
 
-<body>
-  <div id="svelte">
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents">
 
 
 
@@ -65,7 +40,7 @@
 </a></li>
     <li class="svelte-1g2pktb"><a href="/projects" class="svelte-1k7c9lj">Projects
 </a></li>
-    <li class="svelte-1g2pktb"><a href="/cv" class="svelte-1k7c9lj active">CV
+    <li class="svelte-1g2pktb"><a href="/cv" class="svelte-1k7c9lj">CV
 </a></li></ul>
 </nav></span>
 </header>
@@ -258,8 +233,30 @@
 </main></div>
 
 
-
 			
+			<script>
+				{
+					__sveltekit_xypmno = {
+						env: {},
+						assets: new URL(".", location.href).pathname.replace(/^\/$/, ''),
+						element: document.currentScript.parentElement
+					};
+
+					const data = [null,null];
+
+					Promise.all([
+						import("./dist/immutable/entry/start.42e03e45.js"),
+						import("./dist/immutable/entry/app.69b3444b.js")
+					]).then(([kit, app]) => {
+						kit.start(app, __sveltekit_xypmno.element, {
+							node_ids: [0, 3],
+							data,
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
 		</div>
 </body>
 
