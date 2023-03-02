@@ -1,5 +1,6 @@
 ---
 title: Redux Electron Global Dispatch
+description: A Redux middleware permitting to dispatch actions globally in an Electron application
 github: https://github.com/kube/redux-electron-global-dispatch
 index: 12
 ---

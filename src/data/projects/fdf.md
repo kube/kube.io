@@ -1,5 +1,6 @@
 ---
 title: FdF
+description: Basic rasterizer. Renders a 3D view given a map of altitudes.
 youtube: https://youtube.com/embed/X3pcTRCgQF4
 index: 2
 ---

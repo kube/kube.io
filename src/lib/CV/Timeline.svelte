@@ -86,7 +86,7 @@
         .title {
           font-size: 1.6rem;
           font-weight: 700;
-          font-family: var(--palette-fonts-sans);
+          font-family: var(--palette-fonts-title);
           @media print {
             font-weight: 600;
             font-size: 1.5rem;

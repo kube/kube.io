@@ -1,5 +1,6 @@
 ---
 title: Monolite
+description: Type-Safe Structural-Sharing Library for Immutable State Management
 github: https://github.com/kube/monolite
 npm: https://npmjs.org/package/monolite
 index: 16

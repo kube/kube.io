@@ -1,5 +1,6 @@
 ---
 title: 42 GraphQL
+description: GraphQL Façade of the 42 REST API
 github: https://github.com/kube/42graphql
 index: 10
 ---

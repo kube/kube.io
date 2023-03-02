@@ -19,6 +19,7 @@
 			To have warnings/errors of the Svelte compiler at the correct position,
 			enable source maps by default.
 			*/
+    "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

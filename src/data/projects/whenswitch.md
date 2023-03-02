@@ -1,5 +1,6 @@
 ---
 title: WhenSwitch
+description: A simple, type-safe, `case/when` statement for JavaScript
 github: https://github.com/kube/when-switch
 index: 14
 ---

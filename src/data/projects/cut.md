@@ -1,5 +1,6 @@
 ---
 title: CUT
+description: A simple C Unit Testing framework
 github: https://github.com/kube/cut
 index: 6
 ---

@@ -1,5 +1,6 @@
 ---
 title: React Electron
+description: Simple React driver for BrowserWindow in Electron
 github: https://github.com/kube/react-electron
 index: 11
 ---

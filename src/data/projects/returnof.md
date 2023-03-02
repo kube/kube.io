@@ -1,5 +1,6 @@
 ---
 title: ReturnOf
+description: A workaround solution permitting type inference on function returns in TypeScript
 github: https://github.com/kube/returnof
 index: 15
 ---

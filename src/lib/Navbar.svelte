@@ -5,6 +5,7 @@
 <nav>
   <ul>
     <li><NavbarLink path="/">Hello</NavbarLink></li>
+    <!-- <li><NavbarLink path="/blog">Blog</NavbarLink></li> -->
     <li><NavbarLink path="/projects">Projects</NavbarLink></li>
     <li><NavbarLink path="/cv">CV</NavbarLink></li>
   </ul>
@@ -28,9 +29,9 @@
     }
 
     li {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      font-family: var(--palette-fonts-sans);
+      font-family: var(--palette-fonts-caps);
       text-transform: uppercase;
       display: inline-block;
       margin: 0;

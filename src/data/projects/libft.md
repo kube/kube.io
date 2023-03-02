@@ -1,5 +1,6 @@
 ---
 title: LibFt
+description: Recode of a subset of the C Standard Library, which is the first building block of all other C projects at 42.
 github: https://github.com/kube/libft
 index: 1
 ---

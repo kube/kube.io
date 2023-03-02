@@ -1,5 +1,6 @@
 ---
 title: Kay Theme
+description: A colorful, 80's-inspired theme for Visual Studio Code
 picture: https://github.com/kube/vscode-kay-theme/raw/master/images/theme-dark.png
 github: https://github.com/kube/vscode-kay-theme
 index: 13

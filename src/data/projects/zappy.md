@@ -1,5 +1,6 @@
 ---
 title: Zappy
+description: A game composed by three programs a server, an AI, and a graphic visualizer
 youtube: https://youtube.com/embed/F2R2BoDBg5Y
 github: https://github.com/kubekhrm/zappy
 index: 4

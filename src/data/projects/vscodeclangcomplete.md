@@ -1,5 +1,6 @@
 ---
 title: VSCode ClangComplete
+description: A Clang Complete extension for Visual Studio Code
 github: https://github.com/kube/vscode-clang-complete
 index: 8
 ---

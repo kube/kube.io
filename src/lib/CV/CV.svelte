@@ -83,8 +83,8 @@
 <style lang="scss">
   h3 {
     font-size: 1.9rem;
-    font-weight: 300;
-    font-family: var(--palette-fonts-sans);
+    font-weight: 200;
+    font-family: var(--palette-fonts-caps);
     text-transform: uppercase;
     padding-top: 4.15rem;
 
@@ -104,9 +104,9 @@
 
     h2 {
       margin: 0;
-      font-family: var(--palette-fonts-sans);
+      font-family: var(--palette-fonts-caps);
       font-size: 2.4rem;
-      font-weight: 500;
+      font-weight: 400;
       @media print {
         font-size: 2.1rem;
       }
@@ -114,7 +114,7 @@
     .job {
       margin: 0;
       padding: 0;
-      font-family: var(--palette-fonts-sans);
+      font-family: var(--palette-fonts-title);
       font-size: 1.6rem;
     }
     .address {

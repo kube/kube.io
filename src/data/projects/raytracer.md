@@ -1,5 +1,6 @@
 ---
 title: RayTracer
+description: Basic raytracer with simple shapes and built-in editor
 youtube: https://www.youtube.com/embed/1JoTZg4Ulo0
 github: https://github.com/kubekhrm/RT
 index: 3

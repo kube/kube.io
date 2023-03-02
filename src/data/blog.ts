@@ -16,13 +16,9 @@ export type Project = {
     id: string;
     index: number;
     title: string;
-    description?: string;
     subtitle?: string;
     text?: string;
     picture?: string;
-    youtube?: string;
-    github?: string;
-    npm?: string;
   };
 };
 
