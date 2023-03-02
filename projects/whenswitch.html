@@ -1,0 +1,116 @@
+<!DOCTYPE html />
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700;800&display=swap');
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="content-security-policy" content="">
+		<link href="../dist/immutable/assets/_layout.747a19eb.css" rel="stylesheet">
+		<link href="../dist/immutable/assets/_page.e58b7b8c.css" rel="stylesheet">
+		<link rel="modulepreload" href="../dist/immutable/entry/start.975c71bd.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/index.5cd0287d.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/singletons.ad893831.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/control.e7f5239e.js">
+		<link rel="modulepreload" href="../dist/immutable/entry/app.e939b340.js">
+		<link rel="modulepreload" href="../dist/immutable/entry/_layout.svelte.9bdd7ef3.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/stores.4cb6333a.js">
+		<link rel="modulepreload" href="../dist/immutable/entry/_layout.ts.984db11e.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/_layout.da46b06b.js">
+		<link rel="modulepreload" href="../dist/immutable/entry/projects-_slug_-page.svelte.c28d55bb.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/index.4532cce0.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/Github.c193db55.js">
+		<link rel="modulepreload" href="../dist/immutable/entry/projects-_slug_-page.ts.59d3d655.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/_page.b90684a1.js">
+		<link rel="modulepreload" href="../dist/immutable/chunks/projects.68d9e1eb.js">
+</head>
+
+<body data-sveltekit-preload-data="hover">
+  <div style="display: contents">
+
+
+
+
+<div class="website-wrapper svelte-ll8wre"><header class="svelte-11581zo"><span class="svelte-11581zo"><svg width="58" height="48" viewBox="-29,-24,58,48" class="svelte-15wkv3x"><path fill="#7160b7" d="M1.5,-1.75L-1.75,-1.75L-1.75,-1.75L1.5,-1.75Z M1.5,-1.75L-1.75,-1.75L-1.75,-1.75L1.5,-1.75Z M-1.75,1.5L-1.75,1.5L-1.75,0.75L-1.75,0.75Z M-1.75,0.25L-1.75,0.25L-1.75,-0.5L-1.75,-0.5Z M-1.75,-1L-1.75,-1L-1.75,-1.75L-1.75,-1.75Z M1.5,1.5L1.5,-1.75L0.75,-1.75L0.75,1.5Z M0.25,1.5L0.25,-1.75L-0.5,-1.75L-0.5,1.5Z M-1,1.5L-1,-1.75L-1.75,-1.75L-1.75,1.5Z"></path></svg>
+    <nav class="svelte-jdk19s"><ul class="svelte-jdk19s"><li class="svelte-jdk19s"><a href="/" class="svelte-u6sg1b">Hello
+</a></li>
+    
+    <li class="svelte-jdk19s"><a href="/projects" class="svelte-u6sg1b active">Projects
+</a></li>
+    <li class="svelte-jdk19s"><a href="/cv" class="svelte-u6sg1b">CV
+</a></li></ul>
+</nav></span>
+</header>
+    <div class="svelte-106qtst"><a class="backToProjects svelte-106qtst" href="/projects"><span class="arrow svelte-106qtst">&lt;-</span> Projects</a></div>
+
+<h1 class="svelte-106qtst">WhenSwitch</h1>
+
+<main class="svelte-106qtst"><article class="project svelte-106qtst">
+
+    
+
+    
+
+    <div class="marked-description svelte-106qtst"><p><strong>WhenSwitch</strong> adds Ruby-like <code>case/when</code> statements in JavaScript, through a single <code>when</code> function.</p>
+<p>Ternary expressions become too much nested when handling too much cases,
+and switch statements are <a href="https://medium.com/chrisburgin/rewriting-javascript-replacing-the-switch-statement-cfff707cf045" rel="nofollow">error-prone and block-only</a>, WhenSwitch enables simple function conditional flows, as expressions:</p>
+<pre class="language-js"><!-- HTML_TAG_START --><code class="language-js"><span class="token keyword">const</span> <span class="token function-variable function">getDrinkPrice</span> <span class="token operator">=</span> <span class="token parameter">drink</span> <span class="token operator">=></span>
+  <span class="token function">when</span><span class="token punctuation">(</span>drink<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Coke'</span><span class="token punctuation">,</span> <span class="token number">1.5</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Pepsi'</span><span class="token punctuation">,</span> <span class="token number">1.8</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">else</span><span class="token punctuation">(</span><span class="token number">2.0</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code><!-- HTML_TAG_END --></pre>
+<p>This is useful for conditional components in React for example:</p>
+<pre class="language-jsx"><!-- HTML_TAG_START --><code class="language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><span class="token plain-text">
+  </span><span class="token punctuation">&#123;</span><span class="token function">when</span><span class="token punctuation">(</span>props<span class="token punctuation">.</span>page<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'Hello'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">HelloPage</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">'World'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">WorldPage</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">else</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Page404</span></span> <span class="token punctuation">/></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token plain-text">
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></code><!-- HTML_TAG_END --></pre>
+<p>JavaScript not being lazily evaluated though, it adds some overhead on expressions, needing to wrap them in thunks.</p>
+<p>Another issue is with TypeScript: The goal here was to have something completely type-safe, but as it was impossible at the moment to define generic <a href="https://basarat.gitbooks.io/typescript/docs/types/typeGuard.html" rel="nofollow">type guards</a>,
+I left this library as it was, and for now only use it for simple cases.</p></div>
+
+    <a href="https://github.com/kube/when-switch" target="_blank" class="svelte-106qtst"><svg viewBox="0 0 34 33" class="github-link"><path d="M16.6.45C7.6.45.33 7.75.33 16.75c0 7.2 4.67 13.3 11.14 15.45.82.15 1.1-.35 1.1-.78v-2.77c-4.54.98-5.5-2.2-5.5-2.2-.74-1.87-1.8-2.37-1.8-2.37-1.48-1 .1-1 .1-1 1.64.12 2.5 1.7 2.5 1.7 1.45 2.48 3.8 1.76 4.74 1.34.15-1.05.57-1.77 1.04-2.18-3.62-.4-7.42-1.8-7.42-8.05 0-1.8.63-3.24 1.67-4.38-.18-.4-.73-2.07.15-4.3 0 0 1.37-.45 4.48 1.66 1.3-.36 2.7-.54 4.08-.55 1.4 0 2.8.2 4.1.55 3.1-2.1 4.46-1.67 4.46-1.67.9 2.25.33 3.9.17 4.32 1.04 1.14 1.67 2.6 1.67 4.37 0 6.25-3.8 7.63-7.44 8.03.6.5 1.1 1.5 1.1 3.02v4.47c0 .43.28.94 1.1.78 6.48-2.16 11.14-8.26 11.14-15.45 0-9-7.3-16.3-16.3-16.3"></path></svg></a></article>
+</main></div>
+
+
+			
+			<script>
+				{
+					__sveltekit_13pemd5 = {
+						env: {},
+						assets: new URL("..", location.href).pathname.replace(/^\/$/, ''),
+						element: document.currentScript.parentElement
+					};
+
+					const data = [null,null];
+
+					Promise.all([
+						import("../dist/immutable/entry/start.975c71bd.js"),
+						import("../dist/immutable/entry/app.e939b340.js")
+					]).then(([kit, app]) => {
+						kit.start(app, __sveltekit_13pemd5.element, {
+							node_ids: [0, 6],
+							data,
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+</body>
+
+</html>
