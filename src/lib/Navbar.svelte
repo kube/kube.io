@@ -4,10 +4,10 @@
 
 <nav>
   <ul>
-    <li><NavbarLink path="/">Hello</NavbarLink></li>
-    <!-- <li><NavbarLink path="/blog">Blog</NavbarLink></li> -->
-    <li><NavbarLink path="/projects">Projects</NavbarLink></li>
-    <li><NavbarLink path="/cv">CV</NavbarLink></li>
+    <li><NavbarLink path="/" text="Hello" /></li>
+    <!-- <li><NavbarLink path="/blog" text="Blog" /></li> -->
+    <li><NavbarLink path="/projects" text="Projects" /></li>
+    <li><NavbarLink path="/cv" text="CV" /></li>
   </ul>
 </nav>
 
@@ -19,7 +19,6 @@
 
     display: inline-block;
     padding-left: 9px;
-    line-height: 46px;
     vertical-align: bottom;
 
     ul {
