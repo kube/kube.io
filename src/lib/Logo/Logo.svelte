@@ -24,10 +24,20 @@
   let originClientX = 0;
   let originClientY = 0;
 
+  const INITIAL_ROTATION_Y_OFFSET = -Math.PI * 2;
+
   const rotation = spring(
-    { x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE },
+    {
+      x: BASE_ROTATION_X,
+      y: BASE_ROTATION_Y + INITIAL_ROTATION_Y_OFFSET,
+      scale: BASE_SCALE
+    },
     { stiffness: 0.0061, damping: 0.094 }
   );
+
+  onMount(() => {
+    rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });
+  });
 
   export function revolution() {
     revolutions = revolutions === 1 ? 0 : 1;
