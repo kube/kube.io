@@ -29,7 +29,7 @@
 
 <style>
   header {
-    position: fixed;
+    position: absolute;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -53,6 +53,7 @@
   }
 
   header.scrolled {
+    position: fixed;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(31px);
 

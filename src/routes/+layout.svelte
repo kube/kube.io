@@ -18,7 +18,7 @@
     min-height: 600px;
     margin: 0 auto;
     margin-bottom: 90px;
-    padding-top: 130px;
+    padding-top: 158px;
   }
 
   @media print {
