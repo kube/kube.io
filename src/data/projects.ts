@@ -8,8 +8,6 @@
      ## ## ## :##
       ## ## ##*/
 
-import { set } from 'monolite';
-
 export type Project = {
   default: any;
   metadata: {

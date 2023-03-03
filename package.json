@@ -31,7 +31,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@kube/math": "^0.0.6",
-    "monolite": "^0.9.2"
+    "@kube/math": "^0.0.6"
   }
 }

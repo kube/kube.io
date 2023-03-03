@@ -16,10 +16,6 @@
 
   const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
 
-  const INITIAL_ROTATION_X = -Math.PI;
-  const INITIAL_ROTATION_Y = -Math.PI;
-  const INITIAL_SCALE = 0.1;
-
   const BASE_ROTATION_X = Math.PI / 4;
   const BASE_ROTATION_Y = Math.PI / 5;
   const BASE_SCALE = 1;
@@ -29,7 +25,7 @@
   let originClientY = 0;
 
   const rotation = spring(
-    { x: INITIAL_ROTATION_X, y: INITIAL_ROTATION_Y, scale: INITIAL_SCALE },
+    { x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE },
     { stiffness: 0.0061, damping: 0.094 }
   );
 
@@ -61,10 +57,6 @@
     group: 'Logo',
     label: 'Vertical Revolution',
     callback: verticalRevolution
-  });
-
-  onMount(() => {
-    rotation.set({ x: BASE_ROTATION_X, y: BASE_ROTATION_Y, scale: BASE_SCALE });
   });
 
   // Agnostic Drag Handlers
