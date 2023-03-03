@@ -1,1 +1,0 @@
-import{H as t}from"./control.e7f5239e.js";import{a as e}from"./projects.68d9e1eb.js";function n(r,o){return new t(r,o)}new TextEncoder;const a=async({params:r})=>{const o=e(r.slug);if(!o)throw n(404,"Not found");return{props:{project:await o}}},s=Object.freeze(Object.defineProperty({__proto__:null,load:a},Symbol.toStringTag,{value:"Module"}));export{s as _,a as l};
