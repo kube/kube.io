@@ -1,10 +1,10 @@
-During the last four years, I've been working a lot with web technologies, mostly from the JavaScript ecosystem. This brought me to work on JavaScript Piscine for 42, an intensive pedagogical two-week course.
+For the last 10 years I've been working intensively with Web Technologies, particularly in the JavaScript Ecosystem.
 
-Architecture matters to me. Things have to stay clean and simple, and with this in mind I take time creating modules and boilerplates, trying to bring some purity in my work.
+I rely on Software Engineering Principles, leveraging Abstraction to build Architecture from macro to micro, enabling early prototyping and Continuous Improvement on Product.
 
-Currently, I'm going back to the roots, exploring Compiler Design and Functional Programming.
-
-Graphic Design is also something I care about. I've been working by the past on multiple graphic design projects, like logo, serigraphy or webdesign.
+<p class="signature">
+— Chris Feijoo
+</p>
 
 <style>
 	p {
@@ -12,4 +12,9 @@ Graphic Design is also something I care about. I've been working by the past on 
 		font-size: 1.4rem;
 		line-height: 1.9rem;
 	}
+
+  .signature {
+    text-align: right;
+    margin-right: 1rem;
+  }
 </style>

@@ -1,4 +1,5 @@
-/*#######.
+
+      /*#######.
      ########",#:
    #########',##".
   ##'##'## .##',##.
@@ -118,14 +119,20 @@ export const cv = {
       subtitle: 'Software Engineer',
       url: 'https://thefork.com',
       description: [
-        'Currently working in the Supply Team, which is in charge of the B2B platform.'
+        'Worked in Restaurant Experience (B2B).',
+        'Enhancements and maintainance of Floorplan, which allows restaurants to manage their tables and reservations.',
+        'Initiated the VirtualMode project on TFM Front, allowing to run the frontend in isolation, with Virtual API, Storage and Environment, and powerful system of factories to test any state in a few lines of description.',
+        'Worked on multiple purely technical projects like:',
+        '- Automatic code migrations using JSCodeShift',
+        '- Frontend Architecture based on React Contexts, to make it easily testable',
+        '- Cleaning and Simplification of the GraphQL Schema, to make it more conventional.'
       ],
       stack: [
         'TypeScript',
         'NodeJS',
         'React',
-        'Redux',
         'Storybook',
+        'GraphQL',
         'Apollo',
         'PostgreSQL'
       ]
