@@ -12,7 +12,7 @@
 
 <main in:fade={{ duration: 400 }} out:fade={{ duration: 90 }}>
   <h1 in:fly={{ y: 90, duration: 290 }}>{TITLE}.</h1>
-  <h2>I'm a Software Developer.</h2>
+  <h2>I build Software.</h2>
 
   <Intro />
 
