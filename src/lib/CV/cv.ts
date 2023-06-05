@@ -113,7 +113,7 @@ export const cv = {
       ]
     },
     {
-      date: 'Since March 2021',
+      date: 'Mar 2021 Mar 2023',
       title: 'TheFork',
       place: 'France',
       subtitle: 'Software Engineer',
