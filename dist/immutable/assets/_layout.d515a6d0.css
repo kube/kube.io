@@ -45,6 +45,7 @@
 
 html {
   overflow: overlay;
+  scrollbar-gutter: stable;
 }
 @media print {
   html {
