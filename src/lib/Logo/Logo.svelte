@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useRegisterCommand } from '$lib/DebugContext/useRegisterCommand';
 
-  import { Matrix } from '@kube/math';
+  import { Matrix, Vector } from '@kube/math';
   import { onMount } from 'svelte';
   import { spring } from 'svelte/motion';
   import { facePath, isFaceFacingCamera } from './Face';
@@ -14,7 +14,12 @@
   export let WIDTH = 48;
   export let HEIGHT = 48;
 
-  const VIEWBOX = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT].toString();
+  const VIEWBOX = [
+    -WIDTH / 2 - 4,
+    -HEIGHT / 2 - 4,
+    WIDTH + 8,
+    HEIGHT + 8
+  ].toString();
 
   const BASE_ROTATION_X = Math.PI / 4;
   const BASE_ROTATION_Y = Math.PI / 5;
@@ -32,6 +37,11 @@
       y: BASE_ROTATION_Y + INITIAL_ROTATION_Y_OFFSET,
       scale: BASE_SCALE
     },
+    { stiffness: 0.0061, damping: 0.094 }
+  );
+
+  const dragRotation = spring(
+    { x: 0, y: 0 },
     { stiffness: 0.0061, damping: 0.094 }
   );
 
@@ -78,22 +88,17 @@
 
   function handleCubeDragMove([x, y]: Point) {
     const delta = {
-      x: (x - originClientX) / 100,
-      y: (y - originClientY) / 100
+      x: x - originClientX,
+      y: y - originClientY
     };
-    rotation.set({
-      x: BASE_ROTATION_X - delta.y,
-      y: BASE_ROTATION_Y + Math.PI * 2 * revolutions + delta.x,
-      scale: BASE_SCALE
+    dragRotation.set({
+      x: delta.x,
+      y: delta.y
     });
   }
 
   function handleCubeDragEnd() {
-    rotation.set({
-      x: BASE_ROTATION_X,
-      y: BASE_ROTATION_Y + Math.PI * 2 * revolutions,
-      scale: BASE_SCALE
-    });
+    dragRotation.set({ x: 0, y: 0 });
   }
 
   // Touch Listeners
@@ -151,9 +156,14 @@
 
   // Cube Calculation
 
+  $: dragVector = new Vector([$dragRotation.x, $dragRotation.y, 0, 1]);
+  $: rotationAxis = dragVector.rotateZ(Math.PI / 2).normalize();
+  $: angle = dragVector.norm() / 100;
+
   $: cubeTransformations = Matrix.scale(WIDTH * 0.6 * $rotation.scale)
     .dot(Matrix.rotationX($rotation.x))
-    .dot(Matrix.rotationY($rotation.y));
+    .dot(Matrix.rotationY($rotation.y))
+    .dot(Matrix.rotation(rotationAxis, angle));
 
   $: projectedCubeStripes = STRIPES.map(face =>
     face.map(vector => vector.multiplyByMatrix(cubeTransformations))

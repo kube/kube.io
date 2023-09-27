@@ -31,6 +31,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@kube/math": "^0.0.6"
+    "@kube/math": "^0.0.7"
   }
 }
