@@ -10,9 +10,6 @@
   <a href="https://github.com/kube" target="__blank">
     <GithubIcon class="icon" style="fill:#6e5494" />
   </a>
-  <a href="https://observablehq.com/@kube" target="__blank">
-    <svelte:component this={ObservableIcon} class="icon" style="fill:#86c1c6" />
-  </a>
   <a href="https://linkedin.com/in/cfeijoo" target="__blank">
     <LinkedInIcon class="icon" style="fill:#0077b5" />
   </a>
