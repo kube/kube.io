@@ -52,8 +52,9 @@ html {
     font-size: 13px;
   }
 
-  // Make Scrollbar not change viewport on Windows
+  // Make Scrollbar not change viewport
   overflow: overlay;
+  scrollbar-gutter: stable;
 }
 
 body {
