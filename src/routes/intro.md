@@ -2,10 +2,6 @@ Over the past decade I've been working intensively with Web Technologies, partic
 
 I rely on simple Software Engineering Principles, leveraging Abstraction to build Architecture from macro to micro, enabling early prototyping and Continuous Improvement on Product.
 
-<p class="signature">
-— Chris Feijoo
-</p>
-
 <style>
 	p {
 		text-align: justify;
