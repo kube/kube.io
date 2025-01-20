@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+  font-family: Inter, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, sans-serif; }
+}
+
+:root {
+  --palette-white: #ffffff;
+  --palette-black: #000000;
+  --palette-dark-grey: #131316;
+  --palette-dark-grey-rgb: 19, 19, 22;
+  --palette-medium-grey: #8c8c8b;
+  --palette-light-grey: #ededec;
+  --palette-light-grey-rgb: 237, 237, 236;
+  --palette-purple: #7160b7;
+  --palette-sunburst-grey: #cfcfcc;
+  --palette-moonburst-grey: #a4afb9;
+  --palette-fonts-title: InterVariable, Inter;
+  --palette-fonts-caps: InterVariable, Inter;
+  --palette-fonts-text: InterVariable, Inter;
+  --palette-fonts-code: var(--font-FiraCode);
+
+  /* TODO: Should use palette from Kay */
+  --palette-code-background: #14161a;
+  --palette-code-comment: #455074;
+  --palette-code-text: #8499b4;
+  --palette-code-pink: #ff4598;
+  --palette-code-purple: #7e7fff;
+  --palette-code-blue: #3db7ff;
+  --palette-code-cyan: #00fafb;
+  --palette-code-yellow: #ffd900;
+
+  --palette-light-link-normal: #756b9a;
+  --palette-light-link-hover: #5a85bd;
+  --palette-light-link-active: #5a85bd;
+
+  --palette-dark-link-normal: #8788c3;
+  --palette-dark-link-hover: #98cce6;
+  --palette-dark-link-active: #98cce6;
+
+  @media (prefers-color-scheme: light) {
+    --palette-text-color: var(--palette-black);
+    --palette-text-color-light: var(--palette-dark-grey);
+  }
+  @media (prefers-color-scheme: dark) {
+    --palette-text-color: var(--palette-white);
+    --palette-text-color-light: var(--palette-light-grey);
+  }
+}
+
+html {
+  @media print {
+    font-size: 8.5pt;
+  }
+  @media screen {
+    font-size: 13px;
+  }
+
+  /* Make Scrollbar not change viewport */
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: var(--palette-fonts-text);
+
+  a {
+    text-decoration: none;
+  }
+
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-position: center center;
+
+  @media print {
+    margin: 0;
+    background-color: white;
+    color: black;
+    a {
+      color: black;
+    }
+  }
+
+  @media screen {
+    @media (prefers-color-scheme: light) {
+      /* Should redefine palette here too */
+      color: var(--palette-dark-grey);
+
+      a {
+        color: var(--palette-light-link-normal);
+        &:hover {
+          color: var(--palette-light-link-hover);
+        }
+        &:active {
+          color: var(--palette-light-link-active);
+        }
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      /* Should redefine palette here too */
+      color: var(--palette-light-grey);
+
+      a {
+        color: var(--palette-dark-link-normal);
+        &:hover {
+          color: var(--palette-dark-link-hover);
+        }
+        &:active {
+          color: var(--palette-dark-link-active);
+        }
+      }
+    }
+  }
+}
+
