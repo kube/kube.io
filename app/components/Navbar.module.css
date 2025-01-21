@@ -1,0 +1,35 @@
+.navbarlink {
+  text-align: center;
+  text-decoration: none;
+  font-weight: 400;
+  opacity: 0.8;
+  letter-spacing: 1.7px;
+  color: var(--palette-medium-grey);
+  transition: font-weight 0.3s ease, letter-spacing 0.3s ease;
+
+  &.active {
+    opacity: 1;
+    font-weight: 700;
+    color: var(--palette-purple);
+    letter-spacing: 1.5px;
+    &:hover {
+      color: var(--palette-purple);
+    }
+  }
+  &:hover {
+    opacity: 1;
+    color: var(--palette-medium-grey);
+  }
+
+  /* Make sure item is always same width when font-weight changes */
+  &::after {
+    display: block;
+    visibility: hidden;
+    content: attr(data-text);
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    height: 0;
+    overflow: hidden;
+    margin: 0 1px;
+  }
+}
