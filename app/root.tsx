@@ -1,4 +1,4 @@
-import { Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { PageLayout } from "./components/PageLayout";
 import { GlobalInitialRenderContext } from "./contexts/GlobalInitialRenderContext";
 import "./global.css";
@@ -20,8 +20,8 @@ export default function Root() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-        {/* Ugly fix until Vanilla-Extract works well with React-Router v7 (needs React-Router update to properly inject CSS modules) */}
-        <link rel="stylesheet" href="/assets/root-DmZBihRf.css" />
+        <Meta />
+        <Links />
       </head>
 
       <body className="bg-left-top bg-[image:var(--kube-background-light)] dark:bg-[image:var(--kube-background-dark)] bg-[--palette-light-grey] dark:bg-[--palette-dark-grey]">
