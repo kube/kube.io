@@ -1,5 +1,5 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
+import { cn } from "../utils";
 
 const MONTHS = [
   "JAN",
@@ -82,7 +82,7 @@ export const TimelineDateSquare: React.FC<TimelineDateSquareProps> = ({
   className,
   date,
 }) => (
-  <div className={twMerge("text-lg tabular-nums text-gray-500", className)}>
+  <div className={cn("text-lg tabular-nums text-gray-500", className)}>
     {"from" in date ? (
       <DateRange from={date.from} to={date.to} />
     ) : (

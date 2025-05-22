@@ -6,15 +6,15 @@ import {
   useMotionValue,
   useScroll,
   useTransform,
-} from "framer-motion";
+} from "motion/react";
 import { useContext } from "react";
 import { Link, useLocation } from "react-router";
-import { twMerge } from "tailwind-merge";
 import { GlobalInitialRenderContext } from "../contexts/GlobalInitialRenderContext";
 import { Logo } from "./Logo";
 import styles from "./Navbar.module.css";
 
 import { FLAGS } from "../flags.ts";
+import { cn } from "../utils/index.ts";
 
 type NavbarLinkProps = {
   to: string;
@@ -71,7 +71,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     >
       <div className="group fixed top-0 left-0 w-full z-10">
         <div
-          className={twMerge(
+          className={cn(
             "py-2",
             "border-b bg-[#F7F7F7] border-[#DFDFDF] dark:bg-[#0F0F0F] dark:border-[#242424]",
             "border-opacity-[--border-opacity] dark:border-opacity-[--border-opacity]",

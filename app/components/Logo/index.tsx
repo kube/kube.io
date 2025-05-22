@@ -5,10 +5,10 @@ import {
   useSpring,
   useTransform,
   type SpringOptions,
-} from "framer-motion";
+} from "motion/react";
 import { useEffect } from "react";
 
-import { twMerge } from "tailwind-merge";
+import { cn } from "../../utils";
 import { facePath } from "./Face";
 import { createCube } from "./createCube";
 
@@ -24,6 +24,7 @@ const BASE_CUBE_TRANSFORMS = Matrix.scale(60)
 const SPRING_PARAMS: SpringOptions = { stiffness: 38, damping: 9 };
 
 type LogoProps = {
+  ref?: React.Ref<SVGSVGElement>;
   className?: string;
   width?: number;
 };
@@ -78,7 +79,7 @@ export const Logo: React.FC<LogoProps> = ({ className, ref }) => {
   return (
     <motion.svg
       ref={ref}
-      className={twMerge(
+      className={cn(
         "hover:scale-105 active:scale-90 transition-transform",
         className
       )}

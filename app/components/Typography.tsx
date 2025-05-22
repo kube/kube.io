@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export const H1: React.FC<React.PropsWithChildren> = ({ children }) => (
   <motion.div

@@ -1,3 +1,4 @@
+// @ts-expect-error Until Blog Feature Flag toggled on.
 import type * as Route from "./+types.post";
 
 import { H1 } from "../../components/Typography";

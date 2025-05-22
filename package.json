@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",
-    "preview": "serve ./build/client"
+    "preview": "serve ./build/client",
+    "typecheck": "react-router typegen && tsc"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.0",
@@ -16,25 +17,25 @@
     "@vanilla-extract/css": "^1.17.0",
     "@vanilla-extract/vite-plugin": "^4.0.19",
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.1",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
     "serve": "^14.2.4",
-    "tailwindcss": "^3.4.14",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.0.7"
+    "vite": "^6.0.11"
   },
   "dependencies": {
     "@kube/math": "^0.0.7",
     "@react-router/node": "7.1.2-pre.0",
     "@react-router/serve": "7.1.2-pre.0",
     "clsx": "^2.1.1",
-    "framer-motion": "12.0.0-alpha.1",
     "front-matter": "^4.0.2",
-    "isbot": "^5",
+    "isbot": "^5.1.21",
+    "motion": "^12.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "7.1.2-pre.0",
-    "tailwind-merge": "^2.5.4"
+    "tailwind-merge": "^2.6.0"
   }
 }
