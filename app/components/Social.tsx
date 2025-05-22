@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { cn } from "../utils";
 import Collective from "./icons/Collective";
 import GithubIcon from "./icons/Github";
 import LinkedInIcon from "./icons/LinkedIn";
@@ -16,7 +16,7 @@ const SocialLinkIcon: React.FC<{
 }> = ({ to, icon: Icon, className }) => (
   <Link to={to} target="_blank">
     <Icon
-      className={twMerge(
+      className={cn(
         "h-10 w-10 hover:scale-105 transition-all active:scale-90 active:brightness-100 hover:brightness-90 dark:hover:brightness-150",
         className
       )}
