@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import { useIsInitialRender } from "../hooks/useIsInitialRender";
 
 export const GlobalInitialRenderContext = createContext<boolean>(false);
@@ -12,7 +12,3 @@ export const GlobalInitialRenderProvider: React.FC<React.PropsWithChildren> = ({
     </GlobalInitialRenderContext.Provider>
   );
 };
-
-export function useIsGlobalInitialRender() {
-  return useContext(GlobalInitialRenderContext);
-}

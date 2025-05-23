@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export function useIsInitialRender() {
-  const isInitial = useRef(true);
+  const [isInitial, setIsInitial] = useState(true);
   useEffect(() => {
-    isInitial.current = false;
+    setIsInitial(false);
   }, []);
-  return isInitial.current;
+  return isInitial;
 }

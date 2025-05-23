@@ -1,15 +1,12 @@
 import clsx from "clsx";
 import {
   animate,
-  AnimatePresence,
   motion,
   useMotionValue,
   useScroll,
   useTransform,
 } from "motion/react";
-import { useContext } from "react";
 import { Link, useLocation } from "react-router";
-import { GlobalInitialRenderContext } from "../contexts/GlobalInitialRenderContext";
 import { Logo } from "./Logo";
 import styles from "./Navbar.module.css";
 
@@ -38,7 +35,6 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({ to, text, exact }) => {
 
 export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { scrollY } = useScroll();
-  const isGlobalInitialRender = useContext(GlobalInitialRenderContext);
 
   const scrollY_ = useMotionValue(scrollY.get());
 
@@ -111,15 +107,9 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <AnimatePresence initial={!isGlobalInitialRender}>
-        <motion.main
-          className="max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {children}
-        </motion.main>
-      </AnimatePresence>
+      <motion.main className="max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10">
+        {children}
+      </motion.main>
     </motion.div>
   );
 };
