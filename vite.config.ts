@@ -7,6 +7,9 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
 
+import { createFavicon } from "./createFavicon";
+import faviconsPlugin from "./faviconsPlugin";
+
 export default defineConfig({
   css: {
     postcss: {
@@ -17,5 +20,10 @@ export default defineConfig({
     mdx({ remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter] }),
     vanillaExtractPlugin(),
     reactRouter(),
+    faviconsPlugin(createFavicon(), {
+      background: "#000000",
+      appName: "KUBE",
+      path: "/favicons",
+    }),
   ],
 });

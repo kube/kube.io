@@ -1,4 +1,5 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import Favicons from "virtual:favicons";
 import { PageLayout } from "./components/PageLayout";
 import { GlobalInitialRenderContext } from "./contexts/GlobalInitialRenderContext";
 import "./global.css";
@@ -21,6 +22,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+        <Favicons />
         <Meta />
         <Links />
       </head>
