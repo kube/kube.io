@@ -13,7 +13,7 @@ export function ErrorBoundary() {
   return <h1>Something went wrong</h1>;
 }
 
-export default function Root() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={styles.root}>
       <head>
@@ -27,13 +27,15 @@ export default function Root() {
 
       <body className="bg-left-top bg-[image:var(--kube-background-light)] dark:bg-[image:var(--kube-background-dark)] bg-[--palette-light-grey] dark:bg-[--palette-dark-grey]">
         <GlobalInitialRenderContext.Provider value={useIsInitialRender()}>
-          <PageLayout>
-            <Outlet />
-          </PageLayout>
+          <PageLayout>{children}</PageLayout>
         </GlobalInitialRenderContext.Provider>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
+}
+
+export default function Root() {
+  return <Outlet />;
 }
