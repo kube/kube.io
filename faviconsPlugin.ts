@@ -59,7 +59,7 @@ export default async function faviconsPlugin(
       for (const [name, content] of faviconsFiles.entries()) {
         this.emitFile({
           type: "asset",
-          fileName: join(options.path, name),
+          fileName: join(options.path, name).replace(/^\//, ""),
           source: content,
         });
       }
