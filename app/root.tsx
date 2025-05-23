@@ -1,10 +1,21 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import {
+  type MetaFunction,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "react-router";
 import Favicons from "virtual:favicons";
 import { PageLayout } from "./components/PageLayout";
 import { GlobalInitialRenderContext } from "./contexts/GlobalInitialRenderContext";
 import "./global.css";
 import { useIsInitialRender } from "./hooks/useIsInitialRender";
 import * as styles from "./root.css";
+
+export const meta: MetaFunction = () => {
+  return [{ title: "KUBE : Software & Design" }];
+};
 
 export function HydrateFallback() {
   return <div>Loading...</div>;
