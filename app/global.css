@@ -20,11 +20,11 @@
 }
 
 ::view-transition-old(content-view) {
-  animation: 100ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
+  animation: 100ms ease-out both fade-out;
 }
 
 ::view-transition-new(content-view) {
-  animation: 200ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in;
+  animation: 200ms ease-out 90ms both fade-in;
 }
 
 @keyframes slide-title-from-bottom {
