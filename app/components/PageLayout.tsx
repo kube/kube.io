@@ -27,6 +27,7 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({ to, text, exact }) => {
       className={clsx(styles.navbarlink, isActive && styles.active)}
       to={to}
       data-text={text}
+      viewTransition
     >
       <span>{text}</span>
     </Link>

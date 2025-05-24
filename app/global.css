@@ -11,6 +11,11 @@
   :root { font-family: InterVariable, sans-serif; }
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
 :root {
   --palette-white: #ffffff;
   --palette-black: #000000;
