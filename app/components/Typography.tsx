@@ -1,26 +1,10 @@
-import { motion } from "motion/react";
-import { use } from "react";
-import { GlobalInitialRenderContext } from "../contexts/GlobalInitialRenderContext";
-
 export const H1: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const isGlobalInitialRender = use(GlobalInitialRenderContext);
-
   return (
-    <motion.div
-      initial={!isGlobalInitialRender && { y: 40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 40, opacity: 0 }}
-      transition={{
-        type: "spring",
-        stiffness: 130,
-        damping: 20,
-        mass: 0.4,
-      }}
-    >
+    <div className="[view-transition-name:hero-title]">
       <h1 className="text-[4rem] leading-[4rem] lg:text-[6rem] lg:leading-[5.8rem] md:text-[5rem] md:leading-[4.8rem] tracking-wide font-bold">
         {children}
       </h1>
-    </motion.div>
+    </div>
   );
 };
 

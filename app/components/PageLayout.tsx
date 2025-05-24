@@ -108,7 +108,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <motion.main className="max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10">
+      <motion.main className="[view-transition-name:content-view] max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10">
         {children}
       </motion.main>
     </motion.div>
