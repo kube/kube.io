@@ -1,15 +1,10 @@
 import clsx from "clsx";
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll } from "motion/react";
 import { Link, useLocation } from "react-router";
-import { Logo } from "./Logo";
+import { Logo } from "./Logo/index.tsx";
 import styles from "./Navbar.module.css";
 
+import { useEffect, useState } from "react";
 import { FLAGS } from "../flags.ts";
 import { cn } from "../utils/index.ts";
 
@@ -27,46 +22,61 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({ to, text, exact }) => {
       className={clsx(styles.navbarlink, isActive && styles.active)}
       to={to}
       data-text={text}
-      viewTransition
+      viewTransition={!isActive}
     >
       <span>{text}</span>
     </Link>
   );
 };
 
+function map(
+  [o1, o2]: [number, number], // origin
+  [d1, d2]: [number, number], // destination
+  unit = ""
+) {
+  const s = (d2 - d1) / (o2 - o1); // scale
+  const expr = `calc(((var(--scroll-progress) - ${o1}) * ${s} + ${d1}) * 1${unit})`; // transform expression
+  const dMin = Math.min(d1, d2);
+  const dMax = Math.max(d1, d2);
+  return `clamp(${dMin}${unit}, ${expr}, ${dMax}${unit})`; // Return clamped value
+}
+
+function threshold(threshold: number, [v1, v2]: [number, number], unit = "") {
+  const trigger = `(clamp(0, (var(--scroll-progress) - ${threshold}) * 999, 1)`;
+  return `calc(${trigger} * (${v2} - ${v1}) + ${v1}) * 1${unit})`;
+}
+
 export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  // Check if ScrollTimeline is supported, and fallback on Framer Motion's useScroll if not.
   const { scrollY } = useScroll();
-
-  const scrollY_ = useMotionValue(scrollY.get());
-
-  scrollY.on("change", (y) => {
-    if (y === 0 && Math.abs(scrollY_.get() - scrollY.get()) > 130) {
-      animate(scrollY_, y, { type: "spring", stiffness: 300, damping: 40 });
-    } else {
-      scrollY_.stop();
-      scrollY_.set(y);
-    }
-  });
+  const [scrollTimelineSupported, setScrollTimelineSupported] = useState(true);
+  useEffect(() => setScrollTimelineSupported("ScrollTimeline" in window), []);
 
   return (
     <motion.div
-      className="flex flex-col gap-16 pb-20"
+      className="flex flex-col gap-16 pb-20 scroll-progress-provider"
       style={{
-        // @ts-expect-error CSS Variables are not typed in Framer Motion
-        "--bg-opacity": useTransform(scrollY_, [130, 180], [0, 0.8]),
-        "--header-pattern-opacity": useTransform(scrollY_, [0, 160], [0, 0.4]),
-        "--navbar-opacity": useTransform(scrollY_, (y) => (y > 200 ? 0 : 1)),
-        "--navbar-translate-x": useTransform(scrollY_, (y) =>
-          y > 200 ? "-13px" : "0px"
-        ),
-        "--logo-width": useTransform(scrollY_, [70, 160], ["54px", "38px"]),
-        "--header-blur": useTransform(scrollY_, [150, 220], ["0px", "9px"]),
-        "--margin-top": useTransform(scrollY_, [0, 160], ["70px", "0px"]),
-        "--font-size": useTransform(scrollY_, [0, 160], ["1.3rem", "1rem"]),
-        "--border-opacity": useTransform(scrollY_, [180, 220], [0, 0.8]),
+        // @ts-expect-error React.CSSProperties typing does not support CSS variables
+        "--scroll-progress": scrollTimelineSupported
+          ? "var(--scroll-progress-root)"
+          : scrollY,
       }}
     >
-      <div className="group fixed top-0 left-0 w-full z-10">
+      <div
+        className="group fixed top-0 left-0 w-full z-10"
+        style={{
+          // @ts-expect-error React.CSSProperties typing does not support CSS variables
+          "--bg-opacity": map([130, 180], [0, 0.8]),
+          "--header-pattern-opacity": map([0, 160], [0, 0.4]),
+          "--navbar-opacity": threshold(200, [1, 0]),
+          "--navbar-translate-x": threshold(200, [0, -13], "px"),
+          "--logo-width": map([70, 160], [54, 38], "px"),
+          "--header-blur": map([150, 220], [0, 9], "px"),
+          "--margin-top": map([0, 160], [70, 0], "px"),
+          "--font-size": map([0, 160], [1.3, 1], "rem"),
+          "--border-opacity": map([180, 220], [0, 0.8]),
+        }}
+      >
         <div
           className={cn(
             "py-2",
@@ -108,9 +118,9 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <motion.main className="[view-transition-name:content-view] max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10">
+      <main className="[view-transition-name:content-view] max-w-4xl w-full mx-auto flex flex-col gap-6 px-8 mt-64 mb-10">
         {children}
-      </motion.main>
+      </main>
     </motion.div>
   );
 };

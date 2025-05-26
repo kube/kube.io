@@ -11,6 +11,26 @@
   :root { font-family: InterVariable, sans-serif; }
 }
 
+@property --scroll-progress-root {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes header-scroll-progress {
+  0% { --scroll-progress-root: 0; }
+  100% { --scroll-progress-root: 100000; }
+}
+
+@layer utilities {
+  .scroll-progress-provider {
+    animation: header-scroll-progress linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 100000px;
+  }
+}
+
+
 @keyframes fade-in {
   from { opacity: 0; }
 }
