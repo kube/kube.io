@@ -80,19 +80,20 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div
           className={cn(
             "py-2",
+            "[view-transition-name:header]",
             "border-b bg-[#F7F7F7] border-[#DFDFDF] dark:bg-[#0F0F0F] dark:border-[#242424]",
             "border-opacity-[--border-opacity] dark:border-opacity-[--border-opacity]",
             "bg-opacity-[--bg-opacity] dark:bg-opacity-[--bg-opacity]",
             "backdrop-blur-[--header-blur]"
           )}
         >
-          <div className="absolute opacity-[--header-pattern-opacity] -z-10 top-0 left-0 w-full h-full bg-left-top bg-[image:var(--kube-background-light)] dark:bg-[image:var(--kube-background-dark)]" />
+          <div className="[view-transition-name:header-pattern] absolute opacity-[--header-pattern-opacity] -z-10 top-0 left-0 w-full h-full bg-left-top bg-[image:var(--kube-background-light)] dark:bg-[image:var(--kube-background-dark)]" />
 
           <header className="max-w-4xl mx-auto w-full flex items-center px-8 mt-[--margin-top] gap-8 h-16">
-            <Logo className="w-[--logo-width] flex-shrink-0" />
+            <Logo className="[view-transition-name:header-logo] w-[--logo-width] flex-shrink-0" />
 
             <nav className="relative pt-[1px] grow h-10 flex items-center">
-              <ul className="transition-[opacity,transform] duration-300 opacity-[--navbar-opacity] group-hover:opacity-100 list-none m-0 p-0 flex gap-9 text-[length:var(--font-size)] uppercase translate-x-[--navbar-translate-x] group-hover:translate-x-0">
+              <ul className="[view-transition-name:header-nav] transition-[opacity,transform] duration-300 opacity-[--navbar-opacity] group-hover:opacity-100 list-none m-0 p-0 flex gap-9 text-[length:var(--font-size)] uppercase translate-x-[--navbar-translate-x] group-hover:translate-x-0">
                 <li>
                   <NavbarLink to="/" text="Hello" exact />
                 </li>
