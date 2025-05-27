@@ -39,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
 
-      <body className="bg-left-top bg-[image:var(--kube-background-light)] dark:bg-[image:var(--kube-background-dark)] bg-[--palette-light-grey] dark:bg-[--palette-dark-grey]">
+      <body className="bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) bg-(--palette-light-grey) dark:bg-(--palette-dark-grey)">
         <GlobalInitialRenderContext.Provider value={useIsInitialRender()}>
           <PageLayout>{children}</PageLayout>
         </GlobalInitialRenderContext.Provider>

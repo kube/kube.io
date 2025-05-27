@@ -31,11 +31,11 @@ const DateSingle: React.FC<{ date: TimelineDate; showYear?: boolean }> = ({
 }) => (
   <div className="flex flex-col text-lg tabular-nums space-y-1 text-gray-500">
     {showYear && (
-      <div className="text-[1.125rem] leading-[1.125rem]">{date.year}</div>
+      <div className="text-[1.125rem] leading-4.5">{date.year}</div>
     )}
 
     {date.month && (
-      <div className="text-[1.25rem] flex justify-between leading-[1.25rem]">
+      <div className="text-[1.25rem] flex justify-between leading-5">
         {MONTHS[date.month - 1].split("").map((letter, i) => (
           <span key={i}>{letter}</span>
         ))}

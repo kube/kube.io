@@ -22,7 +22,7 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
           <TimelineDateSquare date={line.date} />
 
           <div className="space-y-4">
-            <div className="space-x-4 align-text-bottom leading-[1.5rem] text-[1.5rem]">
+            <div className="space-x-4 align-text-bottom leading-6 text-[1.5rem]">
               <a
                 href={line.url}
                 target="_blank"
@@ -37,7 +37,7 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
               )}
             </div>
 
-            <div className="text-[1.5rem] leading-[1.5rem]">
+            <div className="text-[1.5rem] leading-6">
               {line.subtitle}
             </div>
 
@@ -54,7 +54,7 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
                 {line.stack.map((item, index) => (
                   <li
                     key={index}
-                    className="border-gray-400 text-gray-400 border rounded text-[0.7rem] uppercase px-[3px] py-[1px] whitespace-nowrap"
+                    className="border-gray-400 text-gray-400 border rounded-sm text-[0.7rem] uppercase px-[3px] py-px whitespace-nowrap"
                   >
                     {item}
                   </li>

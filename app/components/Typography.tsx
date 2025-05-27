@@ -1,7 +1,7 @@
 export const H1: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="[view-transition-name:hero-title]">
-      <h1 className="text-[4rem] leading-[4rem] lg:text-[6rem] lg:leading-[5.8rem] md:text-[5rem] md:leading-[4.8rem] tracking-wide font-bold">
+      <h1 className="text-[4rem] leading-16 lg:text-[6rem] lg:leading-[5.8rem] md:text-[5rem] md:leading-[4.8rem] tracking-wide font-bold">
         {children}
       </h1>
     </div>

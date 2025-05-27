@@ -7,12 +7,12 @@ export default function WorkshopPage() {
         <div className="absolute -left-80 w-36">
           <Logo className="w-80" />
         </div>
-        <div className="z-10 text-black bg-[image:var(--kube-background-light)] bg-clip-text">
+        <div className="z-10 text-black bg-(image:--kube-background-light) bg-clip-text">
           <div className="flex justify-between text-[5.7rem] leading-[4.7rem] font-black">
             <span>W</span>
             <span>O</span>
           </div>
-          <div className="flex justify-between text-[7rem] leading-[5rem] font-bold">
+          <div className="flex justify-between text-[7rem] leading-20 font-bold">
             <span>R</span>
             <span>K</span>
           </div>
