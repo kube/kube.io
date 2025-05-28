@@ -196,10 +196,6 @@ body {
     text-decoration: none;
   }
 
-  background-repeat: repeat;
-  background-attachment: fixed;
-  background-position: center center;
-
   @media print {
     margin: 0;
     background-color: white;
