@@ -67,7 +67,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         style={{
           // @ts-expect-error React.CSSProperties typing does not support CSS variables
           "--bg-opacity": map([130, 180], [0, 80], "%"),
-          "--border-opacity": map([180, 220], [0, 80], "%"),
+          "--border-opacity": map([160, 220], [0, 100], "%"),
           "--header-pattern-opacity": map([0, 160], [0, 40], "%"),
           "--navbar-opacity": threshold(200, [100, 0], "%"),
           "--navbar-translate-x": threshold(200, [0, -13], "px"),
@@ -82,7 +82,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             "py-2",
             "[view-transition-name:header]",
             "bg-[#F7F7F7]/[var(--bg-opacity)] dark:bg-[#0F0F0F]/[var(--bg-opacity)]",
-            "border-b border-[#DFDFDF]/[var(--border-opacity)] dark:border-[#242424]/[var(--border-opacity)]",
+            "border-b border-[#E2E2E2]/[var(--border-opacity)] dark:border-[#242424]/[var(--border-opacity)]",
             "backdrop-blur-(--header-blur)"
           )}
         >
