@@ -94,33 +94,21 @@
 }
 
 ::view-transition-old(header) {
-  z-index: 1000;
+  height: 100%;
+  /* z-index: 1000; */
 }
 ::view-transition-new(header) {
-  z-index: 1000;
-
-  @media (prefers-color-scheme: dark) {
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--palette-dark-grey-rgb), 1.0) 0%,
-      rgba(var(--palette-dark-grey-rgb), 0.0) 100%
-    );
-  }
-
-  @media (prefers-color-scheme: light) {
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--palette-light-grey-rgb), 1.0) 0%,
-      rgba(var(--palette-light-grey-rgb), 0.0) 100%
-    );
-  }
+  height: 100%;
+  /* z-index: 1000; */
 }
 
 ::view-transition-old(header-logo) {
   display: none;
+  box-sizing: border-box;
 }
 ::view-transition-new(header-logo) {
   animation: none;
+  box-sizing: border-box;
 }
 
 ::view-transition-old(header-pattern) {
