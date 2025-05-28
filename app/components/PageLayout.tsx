@@ -66,7 +66,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         className="group fixed top-0 left-0 w-full z-10"
         style={{
           // @ts-expect-error React.CSSProperties typing does not support CSS variables
-          "--bg-opacity": map([130, 180], [0, 20], "%"),
+          "--bg-opacity": map([130, 180], [0, 40], "%"),
           "--border-opacity": map([160, 220], [0, 90], "%"),
           "--header-pattern-opacity": map([0, 160], [0, 40], "%"),
           "--navbar-opacity": threshold(200, [100, 0], "%"),
@@ -77,7 +77,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           "--font-size": map([0, 160], [1.3, 1], "rem"),
         }}
       >
-        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey) dark:bg-(--palette-dark-grey)/[80%] h-44 mask-linear-180 mask-linear-from-30%">
+        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-44 mask-linear-180 mask-linear-from-30%">
           <div className="w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-70" />
         </div>
 
