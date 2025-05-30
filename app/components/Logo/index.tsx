@@ -27,9 +27,10 @@ type LogoProps = {
   ref?: React.Ref<SVGSVGElement>;
   className?: string;
   width?: number;
+  onMouseDown?: () => void;
 };
 
-export const Logo: React.FC<LogoProps> = ({ className, ref }) => {
+export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
   const revolutions = useMotionValue(0);
 
   useEffect(() => {
@@ -80,12 +81,15 @@ export const Logo: React.FC<LogoProps> = ({ className, ref }) => {
     <motion.svg
       ref={ref}
       className={cn(
-        "hover:scale-105 active:scale-90 transition-transform touch-none",
+        "hover:scale-105 active:scale-90 transition-transform",
         className
       )}
       viewBox={VIEWBOX}
       onClick={rotate}
-      onMouseDown={(event) => event.preventDefault()}
+      onMouseDown={(event) => {
+        onMouseDown?.();
+        event.preventDefault();
+      }}
       onPan={(_, { offset }) => {
         dragX.set(offset.x);
         dragY.set(offset.y);
