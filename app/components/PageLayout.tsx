@@ -77,7 +77,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           "--font-size": map([0, 160], [1.3, 1], "rem"),
         }}
       >
-        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-44 mask-linear-180 mask-linear-from-30%">
+        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-30%">
           <div className="w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-70" />
         </div>
 
@@ -86,7 +86,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             "py-2",
             "[view-transition-name:header]",
             "bg-[#F7F7F7]/[var(--bg-opacity)] dark:bg-[#0F0F0F]/[var(--bg-opacity)]",
-            "border-b border-[#E2E2E2]/[var(--border-opacity)] dark:border-[#242424]/[var(--border-opacity)]",
+            "border-b-2 border-[#DADADA]/[var(--border-opacity)] dark:border-[#303031]/[var(--border-opacity)]",
             "backdrop-blur-(--header-blur)"
           )}
         >
