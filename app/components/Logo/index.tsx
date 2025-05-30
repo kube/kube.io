@@ -80,11 +80,11 @@ export const Logo: React.FC<LogoProps> = ({ className, ref }) => {
     <motion.svg
       ref={ref}
       className={cn(
-        "hover:scale-105 active:scale-90 transition-transform",
+        "hover:scale-105 active:scale-90 transition-transform touch-none",
         className
       )}
       viewBox={VIEWBOX}
-      onTap={rotate}
+      onClick={rotate}
       onMouseDown={(event) => event.preventDefault()}
       onPan={(_, { offset }) => {
         dragX.set(offset.x);
