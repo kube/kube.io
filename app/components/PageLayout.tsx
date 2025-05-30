@@ -7,6 +7,7 @@ import styles from "./Navbar.module.css";
 import { useEffect, useState } from "react";
 import { FLAGS } from "../flags.ts";
 import { cn } from "../utils/index.ts";
+import { scrollDerivedVariables } from "./PageLayout.css.ts";
 
 type NavbarLinkProps = {
   to: string;
@@ -29,23 +30,6 @@ const NavbarLink: React.FC<NavbarLinkProps> = ({ to, text, exact }) => {
   );
 };
 
-function map(
-  [o1, o2]: [number, number], // origin
-  [d1, d2]: [number, number], // destination
-  unit = ""
-) {
-  const s = (d2 - d1) / (o2 - o1); // scale
-  const expr = `calc(((var(--scroll-progress) - ${o1}) * ${s} + ${d1}) * 1${unit})`; // transform expression
-  const dMin = Math.min(d1, d2);
-  const dMax = Math.max(d1, d2);
-  return `clamp(${dMin}${unit}, ${expr}, ${dMax}${unit})`; // Return clamped value
-}
-
-function threshold(threshold: number, [v1, v2]: [number, number], unit = "") {
-  const trigger = `(clamp(0, (var(--scroll-progress) - ${threshold}) * 999, 1)`;
-  return `calc(${trigger} * (${v2} - ${v1}) + ${v1}) * 1${unit})`;
-}
-
 export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Check if ScrollTimeline is supported, and fallback on Framer Motion's useScroll if not.
   const { scrollY } = useScroll();
@@ -63,19 +47,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       }}
     >
       <div
-        className="group fixed top-0 left-0 w-full z-10"
-        style={{
-          // @ts-expect-error React.CSSProperties typing does not support CSS variables
-          "--bg-opacity": map([130, 180], [0, 40], "%"),
-          "--border-opacity": map([160, 220], [0, 90], "%"),
-          "--header-pattern-opacity": map([0, 160], [0, 40], "%"),
-          "--navbar-opacity": threshold(200, [100, 0], "%"),
-          "--navbar-translate-x": threshold(200, [0, -13], "px"),
-          "--logo-width": map([70, 160], [54, 38], "px"),
-          "--header-blur": map([150, 220], [0, 9], "px"),
-          "--margin-top": map([0, 160], [70, 0], "px"),
-          "--font-size": map([0, 160], [1.3, 1], "rem"),
-        }}
+        className={cn("fixed top-0 left-0 w-full z-10", scrollDerivedVariables)}
       >
         <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-30%">
           <div className="w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-70" />
