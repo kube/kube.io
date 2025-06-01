@@ -5,12 +5,19 @@ import { TimelineDateSquare } from "../../components/DateSquare";
 import { type Post, getAllPosts } from "../../data/blog";
 
 const PostItem: React.FC<{ post: Post }> = ({ post }) => {
+  const { slug } = post;
+  const href = `./${slug}`;
+
   const date = new Date(post.date);
 
   return (
-    <Link to={`./${post.slug}`}>
-      <li className="flex gap-6">
+    <Link to={href} viewTransition>
+      <li
+        style={{ viewTransitionName: `blog-article-container-${slug}` }}
+        className={"flex gap-6"}
+      >
         <TimelineDateSquare
+          style={{ viewTransitionName: `blog-article-date-${slug}` }}
           date={{
             year: date.getUTCFullYear(),
             month: date.getUTCMonth(),
@@ -19,8 +26,10 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
         />
 
         <div className="flex flex-col gap-4">
-          <h2 className="text-[2rem] leading-[1.7rem] font-semibold">
-            {post.title}
+          <h2 className="text-[2.7rem] leading-[2.5rem] font-semibold">
+            <span style={{ viewTransitionName: `blog-article-title-${slug}` }}>
+              {post.title}
+            </span>
           </h2>
 
           {post.description}
@@ -33,7 +42,7 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
 export default function BlogIndex() {
   return (
     <>
-      <H1>Blog</H1>
+      <H1 id="blog">Articles</H1>
 
       <ol className="flex flex-col gap-12 mt-8">
         {getAllPosts().map((post) => (
