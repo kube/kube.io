@@ -16,7 +16,7 @@ const SectionTitle: React.FC<{ title: string }> = ({ title }) => (
 export default function CVPage() {
   return (
     <div className="space-y-24">
-      <H1>Curiculum Vitae</H1>
+      <H1 id="cv">Curiculum Vitae</H1>
 
       <section className="text-xl space-y-1">
         <H2>
