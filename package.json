@@ -27,6 +27,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@giscus/react": "^3.1.0",
     "@kube/math": "^0.0.7",
     "@react-pdf/renderer": "^4.3.0",
     "@react-router/node": "7.6.0",
