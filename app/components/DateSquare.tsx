@@ -21,6 +21,7 @@ export type TimelineDate =
   | { year: number; month: number; day: number };
 
 export type TimelineDateSquareProps = {
+  style?: React.CSSProperties;
   className?: string;
   date: TimelineDate | { from: TimelineDate; to?: TimelineDate };
 };
@@ -77,10 +78,14 @@ const DateRange: React.FC<{ from: TimelineDate; to?: TimelineDate }> = ({
 );
 
 export const TimelineDateSquare: React.FC<TimelineDateSquareProps> = ({
+  style,
   className,
   date,
 }) => (
-  <div className={cn("text-lg tabular-nums text-gray-500", className)}>
+  <div
+    style={style}
+    className={cn("text-lg tabular-nums text-gray-500", className)}
+  >
     {"from" in date ? (
       <DateRange from={date.from} to={date.to} />
     ) : (
