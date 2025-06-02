@@ -44,6 +44,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
+        <script
+          defer
+          data-domain="kube.io"
+          src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+        />
+        <script children="window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }" />
+
         <Favicons />
         <Meta />
         <Links />
