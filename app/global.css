@@ -166,6 +166,47 @@
     --palette-text-color: var(--palette-white);
     --palette-text-color-light: var(--palette-light-grey);
   }
+
+  /* Mermaid */
+  @media (prefers-color-scheme: light) {
+    --palette-mermaid-line-color: #606c72;
+    --palette-mermaid-flowchart-node-border-color: #40464b;
+    --palette-mermaid-flowchart-cluster-background-color: rgba(
+      255,
+      247,
+      175,
+      0.527
+    );
+    --palette-mermaid-flowchart-cluster-border-color: rgba(209, 193, 45, 0.651);
+    --palette-mermaid-flowchart-cluster-label-color: #968e3f;
+    --palette-mermaid-flowchart-edge-label-background-color: rgba(
+      236,
+      236,
+      236,
+      0.9
+    );
+    --palette-mermaid-flowchart-edge-label-color: #7d838a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --palette-mermaid-line-color: #a7b6be;
+    --palette-mermaid-flowchart-node-border-color: #515a61;
+    --palette-mermaid-flowchart-cluster-background-color: rgba(
+      153,
+      146,
+      86,
+      0.493
+    );
+    --palette-mermaid-flowchart-cluster-border-color: rgba(202, 184, 17, 0.651);
+    --palette-mermaid-flowchart-cluster-label-color: #f5efaf;
+    --palette-mermaid-flowchart-edge-label-background-color: rgba(
+      32,
+      32,
+      32,
+      0.9
+    );
+    --palette-mermaid-flowchart-edge-label-color: #bcc9ce;
+  }
 }
 
 html {
