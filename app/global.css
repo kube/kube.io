@@ -1,9 +1,8 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-  --font-sans:
-    'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 @utility scroll-progress-provider {
@@ -16,9 +15,7 @@
   :root {
     color-scheme: light dark;
     font-family: Inter, sans-serif;
-    font-feature-settings:
-      'liga' 1,
-      'calt' 1; /* fix for Chrome */
+    font-feature-settings: "liga" 1, "calt" 1; /* fix for Chrome */
   }
   @supports (font-variation-settings: normal) {
     :root {
@@ -27,7 +24,7 @@
   }
 
   @property --scroll-progress-root {
-    syntax: '<number>';
+    syntax: "<number>";
     inherits: false;
     initial-value: 0;
   }
@@ -42,13 +39,16 @@
   }
 }
 
-
 @keyframes fade-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-out {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 
 ::view-transition-old(content-view) {
@@ -59,12 +59,15 @@
 }
 
 @keyframes slide-title-from-bottom {
-  from { transform: translateY(40px); }
+  from {
+    transform: translateY(40px);
+  }
 }
 @keyframes slide-title-to-top {
-  to { transform: translateY(-13px); }
+  to {
+    transform: translateY(-13px);
+  }
 }
-
 
 ::view-transition-old(.herotitle):only-child,
 ::view-transition-old(.article-title):only-child {
@@ -74,7 +77,7 @@
 ::view-transition-new(.herotitle):only-child,
 ::view-transition-new(.article-title):only-child {
   animation: 400ms ease-in-out 40ms both fade-in,
-    400ms cubic-bezier(.02,.02,.24,1) 40ms both slide-title-from-bottom;
+    400ms cubic-bezier(0.02, 0.02, 0.24, 1) 40ms both slide-title-from-bottom;
 }
 
 ::view-transition-old(.herotitle) {
@@ -83,7 +86,6 @@
 ::view-transition-new(.herotitle) {
   height: 100%;
 }
-
 
 ::view-transition-old(header) {
   height: 100%;
@@ -226,4 +228,3 @@ body {
     }
   }
 }
-
