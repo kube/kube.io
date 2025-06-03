@@ -17,7 +17,53 @@ export default defineConfig({
     mdx({
       remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
       rehypePlugins: [
-        rehypeMermaid,
+        [
+          rehypeMermaid,
+          {
+            mermaidConfig: {
+              theme: "default",
+              flowchart: {
+                subGraphTitleMargin: { top: 3, bottom: 5 },
+              },
+              themeVariables: {
+                fontFamily: "var(--palette-fonts-text)",
+                lineColor: "var(--palette-mermaid-line-color)",
+                nodeBorder:
+                  "var(--palette-mermaid-flowchart-node-border-color)",
+                clusterBkg:
+                  "var(--palette-mermaid-flowchart-cluster-background-color)",
+                clusterBorder:
+                  "var(--palette-mermaid-flowchart-cluster-border-color)",
+              },
+              themeCSS: `
+                .node rect { rx: 2px; }
+                .cluster rect { rx: 2px; }
+                .node.database .label div {
+                  translate: 1px -2px;
+                }
+                .cluster-label .nodeLabel {
+                  opacity: 0.7;
+                  color: var(--palette-mermaid-flowchart-cluster-label-color);
+                }
+                g.edgeLabel {
+                  backdrop-filter: blur(8px);
+                  .labelBkg {
+                    border-radius: 3px;
+                    padding: 0px 3px;
+                    background-color: var(--palette-mermaid-flowchart-edge-label-background-color);
+                  }
+                  span.edgeLabel {
+                    background-color: transparent;
+                    p {
+                      background-color: transparent;
+                      color: var(--palette-mermaid-flowchart-edge-label-color);
+                    }
+                  }
+                }
+              `,
+            },
+          } satisfies Parameters<typeof rehypeMermaid>[0],
+        ],
         [rehypePrettyCode, { theme: "one-dark-pro" }],
       ],
     }),
