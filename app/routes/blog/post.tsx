@@ -2,6 +2,7 @@ import type * as Route from "./+types/post";
 
 import Giscus from "@giscus/react";
 
+import type { MDXProvider } from "@mdx-js/react";
 import { Link } from "react-router";
 import { TimelineDateSquare } from "../../components/DateSquare";
 import { getPost } from "../../data/blog";
@@ -17,8 +18,17 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
   const date = new Date(article.date);
 
+  const Article: typeof MDXProvider = article.content;
+
   return (
     <div>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+        integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
+        crossOrigin="anonymous"
+      />
+
       <h1
         className={`text-[1.5rem] lg:text-[2rem] md:text-[5rem] md:leading-[4.8rem] tracking-wide font-light`}
       >
@@ -53,8 +63,28 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
           </h1>
         </div>
 
-        <div className="text-xl font-serif space-y-6 text-justify">
-          {article.content()}
+        <div className="font-serif space-y-6 text-justify">
+          <Article
+            components={{
+              h1: ({ children }) => (
+                <h1 className="text-5xl font-bold font-sans">{children}</h1>
+              ),
+              h2: ({ children }) => (
+                <h2 className="text-3xl font-bold font-sans">{children}</h2>
+              ),
+              h3: ({ children }) => (
+                <h3 className="text-xl font-semibold font-sans">{children}</h3>
+              ),
+              p: ({ children }) => (
+                <p className="text-lg leading-7">{children}</p>
+              ),
+              pre: ({ children }) => (
+                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
+                  {children}
+                </pre>
+              ),
+            }}
+          />
         </div>
 
         <div className="mt-48">
