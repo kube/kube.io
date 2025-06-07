@@ -78,11 +78,6 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
               p: ({ children }) => (
                 <p className="text-lg leading-7">{children}</p>
               ),
-              pre: ({ children }) => (
-                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
-                  {children}
-                </pre>
-              ),
             }}
           />
         </div>
