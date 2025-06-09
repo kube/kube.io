@@ -20,8 +20,26 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
   const Article: typeof MDXProvider = article.content;
 
+  // Calculate title size for mobile
+  const titleLongestWord = article.title
+    .split(/[\s-]/g)
+    .reduce(
+      (longest, word) => (word.length > longest.length ? word : longest),
+      ""
+    );
+  const titleFontSizeMobile =
+    titleLongestWord.length > 10
+      ? `${40 / titleLongestWord.length}rem`
+      : "4rem";
+
   return (
-    <div>
+    <div
+      style={
+        {
+          "--titleFontSizeMobile": titleFontSizeMobile,
+        } as React.CSSProperties
+      }
+    >
       <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -29,9 +47,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
         crossOrigin="anonymous"
       />
 
-      <h1
-        className={`text-[1.5rem] lg:text-[2rem] md:text-[5rem] md:leading-[4.8rem] tracking-wide font-light`}
-      >
+      <h1 className={`text-[1.8rem] sm:text-[2rem] tracking-wide font-light`}>
         <Link to="/blog" viewTransition>
           <span
             style={{ viewTransitionName: "hero-title-blog" }}
@@ -53,7 +69,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
               day: date.getUTCDate(),
             }}
           />
-          <h1 className="text-[4rem] leading-[4rem] lg:text-[5rem] lg:leading-[4.7rem] md:text-[4rem] md:leading-[3.9rem] tracking-wide font-bold">
+          <h1 className="text-(size:--titleFontSizeMobile) leading-(--titleFontSizeMobile) sm:text-[4rem] sm:leading-[4rem] lg:text-[5rem] lg:leading-[4.7rem] md:text-[4rem] md:leading-[3.9rem] tracking-wide font-bold">
             <span
               style={{ viewTransitionName: `blog-article-title-${slug}` }}
               className="[view-transition-class:article-title]"
