@@ -65,7 +65,8 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             "[view-transition-name:header]",
             "bg-[#F7F7F7]/[var(--bg-opacity)] dark:bg-[#0A0A0A]/[var(--bg-opacity)]",
             "border-b-2 border-[#DADADA]/[var(--border-opacity)] dark:border-[#303031]/[var(--border-opacity)]",
-            "backdrop-blur-(--header-blur)"
+            "backdrop-blur-(--header-blur)",
+            "focus:outline-none"
           )}
         >
           <div className="[view-transition-name:header-pattern] absolute opacity-(--header-pattern-opacity) -z-10 top-0 left-0 w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark)" />
@@ -78,25 +79,15 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
             <nav className="relative pt-px grow h-10 flex items-center">
               <ul className="[view-transition-name:header-nav] transition-[opacity,translate] duration-300 opacity-(--navbar-opacity) group-focus:opacity-100 group-hover:opacity-100 list-none m-0 p-0 flex gap-9 text-(length:--font-size) uppercase translate-x-(--navbar-translate-x) group-hover:translate-x-0 group-focus:translate-x-0">
-                <li>
-                  <NavbarLink to="/" text="Hello" exact />
-                </li>
+                <NavbarLink to="/" text="Hello" exact />
 
                 {FLAGS.WORKSHOP && (
-                  <li>
-                    <NavbarLink to="/workshop" text="Workshop" />
-                  </li>
+                  <NavbarLink to="/workshop" text="Workshop" />
                 )}
 
-                {FLAGS.BLOG && (
-                  <li>
-                    <NavbarLink to="/blog" text="Blog" />
-                  </li>
-                )}
+                {FLAGS.BLOG && <NavbarLink to="/blog" text="Blog" />}
 
-                <li>
-                  <NavbarLink to="/cv" text="CV" />
-                </li>
+                <NavbarLink to="/cv" text="CV" />
               </ul>
             </nav>
           </header>
