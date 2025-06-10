@@ -53,7 +53,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       <div
         className={cn("fixed top-0 left-0 w-full z-10", scrollDerivedVariables)}
       >
-        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-30%">
+        <div className="[view-transition-name:header-gradient-mask] absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-30% pointer-events-none">
           <div className="w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-70" />
         </div>
 
