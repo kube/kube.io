@@ -88,7 +88,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
                 </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-[28px] leading-[30px] mt-[70px] font-bold font-sans">
+                <h2 className="text-[26px] leading-[28px] mt-[70px] font-bold font-sans">
                   {children}
                 </h2>
               ),
