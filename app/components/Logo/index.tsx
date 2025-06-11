@@ -63,7 +63,7 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
 
   const dragTransform = useTransform(dragVector, (dragVector) => {
     const rotationAxis = dragVector.rotateZ(Math.PI / 2).normalize();
-    const angle = dragVector.norm() / 100;
+    const angle = dragVector.norm() / 30;
     return Matrix.rotation(rotationAxis, angle);
   });
 
@@ -91,8 +91,11 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
         event.preventDefault();
       }}
       onPan={(_, { offset }) => {
-        dragX.set(offset.x);
-        dragY.set(offset.y);
+        const norm = Math.sqrt(offset.x ** 2 + offset.y ** 2);
+        // Make the drag square root of the distance
+        const ratio = (Math.sqrt(norm) / norm) * 10;
+        dragX.set(offset.x * ratio);
+        dragY.set(offset.y * ratio);
       }}
       onPanEnd={() => {
         dragX.set(0);
