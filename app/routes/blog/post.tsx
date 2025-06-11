@@ -79,21 +79,44 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
           </h1>
         </div>
 
-        <div className="font-serif space-y-6 text-justify">
+        <div className="space-y-6 text-[16px] leading-[22px]">
           <Article
             components={{
               h1: ({ children }) => (
-                <h1 className="text-5xl font-bold font-sans">{children}</h1>
+                <h1 className="text-[36px] leading-[38px] mt-[100px] font-bold font-sans">
+                  {children}
+                </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-3xl font-bold font-sans">{children}</h2>
+                <h2 className="text-[28px] leading-[30px] mt-[70px] font-bold font-sans">
+                  {children}
+                </h2>
               ),
               h3: ({ children }) => (
-                <h3 className="text-xl font-semibold font-sans">{children}</h3>
+                <h3 className="text-[24px] leading-[26px] font-semibold font-sans">
+                  {children}
+                </h3>
               ),
-              p: ({ children }) => (
-                <p className="text-lg leading-7">{children}</p>
+              p: ({ children }) => <p className="text-justify">{children}</p>,
+              ul: ({ children }) => (
+                <ul className="list-disc pl-6 space-y-2">{children}</ul>
               ),
+              li: ({ children }) => (
+                <li className="text-justify">{children}</li>
+              ),
+              pre: ({ children }) => {
+                const isCodeBlock = children.type === "code";
+
+                if (isCodeBlock) {
+                  return (
+                    <pre className="bg-white/50 dark:bg-gray-800/50 rounded-md p-4 overflow-x-auto font-mono text-[13px]">
+                      {children}
+                    </pre>
+                  );
+                }
+
+                return <pre>{children}</pre>;
+              },
             }}
           />
         </div>
