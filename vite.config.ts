@@ -29,7 +29,7 @@ export default defineConfig({
                 subGraphTitleMargin: { top: 3, bottom: 5 },
               },
               themeVariables: {
-                fontFamily: "var(--palette-fonts-text)",
+                fontFamily: "var(--font-mono)",
                 lineColor: "var(--palette-mermaid-line-color)",
                 nodeBorder:
                   "var(--palette-mermaid-flowchart-node-border-color)",
