@@ -77,7 +77,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
               onMouseDown={() => headerRef.current?.focus()}
             />
 
-            <nav className="relative pt-px grow h-10 flex items-center z-(--navbar-z-index) group-focus:z-20 active:z-20">
+            <nav className="relative pt-px grow h-10 flex items-center z-(--navbar-z-index) group-focus:z-20 active:z-20 group-hover:z-20">
               <ul className="[view-transition-name:header-nav] transition-[opacity,translate] duration-300 opacity-(--navbar-opacity) group-focus:opacity-100 group-hover:opacity-100 list-none m-0 p-0 flex gap-9 text-(length:--font-size) uppercase translate-x-(--navbar-translate-x) group-hover:translate-x-0 group-focus:translate-x-0">
                 <NavbarLink to="/" text="Hello" exact />
 
