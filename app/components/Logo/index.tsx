@@ -26,11 +26,17 @@ const SPRING_PARAMS: SpringOptions = { stiffness: 38, damping: 9 };
 type LogoProps = {
   ref?: React.Ref<SVGSVGElement>;
   className?: string;
+  style?: React.CSSProperties;
   width?: number;
   onMouseDown?: () => void;
 };
 
-export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
+export const Logo: React.FC<LogoProps> = ({
+  className,
+  style,
+  onMouseDown,
+  ref,
+}) => {
   const revolutions = useMotionValue(0);
 
   useEffect(() => {
@@ -80,6 +86,7 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
   return (
     <motion.svg
       ref={ref}
+      style={style}
       className={cn(
         "hover:scale-105 active:scale-90 transition-transform",
         className
