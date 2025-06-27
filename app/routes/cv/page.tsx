@@ -1,3 +1,4 @@
+import { DownloadIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import { cv } from "../../data/cv";
@@ -16,7 +17,17 @@ const SectionTitle: React.FC<{ title: string }> = ({ title }) => (
 export default function CVPage() {
   return (
     <div className="space-y-24">
-      <H1>Curiculum Vitae</H1>
+      <H1>
+        Curiculum Vitae{" "}
+        <Link
+          to="/cv.pdf"
+          target="_blank"
+          className="rounded-full p-2 inline-flex items-center justify-center border-1"
+          title="Download CV"
+        >
+          <DownloadIcon className="w-5 h-5" />
+        </Link>
+      </H1>
 
       <section className="text-xl space-y-1">
         <H2>
