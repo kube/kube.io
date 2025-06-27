@@ -32,9 +32,9 @@ export const cv = {
   },
   phone: "0625970771",
 
-  languages: ["TypeScript", "JavaScript", "Rust", "C", "Ruby", "C++"],
-  frameworks: ["Svelte", "React", "GraphQL", "Electron", "NodeJS", "Webpack"],
-  tools: ["VS Code", "Observable", "Sketch", "Framer", "Photoshop", "Keynote"],
+  languages: ["TypeScript", "JavaScript", "Python", "Swift"],
+  frameworks: ["React", "GraphQL", "React Router", "NodeJS"],
+  tools: ["VS Code", "Observable", "Figma", "Keynote"],
   hobbies: ["Guitar", "Running", "Graphic Design"],
 
   social: [

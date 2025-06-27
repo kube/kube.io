@@ -49,7 +49,7 @@ export default function CVPage() {
         <div>{cv.phone.replace(/[0-9][0-9]/g, (_) => _ + " ")}</div>
       </section>
 
-      <section className="grid grid-cols-3 w-full text-[1.4rem]">
+      {/* <section className="grid grid-cols-3 w-full text-[1.4rem]">
         <div>
           <SectionTitle title="Code" />
           <ul>
@@ -76,7 +76,7 @@ export default function CVPage() {
             ))}
           </ul>
         </div>
-      </section>
+      </section> */}
 
       <section>
         <SectionTitle title="Cursus" />
