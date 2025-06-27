@@ -291,7 +291,7 @@ export const cv = {
       subtitle: "Software Engineer Intern",
       url: "https://www.eatpopchef.com",
       description: [
-        "We worked as two engineers with the then-CTO to build the entire frontend & backend of the Food-Delivery application.",
+        "We worked as two engineers with the CTO to build the entire frontend & backend of the Food-Delivery application.",
       ],
       stack: ["JavaScript", "AngularJS", "NodeJS", "SQL"],
     },
