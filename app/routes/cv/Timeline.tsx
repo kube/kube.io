@@ -1,6 +1,6 @@
 import { TimelineDate, TimelineDateSquare } from "../../components/DateSquare";
 
-type TimelineItem = {
+export type TimelineItem = {
   date: TimelineDate | { from: TimelineDate; to?: TimelineDate };
   title: string;
   place?: string;
@@ -10,7 +10,7 @@ type TimelineItem = {
   stack?: string[];
 };
 
-type TimelineProps = {
+export type TimelineProps = {
   timeline: TimelineItem[];
 };
 
@@ -37,9 +37,7 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
               )}
             </div>
 
-            <div className="text-[1.5rem] leading-6">
-              {line.subtitle}
-            </div>
+            <div className="text-[1.5rem] leading-6">{line.subtitle}</div>
 
             {line.description && (
               <div className="text-[1.05rem] space-y-2 leading-[1.4rem]">

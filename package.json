@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@kube/math": "^0.0.7",
+    "@react-pdf/renderer": "^4.3.0",
     "@react-router/node": "7.6.0",
     "@react-router/serve": "7.6.0",
     "@tailwindcss/vite": "^4.1.7",
