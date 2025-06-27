@@ -16,6 +16,7 @@ export default {
     return [
       "/",
       "/cv",
+      "/cv.pdf",
       ...(FLAGS.BLOG
         ? ["/blog", ...POSTS.map((post) => `/blog/${post.slug}`)]
         : []),

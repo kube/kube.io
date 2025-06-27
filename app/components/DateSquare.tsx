@@ -20,7 +20,7 @@ export type TimelineDate =
   | { year: number; month?: number; day?: undefined }
   | { year: number; month: number; day: number };
 
-type TimelineDateSquareProps = {
+export type TimelineDateSquareProps = {
   className?: string;
   date: TimelineDate | { from: TimelineDate; to?: TimelineDate };
 };
@@ -30,9 +30,7 @@ const DateSingle: React.FC<{ date: TimelineDate; showYear?: boolean }> = ({
   showYear = true,
 }) => (
   <div className="flex flex-col text-lg tabular-nums space-y-1 text-gray-500">
-    {showYear && (
-      <div className="text-[1.125rem] leading-4.5">{date.year}</div>
-    )}
+    {showYear && <div className="text-[1.125rem] leading-4.5">{date.year}</div>}
 
     {date.month && (
       <div className="text-[1.25rem] flex justify-between leading-5">

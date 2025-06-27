@@ -54,18 +54,18 @@ export const cv = {
 
   cursus: [
     {
-      date: { year: 2016 },
-      title: "HEC",
-      place: "Paris",
-      subtitle: "Digital Entrepreneur Track",
-      url: "https://www.hec.fr/",
-    },
-    {
       date: { from: { year: 2013 }, to: { year: 2016 } },
       title: "42",
       place: "Paris",
       subtitle: "Software Engineering",
       url: "https://www.42.fr",
+    },
+    {
+      date: { year: 2016 },
+      title: "HEC",
+      place: "Paris",
+      subtitle: "Digital Entrepreneur Track",
+      url: "https://www.hec.fr/",
     },
     {
       date: { from: { year: 2010 }, to: { year: 2012 } },
@@ -291,7 +291,7 @@ export const cv = {
       subtitle: "Software Engineer Intern",
       url: "https://www.eatpopchef.com",
       description: [
-        "We worked as two engineers with the then-CTO to build the entire frontend & backend of the Food-Delivery application.",
+        "We worked as two engineers with the CTO to build the entire frontend & backend of the Food-Delivery application.",
       ],
       stack: ["JavaScript", "AngularJS", "NodeJS", "SQL"],
     },

@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@kube/math": "^0.0.7",
+    "@react-pdf/renderer": "^4.3.0",
     "@react-router/node": "7.6.0",
     "@react-router/serve": "7.6.0",
     "@tailwindcss/vite": "^4.1.7",
@@ -35,6 +36,7 @@
     "favicons": "^7.2.0",
     "front-matter": "^4.0.2",
     "isbot": "^5.1.21",
+    "lucide-react": "^0.525.0",
     "motion": "^12.12.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
