@@ -54,18 +54,18 @@ export const cv = {
 
   cursus: [
     {
-      date: { year: 2016 },
-      title: "HEC",
-      place: "Paris",
-      subtitle: "Digital Entrepreneur Track",
-      url: "https://www.hec.fr/",
-    },
-    {
       date: { from: { year: 2013 }, to: { year: 2016 } },
       title: "42",
       place: "Paris",
       subtitle: "Software Engineering",
       url: "https://www.42.fr",
+    },
+    {
+      date: { year: 2016 },
+      title: "HEC",
+      place: "Paris",
+      subtitle: "Digital Entrepreneur Track",
+      url: "https://www.hec.fr/",
     },
     {
       date: { from: { year: 2010 }, to: { year: 2012 } },
