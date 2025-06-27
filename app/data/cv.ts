@@ -109,10 +109,10 @@ export const cv = {
       url: "https://www.weabea.io",
       description: [
         "Led Frontend and GraphQL development of the Weabea product, which allows umbrella companies to manage freelancers and missions in client companies.",
-        "Re-built reactive and smooth invoicing and timesheet features, enhanced UX after client feedbacks.",
+        "Enhanced Invoicing and Timesheet features to be smooth and reactive for powerusers, after user feedbacks.",
+        "Designed features like Quotation Approval Flows, Activity Account/Balance, Expense Management, Payrolls",
         "Reworked Documents rendering using React PDF.",
-        "Designed features like Quotation Approval Flows, Activity Account/Balance, Expense Management, Salaries",
-        "Reworked the UI for mobile and desktop, using Tailwind and Framer Motion.",
+        "Reworked UI for smooth mobile experience.",
       ],
       stack: [
         "TypeScript",
