@@ -330,7 +330,6 @@ export async function loader() {
     headers: {
       "Content-Type": "application/pdf",
       "Cache-Control": "no-cache",
-      "Content-Disposition": "attachment; filename=cv.pdf",
     },
   });
 }
