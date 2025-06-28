@@ -252,7 +252,9 @@ const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
                     style={{
                       textTransform: "uppercase",
                       fontSize: 6.5,
-                      borderWidth: 0.8,
+                      color: "#444444",
+                      borderColor: "#777777",
+                      borderWidth: 0.6,
                       borderRadius: 2,
                       paddingLeft: 3,
                       paddingRight: 1,
