@@ -1,10 +1,7 @@
 import { cn } from "../utils";
-import Collective from "./icons/Collective";
 import GithubIcon from "./icons/Github";
 import LinkedInIcon from "./icons/LinkedIn";
-import MaltIcon from "./icons/Malt";
 import StackOverflowIcon from "./icons/StackOverflow";
-import TwitterIcon from "./icons/Twitter";
 
 import React from "react";
 import { Link } from "react-router";
@@ -24,22 +21,12 @@ const SocialLinkIcon: React.FC<{
   </Link>
 );
 
-export const SocialLink: React.FC = () => (
+export const SocialLinks: React.FC = () => (
   <footer className="flex gap-7">
     <SocialLinkIcon
       to="//github.com/kube"
       icon={GithubIcon}
       className="fill-[#6e5494]"
-    />
-    <SocialLinkIcon
-      to="//www.malt.fr/profile/chrisfeijoo"
-      icon={MaltIcon}
-      className="fill-[#fc5757]"
-    />
-    <SocialLinkIcon
-      to="//app.collective.work/collective/novae-preyt7of"
-      icon={Collective}
-      className="fill-[#adb6be]"
     />
     <SocialLinkIcon
       to="//linkedin.com/in/cfeijoo"
@@ -50,11 +37,6 @@ export const SocialLink: React.FC = () => (
       to="//stackoverflow.com/users/1914206/kube"
       icon={StackOverflowIcon}
       className="fill-[#ff9900]"
-    />
-    <SocialLinkIcon
-      to="//x.com/KubeKhrm"
-      icon={TwitterIcon}
-      className="fill-[#00aced]"
     />
   </footer>
 );

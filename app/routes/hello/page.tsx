@@ -1,4 +1,4 @@
-import { SocialLink } from "../../components/Social.tsx";
+import { SocialLinks } from "../../components/SocialLinks.tsx";
 import { H1, H2 } from "../../components/Typography.tsx";
 import Intro from "./intro.mdx";
 
@@ -12,7 +12,7 @@ export default function Home() {
         <Intro />
       </main>
 
-      <SocialLink />
+      <SocialLinks />
     </>
   );
 }
