@@ -55,9 +55,10 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       >
         <div
           style={{ viewTransitionName: "header-gradient-mask" }}
-          className="absolute top-0 left-0 w-full bg-(--palette-light-grey)/[80%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-30% pointer-events-none"
+          className="absolute top-0 left-0 w-full bg-(--palette-light-grey)/[30%] dark:bg-(--palette-dark-grey)/[80%] h-40 mask-linear-180 mask-linear-from-10% pointer-events-none"
         >
-          <div className="w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-70" />
+          <div className="absolute z-10 w-full h-full bg-top-left bg-(image:--kube-background-light) dark:bg-(image:--kube-background-dark) opacity-50" />
+          <div className="absolute z-0 w-full h-28 bg-linear-to-b from-(--palette-light-grey) dark:from-(--palette-dark-grey)" />
         </div>
 
         <div
@@ -110,6 +111,8 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       >
         {children}
       </main>
+
+      <div id="portal-root" className="absolute top-0 left-0 w-full" />
     </motion.div>
   );
 };

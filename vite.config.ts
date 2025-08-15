@@ -2,6 +2,7 @@ import mdx from "@mdx-js/rollup";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import { readFileSync } from "fs";
 import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import rehypePrettyCode from "rehype-pretty-code";
@@ -67,7 +68,13 @@ export default defineConfig({
             },
           } satisfies Parameters<typeof rehypeMermaid>[0],
         ],
-        [rehypePrettyCode, { theme: "one-dark-pro" }],
+        [
+          rehypePrettyCode,
+          {
+            theme: JSON.parse(readFileSync("./kay-theme-dark.json", "utf-8")),
+          } satisfies Parameters<typeof rehypePrettyCode>[0],
+          ,
+        ],
       ],
     }),
     vanillaExtractPlugin(),

@@ -1,0 +1,258 @@
+---
+title: Recreating Apple Liquid Glass with CSS & SVG
+slug: css-liquid-glass
+description: Explore how to recreate Apple's stunning Liquid Glass effect using CSS, SVG Displacement Maps, and refraction calculations.
+date: 2025-09-06
+---
+
+import { Checkbox } from "./Checkbox";
+import { DisplacementVectorField } from "./DisplacementVectorField";
+import { RayRefractionSimulation } from "./RayRefractionSimulation";
+import { RefractionAnglesExplanation } from "./RefractionAnglesExplanation";
+import { RefractionDetail } from "./RefractionDetail";
+import { Slider } from "./Slider";
+import { VectorToRedGreen } from "./VectorToRedGreen";
+import { VideoHero } from "./VideoHero";
+
+<VideoHero />
+
+# Introduction
+
+Apple [introduced the Liquid Glass effect during WWDC 2025](https://www.youtube.com/watch?v=jGztGfRujSE) in June. This piece is a hands‑on exploration of how to recreate a similar, physics‑inspired UI effect on the web using CSS, SVG displacement maps, and refraction math. Over a decade ago I wrote a tiny [raytracer](https://www.youtube.com/watch?v=1JoTZg4Ulo0) at school; it only did reflections, but it planted the seed for my curiosity about how light bends.
+
+Instead of chasing pixel‑perfect parity, we’ll approximate Liquid Glass, recreating the core refraction and a specular highlight, as a focused proof‑of‑concept you can extend.
+
+We’ll now build up the effect from first principles—starting with how light bends.
+
+# Understanding Refraction
+
+Refraction is the change in direction (bending) of a wave (in our case a light wave) as it passes between media with different refractive indices, caused by a change in propagation speed.
+The relationship between the incident and refracted angles is given by Snell's Law:
+
+<div className="pt-6 w-full flex justify-center">
+  $$ n_1 \sin(\theta_1) = n_2 \sin(\theta_2) $$
+</div>
+
+<div className="text-base grid grid-cols-1 sm:grid-cols-[65%_35%] gap-1 p-7">
+
+$$n_1 = \text{refractive index of first medium}$$
+
+$$\theta_1 = \text{angle of incidence}$$
+
+$$n_2 = \text{refractive index of second medium}$$
+
+$$\theta_2 = \text{angle of refraction}$$
+
+</div>
+
+<RefractionAnglesExplanation />
+
+When light travels from a higher refractive index medium into a lower one, Snell's Law eventually has no real solution beyond a critical angle: the wave undergoes total internal reflection instead of refracting out. To keep things focused we avoid that branch of behavior by constraining the scenario. We will:
+
+- Treat the ambient medium as air with index 1.
+- Use materials with refractive index > 1 (so rays always enter the higher index first).
+- Consider only a single refraction event (ignore any later exit / second refraction).
+- Assume incident rays start orthogonal to the background plane.
+
+Under these assumptions every ray we care about has a well-defined refracted direction via Snell's Law, and we can postpone handling internal reflection or multi-interface paths.
+
+## Visual Explanation
+
+We will also simplify the geometry of any refracting object:
+
+- Objects are defined by a 2D footprint (plan shape) that lies in a plane strictly parallel to the background. (No 3D shapes, no perspective).
+- There is no physical gap between the object and the background plane (they are in contact).
+- Two parameters can vary: its bezel (edge transition) and its thickness (peak height above the background).
+
+Surface height across the bezel is described by a single, continuous, differentiable function f over the normalized interval [0,1]. Because incoming rays are orthogonal to the background, the height at a point depends only on its normalized inward distance from the object's outer border. We call this distanceFromSide, defined as the ratio between the start of the bezel (0 at the outer border) and the end of the bezel (1 where the bezel transitions to the flat interior).
+
+```ts
+const height = f(distanceFromSide);
+```
+
+From the height we can calculate the angle of incidence, which is the angle between the incoming ray and the normal to the surface at that point. The normal is simply the derivative of the height function at that point, rotated by -90 degrees:
+
+```ts
+const delta = 0.001; // Small value to approximate derivative
+const y1 = f(distanceFromSide - delta);
+const y2 = f(distanceFromSide + delta);
+const derivative = (y2 - y1) / (2 * delta);
+const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
+```
+
+> TODO: Merge these two next interactive graphs into one, and animate:
+>
+> - The surface height drawing (to make people understand how the height function works)
+> - The ray refraction simulation (to show how the angle of incidence is calculated)
+> - Change the height function to show how it affects the refraction
+
+<RayRefractionSimulation glassWidth={400} glassHeight={200} />
+
+You can see in the above simulations that in concave surfaces, the light ray can go outside of the glass, while in convex surfaces it always stays inside.
+
+Displacing the ray OUTSIDE of the object is less performant, and Apple seems to only do convex surfaces (with the exception of the Switch and Slider components, which we will cover later). It is important then to understand that the final displacement will be less performant if we try to simulate concave surfaces.
+
+## Converting to a Displacement Vector Field
+
+Now that we know how to calculate the displacement at a distance from border, let's calculate the displacement vector field for the entire glass surface.
+
+The vector field here just describes at every position on the glass surface how much the light ray is displaced from its original position. This displacement is a vector calculated based on the angle of incidence and the refractive index of the glass.
+
+<DisplacementVectorField />
+
+The translational symmetry along the edge normal allows us to re-use the same displacement magnitudes all around the bezel.
+The only constraint being that the displacement vector will be oriented along the normal at the border.
+
+```ts
+displacementVector = {
+  angle: normalOfBorder,
+  magnitude: displacementMagnitude, // Calculated based on the angle of incidence and refractive index
+};
+```
+
+## Converting to an SVG Displacement Map
+
+### What is a Displacement Map?
+
+A displacement map is an image that defines how pixels in a target image should be displaced. In our case, we will use a displacement map to create the distortion effect of the Liquid Glass.
+
+Displacement maps are typically images with each pixel encoding a vector in multiple channels (e.g., RGB).
+
+SVG's `<feDisplacementMap />` encodes these pixels in a 32 bit RGBA image, where each channel represents a different axis of displacement.
+
+It's up to the user to define which channel corresponds to which axis, but it is important to understand the constraint:
+Because each channel is 8 bits, the displacement is limited to a range of -128 to 127 pixels in each direction. (256 values possible in total).
+128 is the neutral value, meaning no displacement.
+
+### Converting a Vector to Red-Green values
+
+<VectorToRedGreen />
+
+```tsx
+<svg color-interpolation-filters="sRGB">
+  <filter id={id}>
+    <feImage
+      href={displacementMapDataUrl}
+      x={0}
+      y={0}
+      width={width}
+      height={height}
+      result="displacement_map"
+    />
+    <feDisplacementMap
+      in="SourceGraphic"
+      in2="displacement_map"
+      scale={scale}
+      xChannelSelector="R" // Red Channel for displacement in X axis
+      yChannelSelector="G" // Green Channel for displacement in Y axis
+      result="displaced"
+    />
+  </filter>
+</svg>
+```
+
+### Simple Concave Glass
+
+<RefractionDetail
+  equationFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
+  equationRender={`<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>y</mi><mo>=</mo><msqrt><mrow><mi>x</mi><mo>(</mo><mn>2</mn><mo>-</mo><mi>x</mi><mo>)</mo></mrow></msqrt></math>`}
+/>
+
+### Simple Convex Glass
+
+<RefractionDetail
+  equationFn={(x) => 1 - Math.sqrt(1 - (1 - x) ** 2)}
+  equationRender={`<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>y</mi><mo>=</mo><mn>1</mn><mo>-</mo><msqrt><mrow><mi>x</mi><mo>(</mo><mn>2</mn><mo>-</mo><mi>x</mi><mo>)</mo></mrow></msqrt></math>`}
+/>
+
+### Complex Glass with Distortion
+
+b
+If you want to understand a it more about why refraction works like this, check out this [video by Veritasium about Infinite Paths](https://www.youtube.com/watch?v=qJZ1Ez28C-A). Though what we'll do here is simply applying Snell's Law to calculate the refraction angle based on the incident angle and the refractive index of the glass.
+
+## Adding Specular
+
+To enhance the Liquid Glass effect, we can add a specular highlight that simulates the reflection of light on the glass surface. This can be achieved using CSS properties like `box-shadow` or `filter: brightness()` to create a shiny appearance.
+
+## Switch and Slider
+
+Switch and Slider are a special case, in the sense that
+
+## Tools and Techniques
+
+- Using CSS for styling and animations.
+- Leveraging SVG Displacement Maps for distortion.
+- Calculating refraction with Snell's Law.
+
+## Creating the components
+
+- Setting up the SVG structure.
+- Applying CSS for visual styling.
+- Integrating the Displacement Map.
+- Calculating and visualizing refraction.
+
+<RefractionDetail
+  equationFn={(x) => {
+    const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+    const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+    const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+    const ratioCircle = 1 - smootherstep;
+    return circle * ratioCircle + sin * (1 - ratioCircle);
+  }}
+  equationRender={`<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>y</mi><mo>=</mo>
+  <mrow>
+    <mn>2</mn><mo>&#xA0;</mo><msqrt><mrow><mi>x</mi><mo>(</mo><mn>1</mn><mo>-</mo><mi>x</mi><mo>)</mo></mrow></msqrt>
+    <mo>&#x22C5;</mo>
+    <mrow>
+      <mn>1</mn><mo>-</mo>
+      <mrow>
+        <mn>6</mn><msup><mi>x</mi><mn>5</mn></msup>
+        <mo>-</mo>
+        <mn>15</mn><msup><mi>x</mi><mn>4</mn></msup>
+        <mo>+</mo>
+        <mn>10</mn><msup><mi>x</mi><mn>3</mn></msup>
+      </mrow>
+    </mrow>
+    <mo>+</mo>
+    <mrow>
+      <mrow>
+        <mn>0.5</mn>
+        <mo>-</mo>
+        <mfrac>
+          <mrow><mi>cos</mi><mo>(</mo><mn>2</mn><mi>&#x03C0;</mi><mi>x</mi><mo>)</mo></mrow>
+          <mn>40</mn>
+        </mfrac>
+      </mrow>
+      <mo>&#x22C5;</mo>
+      <mrow>
+        <mn>6</mn><msup><mi>x</mi><mn>5</mn></msup>
+        <mo>-</mo>
+        <mn>15</mn><msup><mi>x</mi><mn>4</mn></msup>
+        <mo>+</mo>
+        <mn>10</mn><msup><mi>x</mi><mn>3</mn></msup>
+      </mrow>
+    </mrow>
+  </mrow>
+</math>`}
+/>
+
+And now by tweaking the parameters, we can approximate the behavior of the Switch and Slider components.
+
+<Checkbox />
+
+<Slider />
+
+## Challenges and Solutions
+
+- Common issues with SVG filters.
+- Ensuring mathematical accuracy in refraction.
+
+## Conclusion
+
+- Recap of the process.
+- Potential applications of the technique.
+
+---
+
+Stay tuned for the full implementation details and code snippets!

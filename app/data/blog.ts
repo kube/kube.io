@@ -12,7 +12,9 @@ export function getAllPosts() {
   if (posts.length) return posts;
 
   // Resolve posts only when needed and cache them.
-  posts = Object.values(import.meta.glob("./articles/*.mdx", { eager: true }))
+  posts = Object.values(
+    import.meta.glob("./articles/**/article.mdx", { eager: true })
+  )
     .map<Post>((article: any) => ({
       ...article.frontmatter,
       content: article.default,

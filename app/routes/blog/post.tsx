@@ -1,4 +1,4 @@
-import type * as Route from "./+types/post";
+import { type Route } from "./+types/post";
 
 import Giscus from "@giscus/react";
 
@@ -109,7 +109,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
                 if (isCodeBlock) {
                   return (
-                    <pre className="bg-white/50 dark:bg-gray-800/50 rounded-md p-4 overflow-x-auto font-mono text-[13px]">
+                    <pre className="bg-gray-800/90 dark:bg-gray-800/50 rounded-md p-4 overflow-x-auto font-mono text-[13px]">
                       {children}
                     </pre>
                   );
@@ -117,6 +117,11 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
                 return <pre>{children}</pre>;
               },
+              blockquote: ({ children }) => (
+                <blockquote className="border-l-4 py-4 border-gray-300 dark:border-gray-600 pl-5 italic text-gray-700 dark:text-gray-300">
+                  {children}
+                </blockquote>
+              ),
             }}
           />
         </div>

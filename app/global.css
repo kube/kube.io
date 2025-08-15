@@ -161,10 +161,14 @@
   --palette-dark-link-active: #98cce6;
 
   @media (prefers-color-scheme: light) {
+    --palette-background-color: var(--palette-white);
+    --palette-background-color-light: var(--palette-light-grey);
     --palette-text-color: var(--palette-black);
     --palette-text-color-light: var(--palette-dark-grey);
   }
   @media (prefers-color-scheme: dark) {
+    --palette-background-color: var(--palette-black);
+    --palette-background-color-light: var(--palette-dark-grey);
     --palette-text-color: var(--palette-white);
     --palette-text-color-light: var(--palette-light-grey);
   }

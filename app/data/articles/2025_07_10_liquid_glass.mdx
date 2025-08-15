@@ -1,0 +1,83 @@
+---
+title: CSS Liquid Glass Effect
+slug: css-liquid-glass-effect
+date: 2025-07-10
+description: Exploring how to create a liquid glass effect using CSS, including the use of `backdrop-filter`, `mask-image`, and custom properties for dynamic styling.
+---
+
+import { PauseIcon, PlayIcon, SquareIcon } from "lucide-react";
+import { LiquidGlass as BlurredGlass } from "./LiquidGlass.tsx";
+import { InPortal, LiquidGlass } from "./LiquidGlass3.tsx";
+import { RefractionExplaination } from "./RefractionExplaination.tsx";
+
+# CSS Liquid Glass Effect
+
+In this article, we will explore how to create a liquid glass effect using CSS. This effect can be achieved with a combination of `backdrop-filter`, `mask-image`, and custom properties for dynamic styling.
+
+## The Liquid Glass Effect
+
+<InPortal>
+  <LiquidGlass />
+
+</InPortal>
+
+## Light Refraction
+
+<div>
+  <RefractionExplaination />
+</div>
+
+<div className="w-full h-[500px] bg-radial from-black to-cyan-500" />
+
+<div
+  className="relative overflow-hidden rounded-2xl"
+  style={{
+    height: 600,
+    backgroundSize: "cover",
+    backgroundImage:
+      "url(https://images.unsplash.com/photo-1750440982726-d723eab666a5?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+  }}
+/>
+
+<div className="grid grid-cols-2 gap-4 mt-8">
+  <img
+    src="https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 1"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 2"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/vector-1748360838070-079f27f3630b?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 3"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/vector-1751377728946-f6c04a2b836b?q=80&w=1635&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 4"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://plus.unsplash.com/premium_vector-1711979204855-2fcc38db2fe5?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 4"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/vector-1750195556563-7a6d5d16ab7b?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 4"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/vector-1749549739614-7ef4457d9e97?q=80&w=1635&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 4"
+    className="w-full h-full object-cover rounded-lg"
+  />
+  <img
+    src="https://images.unsplash.com/vector-1747405360006-01d234db6c22?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt="Image 4"
+    className="w-full h-full object-cover rounded-lg"
+  />
+</div>
