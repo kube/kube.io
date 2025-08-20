@@ -40,7 +40,7 @@
     "@react-router/node": "7.6.0",
     "@react-router/serve": "7.6.0",
     "@tailwindcss/vite": "^4.1.7",
-    "canvas": "^3.1.2",
+    "canvas": "^3.2.0",
     "clsx": "^2.1.1",
     "favicons": "^7.2.0",
     "front-matter": "^4.0.2",
