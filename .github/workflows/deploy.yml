@@ -18,7 +18,18 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+          sudo apt-get install -y \
+            build-essential \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libjpeg-dev \
+            libgif-dev \
+            librsvg2-dev \
+            libpixman-1-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            pkg-config \
+            python3
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -31,6 +42,12 @@ jobs:
 
       - name: Install
         run: pnpm install
+
+      - name: Rebuild canvas (ensure native binding)
+        run: |
+          node -p "process.versions" || true
+          pnpm rebuild canvas || (echo 'canvas rebuild failed' && exit 1)
+          ls -R node_modules/.pnpm/canvas*/node_modules/canvas/build || true
 
       - name: Build
         run: pnpm run build
