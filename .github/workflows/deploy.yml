@@ -49,13 +49,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
-      - name: Install (force scripts & source build)
+      - name: Install
         run: |
+          pnpm approve-builds @tailwindcss/oxide canvas esbuild sharp
           pnpm install --ignore-scripts=false
-          # If canvas present but not built, force rebuild
-          if [ ! -f node_modules/.pnpm/canvas@*/node_modules/canvas/build/Release/canvas.node ]; then
-            echo "canvas binding not found after install, will rebuild"
-          fi
 
       - name: Rebuild canvas (ensure native binding)
         run: |
