@@ -60,7 +60,7 @@ jobs:
       - name: Rebuild canvas (ensure native binding)
         run: |
           node -p "process.versions" || true
-          pnpm rebuild canvas --workspace-root --recursive || (echo 'canvas rebuild failed' && exit 1)
+          pnpm rebuild canvas || (echo 'canvas rebuild failed' && exit 1)
           find node_modules -path "*canvas.node" -maxdepth 6 -print || echo 'canvas.node not found'
           ls -R node_modules/.pnpm/canvas@*/node_modules/canvas 2>/dev/null | sed -n '1,120p' || true
 
