@@ -124,17 +124,17 @@ export const VectorToRedGreen: React.FC = () => {
       >
         <defs>
           <marker
-            id="arrow"
+            id="arrow-vrg"
             markerWidth="4"
             markerHeight="4"
-            refX="-2"
-            refY="-2"
+            refX="0"
+            refY="2"
             orient="auto"
           >
             <polygon points="0 0, 4 2, 0 4" fill="context-stroke" />
           </marker>
           <marker
-            id="dot"
+            id="dot-vrg"
             markerWidth="2"
             markerHeight="2"
             refX="1"
@@ -161,8 +161,8 @@ export const VectorToRedGreen: React.FC = () => {
             x2={endX}
             y2={endY}
             strokeWidth={vectorStrokeWidth}
-            markerStart="url(#dot)"
-            markerEnd="url(#arrow)"
+            markerStart="url(#dot-vrg)"
+            markerEnd="url(#arrow-vrg)"
             stroke={vectorColor}
           />
         </g>
@@ -186,9 +186,6 @@ export const VectorToRedGreen: React.FC = () => {
             y={squaresStartY + squareSize + 14}
             textAnchor="middle"
             className="fill-slate-800 dark:fill-slate-200"
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
           >
             Red
           </motion.text>
@@ -209,9 +206,6 @@ export const VectorToRedGreen: React.FC = () => {
             y={squaresStartY + squareSize * 2 + 54}
             textAnchor="middle"
             className="fill-slate-800 dark:fill-slate-200"
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 }}
           >
             Green
           </motion.text>
@@ -232,9 +226,6 @@ export const VectorToRedGreen: React.FC = () => {
             y={squaresStartY + (squareSize + 40) * 2 + squareSize + 14}
             textAnchor="middle"
             className="fill-slate-800 dark:fill-slate-200"
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
           >
             Result
           </motion.text>

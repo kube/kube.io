@@ -20,13 +20,11 @@ export default {
       "/",
       "/cv",
       "/cv.pdf",
-      ...(FLAGS.BLOG
-        ? [
-            "/blog",
-            ...POSTS.map((post) => `/blog/${post.slug}`),
-            "/blog/imageResizer",
-          ]
-        : []),
+
+      "/blog",
+      ...POSTS.map((post) => `/blog/${post.slug}`),
+      "/blog/imageResizer",
+
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];
   },

@@ -3,6 +3,16 @@ import { animate } from "motion";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
 
+const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
+const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
+const LIP_BEZEL_FN = (x: number) => {
+  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  const ratioCircle = 1 - smootherstep;
+  return circle * ratioCircle + sin * (1 - ratioCircle);
+};
+
 type Ray = {
   originX: number;
   hitPoint: [number, number];
@@ -43,8 +53,31 @@ export const RayRefractionSimulation: React.FC<
   const viewHeight = 300;
 
   const bezelWidth = useMotionValue(100);
-  const bezelHeightFn = useMotionValue((x: number) => {
-    return x * x;
+
+  // Bezel Height Function (interpolated with animation on change)
+  const bezelHeightFn_target = useMotionValue((x: number) => {
+    return Math.sqrt(1 - (1 - x) ** 2);
+  });
+  const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
+  const bezelHeightFn_interpolationProgress = useMotionValue(1);
+
+  bezelHeightFn_target.on("change", async (value) => {
+    bezelHeightFn_interpolationProgress.set(0);
+    await animate(bezelHeightFn_interpolationProgress, 1, {
+      duration: 1,
+      ease: "easeInOut",
+    });
+    bezelHeightFn_previous.set(value);
+  });
+
+  const bezelHeightFn = useTransform(() => {
+    const progress = bezelHeightFn_interpolationProgress.get();
+    if (progress === 1) {
+      return bezelHeightFn_target.get();
+    }
+    return (x: number) =>
+      bezelHeightFn_previous.get()(x) * (1 - progress) +
+      bezelHeightFn_target.get()(x) * progress;
   });
 
   const refractionIndex = useMotionValue(GLASS_REFRACTIVE_INDEX);
@@ -138,7 +171,7 @@ export const RayRefractionSimulation: React.FC<
     return () => window.removeEventListener("mouseup", handleMouseUp);
   }, [isPanning]);
 
-  const NUMBER_OF_SAMPLES = 256;
+  const NUMBER_OF_SAMPLES = 64;
 
   const ray = useTransform(() =>
     calculateRefraction(currentX.get(), refractionIndex.get())
@@ -147,31 +180,29 @@ export const RayRefractionSimulation: React.FC<
   const surfacePath = useTransform(() => {
     const bezelHeightFn_ = bezelHeightFn.get();
     const bezelWidth_ = bezelWidth.get();
-    return `
-      M ${glassX} ${glassY + glassHeight}
 
-      ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
-        const x = i / NUMBER_OF_SAMPLES;
-        const y = bezelHeightFn_(x);
-        return `L ${glassX + x * bezelWidth_} ${
-          glassY + (1 - y) * bezelWidth_
-        }`;
-      }).join(" ")}
+    return `M ${glassX} ${glassY + glassHeight}
+
+    ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
+      const x = i / NUMBER_OF_SAMPLES;
+      const y = bezelHeightFn_(x);
+      return `L ${glassX + x * bezelWidth_} ${glassY + (1 - y) * bezelWidth_}`;
+    }).join(" ")}
       
       L ${glassX + glassWidth - bezelWidth_} ${
       glassY + (1 - bezelHeightFn_(1)) * bezelWidth_
     }
 
-      ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
-        const x = 1 - i / NUMBER_OF_SAMPLES;
-        const y = bezelHeightFn_(x);
-        return `L ${glassX + glassWidth - x * bezelWidth_} ${
-          glassY + (1 - y) * bezelWidth_
-        }`;
-      }).join(" ")}
+    ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
+      const x = 1 - i / NUMBER_OF_SAMPLES;
+      const y = bezelHeightFn_(x);
+      return `L ${glassX + glassWidth - x * bezelWidth_} ${
+        glassY + (1 - y) * bezelWidth_
+      }`;
+    }).join(" ")}
 
-      L ${glassX + glassWidth} ${glassY + glassHeight}
-      Z`;
+    L ${glassX + glassWidth} ${glassY + glassHeight}
+    Z`;
   });
 
   return (
@@ -308,18 +339,7 @@ export const RayRefractionSimulation: React.FC<
         <button
           className="px-4 py-2 bg-blue-500 text-white rounded"
           onClick={() => {
-            const newBezelHeightFn = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
-            bezelHeightFn.set(newBezelHeightFn);
-          }}
-        >
-          Concave
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => {
-            const newBezelHeightFn = (x: number) =>
-              1 - Math.sqrt(1 - (1 - x) ** 2);
-            bezelHeightFn.set(newBezelHeightFn);
+            bezelHeightFn_target.set(CONVEX_BEZEL_FN);
           }}
         >
           Convex
@@ -327,13 +347,44 @@ export const RayRefractionSimulation: React.FC<
         <button
           className="px-4 py-2 bg-blue-500 text-white rounded"
           onClick={() => {
-            currentX.set((viewWidth - glassWidth) / 2);
+            bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
+          }}
+        >
+          Concave
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => {
+            bezelHeightFn_target.set(LIP_BEZEL_FN);
+          }}
+        >
+          Lip
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => {
             animate([
+              [
+                currentX,
+                viewWidth / 2,
+                {
+                  duration: 0.5,
+                  ease: "easeInOut",
+                },
+              ],
+              [
+                currentX,
+                (viewWidth - glassWidth) / 2,
+                {
+                  duration: 1,
+                  ease: "easeInOut",
+                },
+              ],
               [
                 currentX,
                 (viewWidth - glassWidth) / 2 + glassWidth,
                 {
-                  duration: 3,
+                  duration: 2,
                   ease: "easeInOut",
                 },
               ],
@@ -341,7 +392,7 @@ export const RayRefractionSimulation: React.FC<
                 currentX,
                 viewWidth / 2,
                 {
-                  duration: 1.5,
+                  duration: 1,
                   ease: "easeInOut",
                 },
               ],

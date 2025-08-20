@@ -1,4 +1,4 @@
 export const FLAGS = {
-  BLOG: true,
+  BLOG: false,
   WORKSHOP: false,
 };

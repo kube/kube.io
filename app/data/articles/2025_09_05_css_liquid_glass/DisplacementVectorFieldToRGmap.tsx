@@ -1,30 +1,62 @@
-import { BoxIcon, CogIcon, RotateCcwIcon } from "lucide-react";
+import { RadiusIcon, RotateCcwIcon, SplineIcon } from "lucide-react";
 import { animate } from "motion";
 import {
   motion,
-  springValue,
   transformValue,
   useMotionValue,
   useTransform,
 } from "motion/react";
 import { calculateDisplacementMap } from "./displacementMap";
 
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
+}
+
+const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
+const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
+const LIP_BEZEL_FN = (x: number) => {
+  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  const ratioCircle = 1 - smootherstep;
+  return circle * ratioCircle + sin * (1 - ratioCircle);
+};
+
 type DisplacementVectorFieldProps = {
   glassThickness?: number;
-  bezelWidth?: number;
   bezelHeightFn?: (x: number) => number;
   refractiveIndex?: number;
 };
 
-export const DisplacementVectorField: React.FC<
+export const DisplacementVectorFieldToRGMap: React.FC<
   DisplacementVectorFieldProps
-> = ({ glassThickness = 50, bezelWidth = 120, refractiveIndex = 1.5 }) => {
-  const bezelHeightFn = useMotionValue((x: number) => {
-    const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-    const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-    const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-    const ratioCircle = 1 - smootherstep;
-    return circle * ratioCircle + sin * (1 - ratioCircle);
+> = ({ glassThickness = 0, refractiveIndex = 1.5 }) => {
+  const bezelWidth = 150;
+
+  // Bezel Height Function (interpolated with animation on change)
+  const bezelHeightFn_target = useMotionValue((x: number) => {
+    return Math.sqrt(1 - (1 - x) ** 2);
+  });
+  const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
+  const bezelHeightFn_interpolationProgress = useMotionValue(1);
+
+  bezelHeightFn_target.on("change", async (value) => {
+    bezelHeightFn_interpolationProgress.set(0);
+    await animate(bezelHeightFn_interpolationProgress, 1, {
+      duration: 1,
+      ease: "easeInOut",
+    });
+    bezelHeightFn_previous.set(value);
+  });
+
+  const bezelHeightFn = useTransform(() => {
+    const progress = bezelHeightFn_interpolationProgress.get();
+    if (progress === 1) {
+      return bezelHeightFn_target.get();
+    }
+    return (x: number) =>
+      bezelHeightFn_previous.get()(x) * (1 - progress) +
+      bezelHeightFn_target.get()(x) * progress;
   });
 
   const displacementMap = useTransform(() =>
@@ -40,8 +72,9 @@ export const DisplacementVectorField: React.FC<
     Math.max(...displacementMap.get().map(Math.abs))
   );
 
-  const NUMBER_OF_RADIUSES = 48;
-  const NUMBER_OF_VECTORS_PER_RADIUS = 12;
+  const NUMBER_OF_DOTS_X = 24;
+  const NUMBER_OF_DOTS_Y = 24;
+  const NUMBER_OF_DOTS = NUMBER_OF_DOTS_X * NUMBER_OF_DOTS_Y;
 
   const canvasWidth = 400;
   const canvasHeight = 300;
@@ -51,65 +84,43 @@ export const DisplacementVectorField: React.FC<
 
   const radius = 130;
 
-  const revolutionProgress = useMotionValue(1);
+  // Progress of conversion from vector to RG dot along every vector travelled as a buffer
+  const conversionProgress = useMotionValue(0);
 
   async function startAnimation() {
-    revolutionProgress.set(0);
-
-    bezelHeightFn.set((x: number) => {
-      return Math.sqrt(1 - (1 - x) ** 2);
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    await animate([
-      [
-        revolutionProgress,
-        1 - 1 / NUMBER_OF_RADIUSES,
-        { duration: 2, ease: "easeInOut" },
-      ],
-    ]);
-
-    bezelHeightFn.set((x: number) => {
-      const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-      const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-      const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-      const ratioCircle = 1 - smootherstep;
-      return circle * ratioCircle + sin * (1 - ratioCircle);
-    });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    bezelHeightFn.set((x: number) => {
-      return 1 - Math.sqrt(1 - (1 - x) ** 2);
-    });
+    // Do something here
   }
+
+  const plot = radius / (NUMBER_OF_DOTS_X / 2);
 
   return (
     <div className="relative">
-      <svg viewBox="0 0 400 300" className="w-full h-full">
+      <svg
+        viewBox="0 0 400 300"
+        className="w-full h-full"
+        transform="translate(0, 0)"
+      >
         <defs>
           <marker
-            id="arrow"
+            id="arrow-displacement-vector-field"
+            viewBox="0 0 4 4"
             markerWidth="4"
             markerHeight="4"
             refX="0"
             refY="2"
             orient="auto"
+            markerUnits="strokeWidth"
           >
-            <polygon points="0 0, 4 2, 0 4" fill="context-stroke" />
-          </marker>
-          <marker
-            id="dot"
-            markerWidth="2"
-            markerHeight="2"
-            refX="1"
-            refY="1"
-            orient="auto"
-          >
-            <circle cx="1" cy="1" r="1" fill="context-stroke" />
+            <path
+              d="M0,0 L4,2 L0,4 Z"
+              stroke="inherit"
+              strokeWidth={5}
+              fill="context-stroke"
+            />
           </marker>
         </defs>
 
-        <motion.g transform={`translate(70, 0)`}>
+        <motion.g>
           <circle
             cx={canvasWidth / 2}
             cy={canvasHeight / 2}
@@ -119,148 +130,176 @@ export const DisplacementVectorField: React.FC<
             strokeWidth={1}
           />
 
-          {Array.from({ length: NUMBER_OF_RADIUSES }, (_, j) => {
+          {Array.from({ length: NUMBER_OF_DOTS }, (_, i) => {
+            const x = 2 * ((i % NUMBER_OF_DOTS_X) / NUMBER_OF_DOTS_X) - 1;
+            const y =
+              2 * (Math.floor(i / NUMBER_OF_DOTS_X) / NUMBER_OF_DOTS_Y) - 1;
+
+            const isInCircle = x * x + y * y < Math.sqrt(2);
+
+            if (!isInCircle) {
+              return null;
+            }
+
             const angle = transformValue(() => {
-              const rotation = Math.min(
-                1,
-                revolutionProgress.get() / (j / NUMBER_OF_RADIUSES)
-              );
-              return Math.PI * 2 * (j / NUMBER_OF_RADIUSES) * rotation;
+              const angle = Math.atan2(y, x);
+              return angle < 0 ? angle + 2 * Math.PI : angle;
             });
 
-            const borderX = centerX - radius;
-            const borderY = centerY;
+            const currentVectorProgress = transformValue(() => {
+              const progress = conversionProgress.get();
+              return clamp01(
+                (progress - i / NUMBER_OF_DOTS) / (1 - i / NUMBER_OF_DOTS)
+              );
+            });
 
-            const plot =
-              ((centerX - borderX) * (bezelWidth / radius)) /
-              NUMBER_OF_VECTORS_PER_RADIUS;
+            const distanceToSide = 1 - Math.abs(Math.sqrt(x * x + y * y) * 4);
+            const index =
+              ((displacementMap.get().length * distanceToSide) /
+                NUMBER_OF_DOTS_X /
+                2) |
+              0;
 
+            const magnitude = transformValue(
+              () => displacementMap.get()[index]
+            );
+            const magnitudeScaled = transformValue(() => {
+              const scale = 1 / maximumDisplacement.get();
+              return (magnitude.get() * scale * plot) / 2;
+            });
+            const color = transformValue(
+              () =>
+                `hsl(${
+                  180 +
+                  Math.abs(magnitude.get() / maximumDisplacement.get()) * 90
+                },95%,45%)`
+            );
+            const strokeWidth = transformValue(
+              () =>
+                0.8 +
+                Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
+            );
+            const nx = useTransform(
+              () => (magnitudeScaled.get() * Math.cos(angle.get())) / radius
+            );
+            const ny = useTransform(
+              () => (magnitudeScaled.get() * Math.sin(angle.get())) / radius
+            );
+            const x1 = centerX + x * radius;
+            x;
+            const y1 = centerY + y * radius;
+            const x2 = transformValue(
+              () => x1 + nx.get() * (1 - currentVectorProgress.get())
+            );
+            const y2 = transformValue(
+              () => y1 + ny.get() * (1 - currentVectorProgress.get())
+            );
+
+            // Compute color components from current vector
+            // Normalized components derived from motion values
+            const redIntensity = useTransform(nx, (v: number) =>
+              clamp01((v + 1) / 2)
+            );
+            const greenIntensity = useTransform(ny, (v: number) =>
+              clamp01((v + 1) / 2)
+            );
+            const blendedColor = useTransform(
+              [redIntensity, greenIntensity],
+              ([ri, gi]: number[]) => {
+                const r = Math.round(ri * 256);
+                const g = Math.round(gi * 256);
+                return `rgb(${r},${g},0)`;
+              }
+            );
             return (
-              <motion.g
-                key={j}
-                style={{
-                  rotate: transformValue(() => `${angle.get()}rad`),
-                  transformOrigin: `${centerX}px ${centerY}px`,
-                  transformBox: "view-box",
-                }}
-              >
-                {Array.from(
-                  { length: NUMBER_OF_VECTORS_PER_RADIUS },
-                  (_, i) => {
-                    const index =
-                      ((displacementMap.get().length * i) /
-                        NUMBER_OF_VECTORS_PER_RADIUS) |
-                      0;
-
-                    const magnitude = springValue(
-                      transformValue(() => displacementMap.get()[index]),
-                      {
-                        stiffness: 100,
-                        damping: 30,
-                        mass: 1,
-                      }
-                    );
-                    const magnitudeScaled = transformValue(
-                      () =>
-                        ((magnitude.get() / maximumDisplacement.get()) * plot) /
-                        2
-                    );
-                    const color = transformValue(
-                      () =>
-                        `hsl(${
-                          180 +
-                          Math.abs(
-                            magnitude.get() / maximumDisplacement.get()
-                          ) *
-                            90
-                        },95%,45%)`
-                    );
-                    const strokeWidth = transformValue(
-                      () =>
-                        0.3 +
-                        Math.abs(magnitude.get() / maximumDisplacement.get()) *
-                          1.3
-                    );
-                    const x2 = transformValue(
-                      () => borderX + plot * i + magnitudeScaled.get()
-                    );
-
-                    return (
-                      <motion.line
-                        key={i}
-                        x1={borderX + plot * i}
-                        y1={borderY}
-                        x2={x2}
-                        y2={borderY}
-                        stroke={color}
-                        strokeWidth={strokeWidth}
-                        markerEnd="url(#arrow)"
-                        markerStart="url(#dot)"
-                      />
-                    );
-                  }
-                )}
-              </motion.g>
+              <>
+                <motion.line
+                  key={i}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke={color}
+                  opacity={transformValue(
+                    () => 1 - currentVectorProgress.get()
+                  )}
+                  strokeWidth={strokeWidth}
+                  strokeLinecap={"round"}
+                  markerEnd="url(#arrow-displacement-vector-field)"
+                />
+                <motion.circle
+                  cx={x1}
+                  cy={y1}
+                  r={transformValue(() => currentVectorProgress.get() * 4)}
+                  fill={blendedColor}
+                  style={{
+                    opacity: currentVectorProgress,
+                    pointerEvents: "none",
+                  }}
+                />
+              </>
             );
           })}
         </motion.g>
       </svg>
 
-      <button
-        className="group absolute bottom-4 right-46 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={() => {
-          bezelHeightFn.set((x) => {
-            return 1 - Math.sqrt(1 - (1 - x) ** 2);
-          });
-        }}
-      >
-        <CogIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
+      <div className="absolute bottom-0 right-4 flex items-end justify-center gap-2">
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={() => {
+            const value = conversionProgress.get() === 0 ? 1 : 0;
+            animate(conversionProgress, value, {
+              duration: 2,
+              ease: "easeOut",
+            });
+          }}
+        >
+          <RadiusIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-0"
+          />
+        </button>
 
-      <button
-        className="group absolute bottom-4 right-32 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={() => {
-          bezelHeightFn.set((x) => {
-            const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-            const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-            const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-            const ratioCircle = 1 - smootherstep;
-            return circle * ratioCircle + sin * (1 - ratioCircle);
-          });
-        }}
-      >
-        <CogIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={() => bezelHeightFn_target.set(CONVEX_BEZEL_FN)}
+        >
+          <SplineIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-0"
+          />
+        </button>
 
-      <button
-        className="group absolute bottom-4 right-18 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={() => {
-          bezelHeightFn.set((x) => {
-            return Math.sqrt(1 - (1 - x) ** 2);
-          });
-        }}
-      >
-        <BoxIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={() => bezelHeightFn_target.set(CONCAVE_BEZEL_FN)}
+        >
+          <SplineIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-270"
+          />
+        </button>
 
-      <button
-        className="group absolute bottom-4 right-4 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={startAnimation}
-      >
-        <RotateCcwIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={() => bezelHeightFn_target.set(LIP_BEZEL_FN)}
+        >
+          <SplineIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-45"
+          />
+        </button>
+
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={startAnimation}
+        >
+          <RotateCcwIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform"
+          />
+        </button>
+      </div>
     </div>
   );
 };

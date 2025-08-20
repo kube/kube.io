@@ -1,26 +1,60 @@
-import { BoxIcon, CogIcon, FanIcon, RotateCcwIcon } from "lucide-react";
+import { RotateCcwIcon, SplineIcon } from "lucide-react";
 import { animate } from "motion";
 import {
+  AnimationPlaybackControlsWithThen,
   motion,
-  springValue,
   transformValue,
   useMotionValue,
   useTransform,
 } from "motion/react";
+import { useRef } from "react";
 import { calculateDisplacementMap } from "./displacementMap";
+
+const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
+const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
+const LIP_BEZEL_FN = (x: number) => {
+  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  const ratioCircle = 1 - smootherstep;
+  return circle * ratioCircle + sin * (1 - ratioCircle);
+};
 
 type DisplacementVectorFieldProps = {
   glassThickness?: number;
-  bezelWidth?: number;
   bezelHeightFn?: (x: number) => number;
   refractiveIndex?: number;
 };
 
 export const DisplacementVectorField: React.FC<
   DisplacementVectorFieldProps
-> = ({ glassThickness = 50, bezelWidth = 120, refractiveIndex = 1.5 }) => {
-  const bezelHeightFn = useMotionValue((x: number) => {
+> = ({ glassThickness = 20, refractiveIndex = 1.5 }) => {
+  const bezelWidth = 120;
+
+  // Bezel Height Function (interpolated with animation on change)
+  const bezelHeightFn_target = useMotionValue((x: number) => {
     return Math.sqrt(1 - (1 - x) ** 2);
+  });
+  const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
+  const bezelHeightFn_interpolationProgress = useMotionValue(1);
+
+  bezelHeightFn_target.on("change", async (value) => {
+    bezelHeightFn_interpolationProgress.set(0);
+    await animate(bezelHeightFn_interpolationProgress, 1, {
+      duration: 1,
+      ease: "easeInOut",
+    });
+    bezelHeightFn_previous.set(value);
+  });
+
+  const bezelHeightFn = useTransform(() => {
+    const progress = bezelHeightFn_interpolationProgress.get();
+    if (progress === 1) {
+      return bezelHeightFn_target.get();
+    }
+    return (x: number) =>
+      bezelHeightFn_previous.get()(x) * (1 - progress) +
+      bezelHeightFn_target.get()(x) * progress;
   });
 
   const displacementMap = useTransform(() =>
@@ -37,7 +71,7 @@ export const DisplacementVectorField: React.FC<
   );
 
   const NUMBER_OF_RADIUSES = 48;
-  const NUMBER_OF_VECTORS_PER_RADIUS = 8;
+  const NUMBER_OF_VECTORS_PER_RADIUS = 10;
 
   const canvasWidth = 400;
   const canvasHeight = 300;
@@ -47,43 +81,81 @@ export const DisplacementVectorField: React.FC<
 
   const radius = 130;
 
-  const radiusProgress = useMotionValue(1);
+  const radiusProgress = useMotionValue(0);
+  const projectRayOnSurfaceProgress = useMotionValue(0);
+  const normalisationProgress = useMotionValue(0);
   const revolutionProgress = useMotionValue(0);
 
+  const xAxisRotation = useMotionValue(90);
+
+  const NUMBER_OF_SAMPLES = 64;
+
+  const surfacePath = useTransform(() => {
+    const fn = bezelHeightFn.get();
+    return `
+      M ${centerX - radius} ${centerY}
+
+      ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
+        const x = i / NUMBER_OF_SAMPLES;
+        const y = fn(x);
+        return `L ${centerX - radius + x * bezelWidth} ${
+          centerY - y * bezelWidth
+        }`;
+      }).join(" ")}
+
+      L ${centerX} ${centerY - fn(1) * bezelWidth}
+      L ${centerX} ${centerY}
+      Z`;
+  });
+
+  const currentAnimation = useRef<AnimationPlaybackControlsWithThen>(null);
+
   async function startAnimation() {
+    currentAnimation.current?.stop();
+
     revolutionProgress.set(0);
     radiusProgress.set(0);
+    projectRayOnSurfaceProgress.set(0);
+    normalisationProgress.set(0);
 
-    animate(radiusProgress, 1, {
-      duration: 1,
-      ease: "linear",
+    currentAnimation.current = animate(xAxisRotation, 90, {
+      type: "spring",
+      stiffness: 100,
+      damping: 30,
+      mass: 1,
     });
+    await currentAnimation.current;
 
-    // bezelHeightFn.set((x: number) => {
-    //   return Math.sqrt(1 - (1 - x) ** 2);
-    // });
+    bezelHeightFn_target.set((x: number) => {
+      return Math.sqrt(1 - (1 - x) ** 2);
+    });
+    await bezelHeightFn_interpolationProgress.animation!.finished;
 
-    // await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // await animate([
-    //   [
-    //     revolutionProgress,
-    //     1 - 1 / NUMBER_OF_RADIUSES,
-    //     { duration: 2, ease: "easeInOut" },
-    //   ],
-    // ]);
-
-    // bezelHeightFn.set((x: number) => {
-    //   const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-    //   const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-    //   const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-    //   const ratioCircle = 1 - smootherstep;
-    //   return circle * ratioCircle + sin * (1 - ratioCircle);
-    // });
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
-    // bezelHeightFn.set((x: number) => {
-    //   return 1 - Math.sqrt(1 - (1 - x) ** 2);
-    // });
+    currentAnimation.current = animate([
+      [radiusProgress, 1, { duration: 3, ease: "linear" }],
+      [
+        projectRayOnSurfaceProgress,
+        1,
+        { duration: 1, ease: "easeInOut", delay: 0.7 },
+      ],
+      [
+        normalisationProgress,
+        1,
+        { duration: 1, ease: "easeInOut", delay: 1.7 },
+      ],
+      [
+        xAxisRotation,
+        65,
+        { type: "spring", stiffness: 100, damping: 30, mass: 1, delay: 1.7 },
+      ],
+      [revolutionProgress, 1, { duration: 3, ease: "easeInOut" }],
+      [
+        xAxisRotation,
+        0,
+        { type: "spring", stiffness: 100, damping: 30, mass: 1 },
+      ],
+    ]);
+    await currentAnimation.current;
   }
 
   const borderX = centerX - radius;
@@ -95,17 +167,28 @@ export const DisplacementVectorField: React.FC<
 
   return (
     <div className="relative">
-      <svg viewBox="0 0 400 300" className="w-full h-full">
+      <svg
+        viewBox="0 0 400 300"
+        className="w-full h-full"
+        transform="translate(0, 0)"
+      >
         <defs>
           <marker
-            id="arrow"
+            id="arrow-displacement-vector-field"
+            viewBox="0 0 4 4"
             markerWidth="4"
             markerHeight="4"
             refX="0"
             refY="2"
             orient="auto"
+            markerUnits="strokeWidth"
           >
-            <polygon points="0 0, 4 2, 0 4" fill="context-stroke" />
+            <path
+              d="M0,0 L4,2 L0,4 Z"
+              stroke="inherit"
+              strokeWidth={5}
+              fill="context-stroke"
+            />
           </marker>
 
           <motion.g id="radiusOfVectors">
@@ -116,34 +199,28 @@ export const DisplacementVectorField: React.FC<
                   Math.min(
                     1,
                     (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
-                      (i / NUMBER_OF_VECTORS_PER_RADIUS)
+                      (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
                   )
                 )
               );
-
-              currentVectorProgress.on("change", (v) => {
-                if (i === 0) console.log("Current opacity:", v);
-              });
-
+              const refractedRayProgress = transformValue(() =>
+                Math.max(0, Math.min(1, currentVectorProgress.get() * 2 - 0.5))
+              );
               const index =
                 ((displacementMap.get().length * i) /
                   NUMBER_OF_VECTORS_PER_RADIUS) |
                 0;
-
-              const magnitude = springValue(
-                transformValue(
-                  () =>
-                    currentVectorProgress.get() * displacementMap.get()[index]
-                ),
-                {
-                  stiffness: 100,
-                  damping: 30,
-                  mass: 1,
-                }
+              const magnitude = transformValue(
+                () => refractedRayProgress.get() * displacementMap.get()[index]
               );
-              const magnitudeScaled = transformValue(
-                () => ((magnitude.get() / maximumDisplacement.get()) * plot) / 2
-              );
+              const magnitudeScaled = transformValue(() => {
+                const scale =
+                  1 /
+                  (1 +
+                    (maximumDisplacement.get() - 1) *
+                      normalisationProgress.get() ** 2);
+                return (magnitude.get() * scale * plot) / 2;
+              });
               const color = transformValue(
                 () =>
                   `hsl(${
@@ -156,28 +233,48 @@ export const DisplacementVectorField: React.FC<
                   0.8 +
                   Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
               );
-              const x2 = transformValue(
-                () => borderX + plot * i + magnitudeScaled.get()
+              const x1 = borderX + plot * i;
+              const y1 = transformValue(
+                () =>
+                  centerY -
+                  bezelWidth *
+                    bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS) *
+                    (1 - projectRayOnSurfaceProgress.get())
               );
-
+              const x2 = transformValue(() => x1 + magnitudeScaled.get());
+              const y2 = transformValue(
+                () =>
+                  y1.get() + (borderY - y1.get()) * refractedRayProgress.get()
+              );
               return (
                 <motion.line
                   key={i}
-                  x1={borderX + plot * i}
-                  y1={borderY}
+                  x1={x1}
+                  y1={y1}
                   x2={x2}
-                  y2={borderY}
+                  y2={y2}
                   stroke={color}
                   strokeWidth={strokeWidth}
                   opacity={currentVectorProgress}
-                  markerEnd="url(#arrow)"
+                  strokeLinecap={"round"}
+                  markerEnd="url(#arrow-displacement-vector-field)"
                 />
               );
             })}
           </motion.g>
         </defs>
 
-        <motion.g transform={`translate(0, 0)`}>
+        <motion.g
+          className="[transform-style:preserve-3d]"
+          style={{
+            transformOrigin: "50% 50%",
+            transformBox: "view-box",
+            rotateX: xAxisRotation,
+            translateY: 0,
+            translateZ: 0,
+            scale: 1,
+          }}
+        >
           <circle
             cx={canvasWidth / 2}
             cy={canvasHeight / 2}
@@ -202,7 +299,7 @@ export const DisplacementVectorField: React.FC<
                 href="#radiusOfVectors"
                 style={{
                   opacity: transformValue(() =>
-                    j === 0 || radiusProgress.get() === 1 ? 1 : 0
+                    radiusProgress.get() === 1 ? 1 : 0
                   ),
                   rotate: transformValue(() => `${angle.get()}rad`),
                   transformOrigin: `${centerX}px ${centerY}px`,
@@ -212,67 +309,126 @@ export const DisplacementVectorField: React.FC<
             );
           })}
         </motion.g>
+
+        <motion.g
+          className="[transform-style:preserve-3d]"
+          style={{
+            transformOrigin: "bottom center",
+            transformBox: "view-box",
+            rotateX: useTransform(() => xAxisRotation.get() - 90),
+            rotateY: useTransform(() => revolutionProgress.get() * -360),
+            translateY: 0,
+            translateZ: 0,
+            scale: 1,
+          }}
+        >
+          <motion.path
+            d={surfacePath}
+            className="stroke-slate-400/40 dark:stroke-slate-400/50 fill-slate-200/80 dark:fill-slate-600/80"
+            strokeWidth={1}
+          />
+
+          {Array.from({ length: NUMBER_OF_VECTORS_PER_RADIUS }, (_, i) => {
+            const currentVectorProgress = transformValue(() =>
+              Math.max(
+                0,
+                Math.min(
+                  1,
+                  (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
+                    (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
+                )
+              )
+            );
+            const incidentRayProgress = transformValue(() =>
+              Math.min(1, currentVectorProgress.get() * 2)
+            );
+
+            const x1 = borderX + plot * i;
+            const y1 = 0;
+            const x2 = x1;
+            const y2 = transformValue(
+              () =>
+                centerY -
+                bezelWidth *
+                  bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS)
+            );
+            const incidentRayLength = transformValue(() =>
+              Math.sqrt((x2 - x1) ** 2 + (y2.get() - y1) ** 2)
+            );
+
+            return (
+              <>
+                <motion.line
+                  key={i}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke="red"
+                  strokeWidth={1}
+                  strokeDasharray={incidentRayLength}
+                  strokeDashoffset={transformValue(
+                    () =>
+                      incidentRayLength.get() *
+                      (1 - incidentRayProgress.get() * 2)
+                  )}
+                  opacity={currentVectorProgress}
+                />
+              </>
+            );
+          })}
+        </motion.g>
+
+        <motion.g
+          className="[transform-style:preserve-3d]"
+          style={{
+            transformOrigin: "bottom center",
+            transformBox: "view-box",
+            rotateX: useTransform(() => xAxisRotation.get() - 90),
+            rotateY: useTransform(() => revolutionProgress.get() * -360),
+            translateY: 0,
+            translateZ: 0,
+            scale: 1,
+          }}
+        >
+          <motion.use
+            href="#radiusOfVectors"
+            style={{
+              transformOrigin: `${centerX}px ${centerY}px`,
+              transformBox: "view-box",
+            }}
+          />
+        </motion.g>
       </svg>
 
-      <div className="absolute bottom-4 right-4 flex items-end justify-center gap-2">
+      <div className="absolute bottom-0 right-4 flex items-end justify-center gap-2">
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => {
-            animate(revolutionProgress, 1, {
-              duration: 2,
-              ease: "easeInOut",
-            });
-          }}
+          onClick={() => bezelHeightFn_target.set(CONVEX_BEZEL_FN)}
         >
-          <FanIcon
+          <SplineIcon
             size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-0"
           />
         </button>
 
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => {
-            bezelHeightFn.set((x) => {
-              return 1 - Math.sqrt(1 - (1 - x) ** 2);
-            });
-          }}
+          onClick={() => bezelHeightFn_target.set(CONCAVE_BEZEL_FN)}
         >
-          <CogIcon
+          <SplineIcon
             size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-270"
           />
         </button>
 
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => {
-            bezelHeightFn.set((x) => {
-              const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-              const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-              const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-              const ratioCircle = 1 - smootherstep;
-              return circle * ratioCircle + sin * (1 - ratioCircle);
-            });
-          }}
+          onClick={() => bezelHeightFn_target.set(LIP_BEZEL_FN)}
         >
-          <CogIcon
+          <SplineIcon
             size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
-          />
-        </button>
-
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => {
-            bezelHeightFn.set((x) => {
-              return Math.sqrt(1 - (1 - x) ** 2);
-            });
-          }}
-        >
-          <BoxIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
+            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-45"
           />
         </button>
 
