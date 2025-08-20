@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "packageManager": "pnpm@10.15.0",
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",

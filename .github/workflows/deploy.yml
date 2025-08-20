@@ -10,9 +10,6 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    env:
-      npm_config_build_from_source: true
-      CI: true
     strategy:
       matrix:
         node-version: [20]
@@ -31,14 +28,7 @@ jobs:
             libjpeg-turbo8 \
             libgif-dev \
             libgif7 \
-            librsvg2-dev \
-            libpixman-1-dev \
-            libfreetype6-dev \
-            libpng-dev \
-            pkg-config \
-            python3
-          pkg-config --cflags --libs cairo pango || true
-          ldconfig -p | grep -E "cairo|pango|jpeg|gif|rsvg" || true
+            librsvg2-dev
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -51,15 +41,7 @@ jobs:
 
       - name: Install
         run: |
-          pnpm approve-builds @tailwindcss/oxide canvas esbuild sharp
           pnpm install --ignore-scripts=false
-
-      - name: Rebuild canvas (ensure native binding)
-        run: |
-          node -p "process.versions" || true
-          pnpm rebuild canvas || (echo 'canvas rebuild failed' && exit 1)
-          find node_modules -path "*canvas.node" -maxdepth 6 -print || echo 'canvas.node not found'
-          ls -R node_modules/.pnpm/canvas@*/node_modules/canvas 2>/dev/null | sed -n '1,120p' || true
 
       - name: Build
         run: pnpm run build
