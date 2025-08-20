@@ -3,9 +3,10 @@ title: Retrocompatible CSS Scroll-Timeline Animations
 slug: retrocompatible-css-scroll-timeline-animations
 date: 2025-06-05
 description: Exploring how to use CSS Scroll-Timeline and View Transitions to replace scroll-related animations previously done with JavaScript.
+published: false
 ---
 
-import { FunctionPreview } from './FunctionPreview.tsx'
+import { FunctionPreview } from "./FunctionPreview.tsx";
 
 I didn’t expect my first blog post to be about CSS—but here we are.
 
@@ -13,16 +14,14 @@ For years, I relied on Framer Motion to handle animations triggered on scroll.
 Recently, I migrated my website to use an emerging CSS feature: **Scroll-Timeline**.
 This post explains why and how I did it, how I kept a fallback in place using `motion`, and how I used CSS variables to simplify both coding and retro-compatibility.
 
-
-
 Here we need multiple variables that are all derived from scroll. For the purpose of a simple example, I will just show a few in this article.
 
 ## Why Replace `motion`?
 
-
 While `motion` is a great library for complex/interactive animations (still use it to animate the logo for instance), I wanted to move scroll-based logic out of JavaScript and into CSS.
 
 This brings:
+
 - Better performance (no reflows or DOM updates on scroll)
 - Simpler code
 - Native CSS animations that follow the browser's rendering pipeline
@@ -32,14 +31,12 @@ This brings:
 The base of the solution here, to tackle both retro-compatibility and reducing quantity of code, is to:
 
 - Have a `--scroll-progress-root` CSS variable exposing the current scroll.
-  - If 
-
+  - If
 
 Instead of
 
-
 ```css
-@keyframes 
+@keyframes;
 ```
 
 To expose the scroll as a variable, I define a CSS custom property and animate it:
@@ -102,8 +99,14 @@ All style logic is now driven by CSS variables—either animated directly with S
 I used different scroll/view mappings to animate properties like height and opacity. Here are some examples:
 
 <FunctionPreview
-  viewport={[[0, 200], [0, 150]]}
-  affineMap={[[50, 150], [130, 60]]}
+  viewport={[
+    [0, 200],
+    [0, 150],
+  ]}
+  affineMap={[
+    [50, 150],
+    [130, 60],
+  ]}
 />
 
 ## Clamped Linear Ramps
@@ -133,6 +136,7 @@ If you want a more natural animation, you can use smoothstep-like functions:
 Is all of this overkill for a simple scroll animation? Maybe.
 
 But it was a great opportunity to:
+
 - Learn how to use Scroll-Timeline
 - Practice function mapping
 - Avoid unnecessary JavaScript

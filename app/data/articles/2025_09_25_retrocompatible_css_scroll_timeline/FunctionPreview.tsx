@@ -8,8 +8,8 @@ import {
   useTransform,
 } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { LogoStatic } from "../../components/Logo";
-import { cn } from "../../utils";
+import { LogoStatic } from "../../../components/Logo";
+import { cn } from "../../../utils";
 
 type FunctionPreviewProps = {
   affineMap: [[number, number], [number, number]];

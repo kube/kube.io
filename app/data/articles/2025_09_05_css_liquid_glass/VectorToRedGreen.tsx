@@ -176,19 +176,43 @@ export const VectorToRedGreen: React.FC = () => {
             width={squareSize}
             height={squareSize}
             rx={4}
-            fill={redColor as unknown as string}
+            fill={redColor}
             stroke="currentColor"
             className="stroke-slate-900/40 dark:stroke-slate-300/40"
             style={{ fill: redColor as unknown as string }}
           />
           <motion.text
-            x={squaresStartX + squareSize / 2}
-            y={squaresStartY + squareSize + 14}
-            textAnchor="middle"
+            x={squaresStartX + squareSize + 11}
+            y={squaresStartY + 10}
+            textAnchor="left"
             className="fill-slate-800 dark:fill-slate-200"
           >
-            Red
+            Red (X-axis)
           </motion.text>
+          <rect
+            x={squaresStartX + squareSize * 1.5 - 3}
+            y={squaresStartY + 15}
+            width={squareSize * 3}
+            height={squareSize / 3}
+            rx={5}
+            fill="none"
+            stroke="currentColor"
+            className="stroke-slate-900/40 dark:stroke-slate-300/40"
+          />
+          <motion.circle
+            cx={useTransform(
+              () =>
+                squaresStartX +
+                squareSize * 1.5 +
+                squareSize * 2.75 * redIntensity.get()
+            )}
+            cy={squaresStartY + 20}
+            r={squareSize / 6}
+            fill={redColor}
+            stroke="currentColor"
+            className="stroke-slate-900/40 dark:stroke-slate-300/40"
+          />
+
           {/* Green */}
           <motion.rect
             x={squaresStartX}
@@ -196,19 +220,43 @@ export const VectorToRedGreen: React.FC = () => {
             width={squareSize}
             height={squareSize}
             rx={4}
-            fill={greenColor as unknown as string}
+            fill={greenColor}
             stroke="currentColor"
             className="stroke-slate-900/40 dark:stroke-slate-300/40"
             style={{ fill: greenColor as unknown as string }}
           />
           <motion.text
-            x={squaresStartX + squareSize / 2}
-            y={squaresStartY + squareSize * 2 + 54}
-            textAnchor="middle"
+            x={squaresStartX + squareSize + 11}
+            y={squaresStartY + squareSize + 40 + 10}
+            textAnchor="left"
             className="fill-slate-800 dark:fill-slate-200"
           >
-            Green
+            Green (Y-axis)
           </motion.text>
+          <rect
+            x={squaresStartX + squareSize * 1.5 - 3}
+            y={squaresStartY + squareSize + 40 + 15}
+            width={squareSize * 3}
+            height={squareSize / 3}
+            rx={5}
+            fill="none"
+            stroke="currentColor"
+            className="stroke-slate-900/40 dark:stroke-slate-300/40"
+          />
+          <motion.circle
+            cx={useTransform(
+              () =>
+                squaresStartX +
+                squareSize * 1.5 +
+                squareSize * 2.75 * greenIntensity.get()
+            )}
+            cy={squaresStartY + squareSize + 40 + 20}
+            r={squareSize / 6}
+            fill={greenColor}
+            stroke="currentColor"
+            className="stroke-slate-900/40 dark:stroke-slate-300/40"
+          />
+
           {/* Blended */}
           <motion.rect
             x={squaresStartX}
@@ -222,9 +270,9 @@ export const VectorToRedGreen: React.FC = () => {
             style={{ fill: blendedColor as unknown as string }}
           />
           <motion.text
-            x={squaresStartX + squareSize / 2}
-            y={squaresStartY + (squareSize + 40) * 2 + squareSize + 14}
-            textAnchor="middle"
+            x={squaresStartX + squareSize + 11}
+            y={squaresStartY + (squareSize + 40) * 2 + 19}
+            textAnchor="left"
             className="fill-slate-800 dark:fill-slate-200"
           >
             Result
