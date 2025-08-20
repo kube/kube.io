@@ -15,20 +15,6 @@ jobs:
         node-version: [20]
     steps:
       - uses: actions/checkout@v4
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            libcairo2-dev \
-            libcairo2 \
-            libpango1.0-dev \
-            libpangocairo-1.0-0 \
-            libjpeg-dev \
-            libjpeg-turbo8 \
-            libgif-dev \
-            libgif7 \
-            librsvg2-dev
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
