@@ -23,7 +23,6 @@ export default {
 
       "/blog",
       ...POSTS.map((post) => `/blog/${post.slug}`),
-      "/blog/imageResizer",
 
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];

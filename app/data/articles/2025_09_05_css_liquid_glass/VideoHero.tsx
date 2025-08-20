@@ -17,14 +17,7 @@ function ResizedUnsplashUrl(
     y?: string;
   }
 ): string {
-  const searchParams = new URLSearchParams();
-  if (id) searchParams.set("id", id);
-  if (width) searchParams.set("width", width);
-  if (height) searchParams.set("height", height);
-  if (y) searchParams.set("y", y);
-  if (x) searchParams.set("x", x);
-  searchParams.set("format", "jpeg");
-  return "/blog/imageResizer?" + searchParams.toString();
+  return `https://images.unsplash.com/${id}?fit=crop&w=${width}&h=${height}&crop=center`;
 }
 
 export const VideoHero: React.FC = () => {
@@ -73,8 +66,7 @@ export const VideoHero: React.FC = () => {
         className="relative aspect-[5/3] w-full overflow-hidden rounded-xl bg-red-300 flex items-center justify-center"
         style={{
           backgroundImage: `url(${ResizedUnsplashUrl(unsplashPhotoId, {
-            y: "0%",
-            width: "100%",
+            width: "1000",
           })})`,
           backgroundSize: "cover",
           backgroundPositionY: backgroundParallaxOffset,
@@ -108,9 +100,8 @@ export const VideoHero: React.FC = () => {
           <g filter={`url(#${filterId})`}>
             <motion.image
               href={ResizedUnsplashUrl(unsplashPhotoId, {
-                width: "30%",
-                y: "4%",
-                x: "35%",
+                width: "800",
+                // height: "600",
               })}
               width="100%"
               preserveAspectRatio="xMidYMid slice"
