@@ -3,15 +3,15 @@ import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import * as React from "react";
 
 export const VectorToRedGreen: React.FC = () => {
-  const width = 400;
+  const width = 300;
   const height = 300;
 
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const vectorCenterX = centerX / 2;
+  const vectorCenterX = centerX;
   const vectorCenterY = centerY;
-  const radius = 90;
+  const radius = 130;
   // Motion values for interactive angle & magnitude
   const magnitude = useMotionValue(radius);
   const angle = useMotionValue(Math.PI / 4);
@@ -95,25 +95,43 @@ export const VectorToRedGreen: React.FC = () => {
     () => `hsl(${180 + (magnitude.get() / radius) * 100},95%,45%)`
   );
   const vectorStrokeWidth = useTransform(
-    () => 1 + (magnitude.get() / radius) * 3
+    () => 1.5 + (magnitude.get() / radius) * 4
   );
 
-  // Layout for color squares on right half
-  const squareSize = 30;
-  const squaresStartX = centerX + 50; // ensure on right half
-  const squaresStartY = 60;
+  const currentAnimation = React.useRef<ReturnType<typeof animate> | null>(
+    null
+  );
 
   function startAnimation() {
-    // Smoothly animate back
-    animate([
+    currentAnimation.current?.stop();
+
+    currentAnimation.current = animate([
+      "Rotate around",
+      [magnitude, radius, { duration: 0.4, ease: "easeInOut" }],
+      [angle, Math.PI / 2, { duration: 1.6, ease: "easeInOut" }],
+      "Animate Y axis",
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 1.5, { duration: 0.01 }],
       [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      [angle, Math.PI / 4, { duration: 0.4, ease: "easeOut" }],
-      [angle, Math.PI, { duration: 0.4, ease: "easeOut" }],
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 2.5, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
+      "Center",
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      "Animate X axis",
+      [angle, Math.PI * 2, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeInOut" }],
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 1, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 2, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
     ]);
   }
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full grid grid-cols-2 select-none">
       <motion.svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing"
@@ -131,7 +149,7 @@ export const VectorToRedGreen: React.FC = () => {
             refY="2"
             orient="auto"
           >
-            <polygon points="0 0, 4 2, 0 4" fill="context-stroke" />
+            <motion.polygon points="0 0, 4 2, 0 4" fill={vectorColor} />
           </marker>
           <marker
             id="dot-vrg"
@@ -141,7 +159,7 @@ export const VectorToRedGreen: React.FC = () => {
             refY="1"
             orient="auto"
           >
-            <circle cx="1" cy="1" r="1" fill="context-stroke" />
+            <motion.circle cx="1" cy="1" r="1" fill={vectorColor} />
           </marker>
         </defs>
 
@@ -166,119 +184,70 @@ export const VectorToRedGreen: React.FC = () => {
             stroke={vectorColor}
           />
         </g>
-
-        {/* Color squares representing channel intensities */}
-        <g fontFamily="system-ui, sans-serif" fontSize={12}>
-          {/* Red */}
-          <motion.rect
-            x={squaresStartX}
-            y={squaresStartY}
-            width={squareSize}
-            height={squareSize}
-            rx={4}
-            fill={redColor}
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-            style={{ fill: redColor as unknown as string }}
-          />
-          <motion.text
-            x={squaresStartX + squareSize + 11}
-            y={squaresStartY + 10}
-            textAnchor="left"
-            className="fill-slate-800 dark:fill-slate-200"
-          >
-            Red (X-axis)
-          </motion.text>
-          <rect
-            x={squaresStartX + squareSize * 1.5 - 3}
-            y={squaresStartY + 15}
-            width={squareSize * 3}
-            height={squareSize / 3}
-            rx={5}
-            fill="none"
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-          />
-          <motion.circle
-            cx={useTransform(
-              () =>
-                squaresStartX +
-                squareSize * 1.5 +
-                squareSize * 2.75 * redIntensity.get()
-            )}
-            cy={squaresStartY + 20}
-            r={squareSize / 6}
-            fill={redColor}
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-          />
-
-          {/* Green */}
-          <motion.rect
-            x={squaresStartX}
-            y={squaresStartY + squareSize + 40}
-            width={squareSize}
-            height={squareSize}
-            rx={4}
-            fill={greenColor}
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-            style={{ fill: greenColor as unknown as string }}
-          />
-          <motion.text
-            x={squaresStartX + squareSize + 11}
-            y={squaresStartY + squareSize + 40 + 10}
-            textAnchor="left"
-            className="fill-slate-800 dark:fill-slate-200"
-          >
-            Green (Y-axis)
-          </motion.text>
-          <rect
-            x={squaresStartX + squareSize * 1.5 - 3}
-            y={squaresStartY + squareSize + 40 + 15}
-            width={squareSize * 3}
-            height={squareSize / 3}
-            rx={5}
-            fill="none"
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-          />
-          <motion.circle
-            cx={useTransform(
-              () =>
-                squaresStartX +
-                squareSize * 1.5 +
-                squareSize * 2.75 * greenIntensity.get()
-            )}
-            cy={squaresStartY + squareSize + 40 + 20}
-            r={squareSize / 6}
-            fill={greenColor}
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-          />
-
-          {/* Blended */}
-          <motion.rect
-            x={squaresStartX}
-            y={squaresStartY + (squareSize + 40) * 2}
-            width={squareSize}
-            height={squareSize}
-            rx={4}
-            fill={blendedColor as unknown as string}
-            stroke="currentColor"
-            className="stroke-slate-900/40 dark:stroke-slate-300/40"
-            style={{ fill: blendedColor as unknown as string }}
-          />
-          <motion.text
-            x={squaresStartX + squareSize + 11}
-            y={squaresStartY + (squareSize + 40) * 2 + 19}
-            textAnchor="left"
-            className="fill-slate-800 dark:fill-slate-200"
-          >
-            Result
-          </motion.text>
-        </g>
       </motion.svg>
+
+      <div className="flex items-center justify-center relative">
+        <div className="grid grid-cols-[auto_1fr] gap-4 w-full items-start px-4 py-8">
+          <div className="flex items-center justify-center">
+            <motion.div
+              className="w-8 h-8 rounded"
+              style={{ backgroundColor: redColor }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="font-medium mb-2">
+              Red
+              <span className="text-sm opacity-60"> (X axis)</span>
+            </div>
+            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full">
+              <motion.div
+                className="absolute inset-0 rounded"
+                style={{
+                  backgroundColor: redColor,
+                  width: useTransform(() => `${redIntensity.get() * 100}%`),
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <motion.div
+              className="w-8 h-8 rounded"
+              style={{ backgroundColor: greenColor }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="font-medium mb-2">
+              Green
+              <span className="text-sm opacity-60"> (Y axis)</span>
+            </div>
+            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full">
+              <motion.div
+                className="absolute inset-0 rounded"
+                style={{
+                  backgroundColor: greenColor,
+                  width: useTransform(() => `${greenIntensity.get() * 100}%`),
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <motion.div
+              className="w-8 h-8 rounded"
+              style={{
+                backgroundColor: blendedColor,
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="font-medium mb-2">
+              Result
+              <span className="text-sm opacity-60"> (Blended)</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <button
         className="group absolute bottom-4 right-4 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
