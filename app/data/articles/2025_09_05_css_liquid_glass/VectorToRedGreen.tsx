@@ -1,8 +1,20 @@
 import { RotateCcwIcon } from "lucide-react";
-import { animate, motion, useMotionValue, useTransform } from "motion/react";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import * as React from "react";
 
 export const VectorToRedGreen: React.FC = () => {
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const isInView = useInView(wrapperRef, { once: true, amount: 1 });
+  React.useEffect(() => {
+    if (isInView) startAnimation();
+  }, [isInView]);
+
   const width = 300;
   const height = 300;
 
@@ -113,9 +125,6 @@ export const VectorToRedGreen: React.FC = () => {
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       [angle, Math.PI * 1.5, { duration: 0.01 }],
       [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 2.5, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
       "Center",
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       "Animate X axis",
@@ -124,14 +133,14 @@ export const VectorToRedGreen: React.FC = () => {
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       [angle, Math.PI * 1, { duration: 0.01 }],
       [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 2, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
     ]);
   }
 
   return (
-    <div className="relative w-full h-full grid grid-cols-2 select-none">
+    <div
+      ref={wrapperRef}
+      className="relative w-full h-full grid grid-cols-2 select-none"
+    >
       <motion.svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing"
