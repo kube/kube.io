@@ -2,12 +2,14 @@ import { RotateCcwIcon, SplineIcon } from "lucide-react";
 import { animate } from "motion";
 import {
   AnimationPlaybackControlsWithThen,
+  clamp,
   motion,
   transformValue,
+  useInView,
   useMotionValue,
   useTransform,
 } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { calculateDisplacementMap } from "./displacementMap";
 
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
@@ -29,6 +31,12 @@ type DisplacementVectorFieldProps = {
 export const DisplacementVectorField: React.FC<
   DisplacementVectorFieldProps
 > = ({ glassThickness = 20, refractiveIndex = 1.5 }) => {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const isInView = useInView(wrapperRef, { once: true, amount: 1 });
+  useEffect(() => {
+    if (isInView) startAnimation();
+  }, [isInView]);
+
   const bezelWidth = 120;
 
   // Bezel Height Function (interpolated with animation on change)
@@ -81,12 +89,11 @@ export const DisplacementVectorField: React.FC<
 
   const radius = 130;
 
-  const radiusProgress = useMotionValue(0);
-  const projectRayOnSurfaceProgress = useMotionValue(0);
-  const normalisationProgress = useMotionValue(0);
-  const revolutionProgress = useMotionValue(0);
-
-  const xAxisRotation = useMotionValue(90);
+  const xAxisRotation = useMotionValue(0);
+  const radiusProgress = useMotionValue(1);
+  const projectRayOnSurfaceProgress = useMotionValue(1);
+  const normalisationProgress = useMotionValue(1);
+  const revolutionProgress = useMotionValue(1);
 
   const NUMBER_OF_SAMPLES = 64;
 
@@ -110,7 +117,7 @@ export const DisplacementVectorField: React.FC<
 
   const currentAnimation = useRef<AnimationPlaybackControlsWithThen>(null);
 
-  async function startAnimation() {
+  function startAnimation() {
     currentAnimation.current?.stop();
 
     revolutionProgress.set(0);
@@ -118,44 +125,15 @@ export const DisplacementVectorField: React.FC<
     projectRayOnSurfaceProgress.set(0);
     normalisationProgress.set(0);
 
-    currentAnimation.current = animate(xAxisRotation, 90, {
-      type: "spring",
-      stiffness: 100,
-      damping: 30,
-      mass: 1,
-    });
-    await currentAnimation.current;
-
-    bezelHeightFn_target.set((x: number) => {
-      return Math.sqrt(1 - (1 - x) ** 2);
-    });
-    await bezelHeightFn_interpolationProgress.animation!.finished;
-
     currentAnimation.current = animate([
-      [radiusProgress, 1, { duration: 3, ease: "linear" }],
-      [
-        projectRayOnSurfaceProgress,
-        1,
-        { duration: 1, ease: "easeInOut", delay: 0.7 },
-      ],
-      [
-        normalisationProgress,
-        1,
-        { duration: 1, ease: "easeInOut", delay: 1.7 },
-      ],
-      [
-        xAxisRotation,
-        65,
-        { type: "spring", stiffness: 100, damping: 30, mass: 1, delay: 1.7 },
-      ],
-      [revolutionProgress, 1, { duration: 3, ease: "easeInOut" }],
-      [
-        xAxisRotation,
-        0,
-        { type: "spring", stiffness: 100, damping: 30, mass: 1 },
-      ],
+      [xAxisRotation, 90, { type: "spring", duration: 0.6, bounce: 0.13 }],
+      [radiusProgress, 1, { duration: 2, ease: "linear" }],
+      [projectRayOnSurfaceProgress, 1, { duration: 0.6, ease: "easeInOut" }],
+      [normalisationProgress, 1, { duration: 0.8, ease: "easeInOut" }],
+      [xAxisRotation, 65, { type: "spring", duration: 1, bounce: 0.13 }],
+      [revolutionProgress, 1, { duration: 2, ease: "easeInOut" }],
+      [xAxisRotation, 0, { type: "spring", duration: 1, bounce: 0.13 }],
     ]);
-    await currentAnimation.current;
   }
 
   const borderX = centerX - radius;
@@ -165,102 +143,114 @@ export const DisplacementVectorField: React.FC<
     ((centerX - borderX) * (bezelWidth / radius)) /
     NUMBER_OF_VECTORS_PER_RADIUS;
 
+  const vectorsInRadius = Array.from(
+    { length: NUMBER_OF_VECTORS_PER_RADIUS },
+    (_, i) => {
+      const currentVectorProgress = transformValue(() =>
+        Math.max(
+          0,
+          Math.min(
+            1,
+            (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
+              (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
+          )
+        )
+      );
+      const refractedRayProgress = transformValue(() =>
+        Math.max(0, Math.min(1, currentVectorProgress.get() * 2 - 0.5))
+      );
+      const index =
+        ((displacementMap.get().length * i) / NUMBER_OF_VECTORS_PER_RADIUS) | 0;
+      const magnitude = transformValue(
+        () => refractedRayProgress.get() * displacementMap.get()[index]
+      );
+      const magnitudeScaled = transformValue(() => {
+        const scale =
+          1 /
+          (1 +
+            (maximumDisplacement.get() - 1) * normalisationProgress.get() ** 2);
+        return (magnitude.get() * scale * plot) / 2;
+      });
+      const display = transformValue(() =>
+        currentVectorProgress.get() > 0 ? "block" : "none"
+      );
+      const color = transformValue(
+        () =>
+          `hsl(${
+            180 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 90
+          },95%,45%)`
+      );
+      const strokeWidth = transformValue(
+        () => 0.8 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
+      );
+      const x1 = borderX + plot * i;
+      const y1 = transformValue(
+        () =>
+          centerY -
+          bezelWidth *
+            bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS) *
+            (1 - projectRayOnSurfaceProgress.get())
+      );
+      const x2 = transformValue(() => x1 + magnitudeScaled.get());
+      const y2 = transformValue(
+        () => y1.get() + (borderY - y1.get()) * refractedRayProgress.get()
+      );
+      return {
+        color,
+        x1,
+        x2,
+        y1,
+        y2,
+        currentVectorProgress,
+        strokeWidth,
+        display,
+      };
+    }
+  );
+
   return (
-    <div className="relative">
+    <div ref={wrapperRef} className="relative">
       <svg
         viewBox="0 0 400 300"
         className="w-full h-full"
         transform="translate(0, 0)"
       >
         <defs>
-          <marker
-            id="arrow-displacement-vector-field"
-            viewBox="0 0 4 4"
-            markerWidth="4"
-            markerHeight="4"
-            refX="0"
-            refY="2"
-            orient="auto"
-            markerUnits="strokeWidth"
-          >
-            <path
-              d="M0,0 L4,2 L0,4 Z"
-              stroke="inherit"
-              strokeWidth={5}
-              fill="context-stroke"
-            />
-          </marker>
+          {
+            // Safari compatibility: Create markers for each vector in the radius.
+            // markerEnd does not inherit stroke color in Safari.
+            vectorsInRadius.map((_, i) => (
+              <marker
+                key={i}
+                id={`arrow-displacement-vector-field-${i}`}
+                viewBox="0 0 4 4"
+                markerWidth="4"
+                markerHeight="4"
+                refX="0"
+                refY="2"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <motion.path d="M0,0 L4,2 L0,4 Z" fill={_.color} />
+              </marker>
+            ))
+          }
 
           <motion.g id="radiusOfVectors">
-            {Array.from({ length: NUMBER_OF_VECTORS_PER_RADIUS }, (_, i) => {
-              const currentVectorProgress = transformValue(() =>
-                Math.max(
-                  0,
-                  Math.min(
-                    1,
-                    (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
-                      (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
-                  )
-                )
-              );
-              const refractedRayProgress = transformValue(() =>
-                Math.max(0, Math.min(1, currentVectorProgress.get() * 2 - 0.5))
-              );
-              const index =
-                ((displacementMap.get().length * i) /
-                  NUMBER_OF_VECTORS_PER_RADIUS) |
-                0;
-              const magnitude = transformValue(
-                () => refractedRayProgress.get() * displacementMap.get()[index]
-              );
-              const magnitudeScaled = transformValue(() => {
-                const scale =
-                  1 /
-                  (1 +
-                    (maximumDisplacement.get() - 1) *
-                      normalisationProgress.get() ** 2);
-                return (magnitude.get() * scale * plot) / 2;
-              });
-              const color = transformValue(
-                () =>
-                  `hsl(${
-                    180 +
-                    Math.abs(magnitude.get() / maximumDisplacement.get()) * 90
-                  },95%,45%)`
-              );
-              const strokeWidth = transformValue(
-                () =>
-                  0.8 +
-                  Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
-              );
-              const x1 = borderX + plot * i;
-              const y1 = transformValue(
-                () =>
-                  centerY -
-                  bezelWidth *
-                    bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS) *
-                    (1 - projectRayOnSurfaceProgress.get())
-              );
-              const x2 = transformValue(() => x1 + magnitudeScaled.get());
-              const y2 = transformValue(
-                () =>
-                  y1.get() + (borderY - y1.get()) * refractedRayProgress.get()
-              );
-              return (
-                <motion.line
-                  key={i}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  opacity={currentVectorProgress}
-                  strokeLinecap={"round"}
-                  markerEnd="url(#arrow-displacement-vector-field)"
-                />
-              );
-            })}
+            {vectorsInRadius.map((_, i) => (
+              <motion.line
+                key={i}
+                x1={_.x1}
+                y1={_.y1}
+                x2={_.x2}
+                y2={_.y2}
+                stroke={_.color}
+                strokeWidth={_.strokeWidth}
+                display={_.display}
+                strokeLinecap={"round"}
+                markerEnd={`url(#arrow-displacement-vector-field-${i})`}
+              />
+            ))}
           </motion.g>
         </defs>
 
@@ -286,20 +276,20 @@ export const DisplacementVectorField: React.FC<
 
           {Array.from({ length: NUMBER_OF_RADIUSES }, (_, j) => {
             const angle = transformValue(() => {
-              const rotation = Math.min(
+              const rotation = clamp(
+                0,
                 1,
                 revolutionProgress.get() / (j / NUMBER_OF_RADIUSES)
               );
               return Math.PI * 2 * (j / NUMBER_OF_RADIUSES) * rotation;
             });
-
             return (
               <motion.use
                 key={j}
                 href="#radiusOfVectors"
                 style={{
-                  opacity: transformValue(() =>
-                    radiusProgress.get() === 1 ? 1 : 0
+                  display: transformValue(() =>
+                    radiusProgress.get() === 1 ? "block" : "none"
                   ),
                   rotate: transformValue(() => `${angle.get()}rad`),
                   transformOrigin: `${centerX}px ${centerY}px`,
@@ -328,43 +318,47 @@ export const DisplacementVectorField: React.FC<
             strokeWidth={1}
           />
 
-          {Array.from({ length: NUMBER_OF_VECTORS_PER_RADIUS }, (_, i) => {
-            const currentVectorProgress = transformValue(() =>
-              Math.max(
-                0,
-                Math.min(
-                  1,
-                  (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
-                    (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
+          {
+            // Render the incident rays for each vector in the radius.
+            Array.from({ length: NUMBER_OF_VECTORS_PER_RADIUS }, (_, i) => {
+              const currentVectorProgress = transformValue(() =>
+                Math.max(
+                  0,
+                  Math.min(
+                    1,
+                    (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
+                      (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
+                  )
                 )
-              )
-            );
-            const incidentRayProgress = transformValue(() =>
-              Math.min(1, currentVectorProgress.get() * 2)
-            );
+              );
+              const incidentRayProgress = transformValue(() =>
+                Math.min(1, currentVectorProgress.get() * 2)
+              );
 
-            const x1 = borderX + plot * i;
-            const y1 = 0;
-            const x2 = x1;
-            const y2 = transformValue(
-              () =>
-                centerY -
-                bezelWidth *
-                  bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS)
-            );
-            const incidentRayLength = transformValue(() =>
-              Math.sqrt((x2 - x1) ** 2 + (y2.get() - y1) ** 2)
-            );
+              const x1 = borderX + plot * i;
+              const y1 = 0;
+              const x2 = x1;
+              const y2 = transformValue(
+                () =>
+                  centerY -
+                  bezelWidth *
+                    bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS)
+              );
+              const incidentRayLength = transformValue(() =>
+                Math.sqrt((x2 - x1) ** 2 + (y2.get() - y1) ** 2)
+              );
 
-            return (
-              <>
+              return (
                 <motion.line
                   key={i}
                   x1={x1}
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke="red"
+                  stroke="hsl(180, 95%, 35%)"
+                  display={transformValue(() =>
+                    currentVectorProgress.get() > 0 ? "block" : "none"
+                  )}
                   strokeWidth={1}
                   strokeDasharray={incidentRayLength}
                   strokeDashoffset={transformValue(
@@ -374,9 +368,9 @@ export const DisplacementVectorField: React.FC<
                   )}
                   opacity={currentVectorProgress}
                 />
-              </>
-            );
-          })}
+              );
+            })
+          }
         </motion.g>
 
         <motion.g

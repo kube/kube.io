@@ -14,7 +14,9 @@ function calculateRefractionAngle(
 export const RefractionAnglesExplanation: React.FC = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const isInView = useInView(svgRef, { once: true, amount: 0.7 });
-  useEffect(startAnimation, [isInView]);
+  useEffect(() => {
+    if (isInView) startAnimation();
+  }, [isInView]);
 
   const FIRST_MEDIUM_REFRACTIVE_INDEX = 1; // Air
   const SECOND_MEDIUM_REFRACTIVE_INDEX = 1.5; // Glass
