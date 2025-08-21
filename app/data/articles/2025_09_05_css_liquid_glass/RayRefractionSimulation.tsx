@@ -2,6 +2,7 @@ import { RefreshCcw } from "lucide-react";
 import { animate } from "motion";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
+import { getRayColor } from "./rayColor";
 
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
 const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
@@ -38,17 +39,10 @@ function refract(
   return [-(eta * dot + kSqrt) * normalX, eta - (eta * dot + kSqrt) * normalY];
 }
 
-type RayRefractionSimulationProps = {
-  bezelHeightFn?: (x: number) => number;
-  bezelWidth?: number;
-  glassWidth?: number;
-  glassHeight?: number;
-  halfWidth?: boolean;
-};
+export const RayRefractionSimulation: React.FC = () => {
+  const glassWidth = 400;
+  const glassHeight = 200;
 
-export const RayRefractionSimulation: React.FC<
-  RayRefractionSimulationProps
-> = ({ glassWidth = 400, glassHeight = 200 }) => {
   const viewWidth = 600;
   const viewHeight = 300;
 
@@ -177,6 +171,42 @@ export const RayRefractionSimulation: React.FC<
     calculateRefraction(currentX.get(), refractionIndex.get())
   );
 
+  const maximumDisplacement = useTransform(() => {
+    let maxDisplacement = 0;
+    for (let i = 0; i < NUMBER_OF_SAMPLES; i++) {
+      const x = i / NUMBER_OF_SAMPLES;
+
+      const hit = getRayHit(glassX + x);
+      if (!hit) continue;
+      const refracted = refract(
+        hit.normal[0],
+        hit.normal[1],
+        refractionIndex.get()
+      );
+      if (!refracted) continue;
+      const displacement = Math.abs(hit.point[0] - refracted[0]);
+      if (displacement > maxDisplacement) {
+        maxDisplacement = displacement;
+      }
+    }
+    return maxDisplacement;
+  });
+
+  const displacementIntensity = useTransform(() => {
+    const { originX, refracted } = ray.get();
+    if (!refracted) return 0;
+    const displacement = Math.abs(refracted.x2 - originX);
+    const ratio = displacement / maximumDisplacement.get();
+    console.log("Displacement Ratio:", ratio);
+    return ratio;
+  });
+
+  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const displacementThickness = useTransform(
+    displacementIntensity,
+    (intensity) => 0.3 + intensity * 4
+  );
+
   const surfacePath = useTransform(() => {
     const bezelHeightFn_ = bezelHeightFn.get();
     const bezelWidth_ = bezelWidth.get();
@@ -225,6 +255,21 @@ export const RayRefractionSimulation: React.FC<
           currentX.set(xRatio * viewWidth);
         }}
       >
+        <defs>
+          <marker
+            id="arrow-displacement-vector"
+            viewBox="0 0 4 4"
+            markerWidth="4"
+            markerHeight="4"
+            refX="0"
+            refY="2"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <motion.path d="M0,0 L4,2 L0,4 Z" fill={displacementColor} />
+          </marker>
+        </defs>
+
         <motion.path
           d={surfacePath}
           className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/20"
@@ -253,14 +298,13 @@ export const RayRefractionSimulation: React.FC<
           x={0}
           y={viewHeight - backgroundHeight}
           rx={4}
-          className="fill-slate-900/80 dark:fill-slate-700/70"
+          className="fill-slate-400/10 dark:fill-slate-700/20"
         />
 
         <text
-          className="select-none opacity-50"
+          className="select-none opacity-30 fill-black dark:fill-white"
           x={backgroundWidth / 2}
           y={viewHeight - backgroundHeight / 2}
-          fill="white"
           fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -274,7 +318,7 @@ export const RayRefractionSimulation: React.FC<
           y1={0}
           x2={currentX}
           y2={useTransform(() => ray.get().hitPoint[1])}
-          stroke="blue"
+          stroke={getRayColor(0)}
           strokeWidth="3"
         />
 
@@ -289,7 +333,7 @@ export const RayRefractionSimulation: React.FC<
           y1={useTransform(ray, (_) => _.hitPoint[1])}
           x2={useTransform(ray, (_) => _.refracted?.x2 ?? 0)}
           y2={useTransform(ray, (_) => _.refracted?.y2 ?? 0)}
-          stroke="green"
+          stroke={getRayColor(0.3)}
           strokeWidth="3"
         />
 
@@ -299,7 +343,7 @@ export const RayRefractionSimulation: React.FC<
           y1={useTransform(() => ray.get().hitPoint[1])}
           x2={currentX}
           y2={viewHeight - backgroundHeight}
-          stroke="blue"
+          stroke={getRayColor(0)}
           strokeWidth="1"
           strokeDasharray="3"
           strokeOpacity="0.5"
@@ -312,14 +356,15 @@ export const RayRefractionSimulation: React.FC<
           y1={viewHeight - backgroundHeight}
           x2={useTransform(ray, (_) => _.refracted?.x2 ?? 0)}
           y2={viewHeight - backgroundHeight}
-          stroke="red"
-          strokeWidth="3"
+          stroke={displacementColor}
+          strokeWidth={displacementThickness}
           className="select-none"
           style={{
             display: useTransform(() =>
               ray.get().refracted ? "block" : "none"
             ),
           }}
+          markerEnd="url(#arrow-displacement-vector)"
         />
       </motion.svg>
 

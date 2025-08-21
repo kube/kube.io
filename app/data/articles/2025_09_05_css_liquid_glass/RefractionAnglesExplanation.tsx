@@ -2,6 +2,7 @@ import { RotateCcwIcon } from "lucide-react";
 import { animate } from "motion";
 import { motion, useInView, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef } from "react";
+import { getRayColor } from "./rayColor";
 
 function calculateRefractionAngle(
   n1: number,
@@ -311,7 +312,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
                 Math.sin(incidentRayAngle.get()) *
                 (1 - incidentRayProgress.get())
           )}
-          className="stroke-cyan-500 dark:stroke-cyan-600"
+          stroke={getRayColor(0)}
           strokeWidth={2}
         />
 
@@ -336,7 +337,13 @@ export const RefractionAnglesExplanation: React.FC = () => {
                 Math.sin(refractedRayAngle.get()) *
                 refractedRayProgress.get()
           )}
-          className="stroke-emerald-600 dark:stroke-emerald-600"
+          stroke={useTransform(() =>
+            getRayColor(
+              (Math.abs(incidentRayAngle.get() - refractedRayAngle.get()) /
+                Math.PI) *
+                4
+            )
+          )}
           strokeWidth={2}
         />
 

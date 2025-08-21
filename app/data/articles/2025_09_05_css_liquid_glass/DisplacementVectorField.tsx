@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import { useEffect, useRef } from "react";
 import { calculateDisplacementMap } from "./displacementMap";
+import { getRayColor } from "./rayColor";
 
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
 const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
@@ -22,15 +23,10 @@ const LIP_BEZEL_FN = (x: number) => {
   return circle * ratioCircle + sin * (1 - ratioCircle);
 };
 
-type DisplacementVectorFieldProps = {
-  glassThickness?: number;
-  bezelHeightFn?: (x: number) => number;
-  refractiveIndex?: number;
-};
+export const DisplacementVectorField: React.FC = () => {
+  const glassThickness = 20;
+  const refractiveIndex = 1.5;
 
-export const DisplacementVectorField: React.FC<
-  DisplacementVectorFieldProps
-> = ({ glassThickness = 20, refractiveIndex = 1.5 }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const isInView = useInView(wrapperRef, { once: true, amount: 1 });
   useEffect(() => {
@@ -178,11 +174,8 @@ export const DisplacementVectorField: React.FC<
       const display = transformValue(() =>
         refractedRayProgress.get() > 0 ? "block" : "none"
       );
-      const color = transformValue(
-        () =>
-          `hsl(${
-            180 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 90
-          },95%,45%)`
+      const color = transformValue(() =>
+        getRayColor(magnitude.get() / maximumDisplacement.get())
       );
       const strokeWidth = transformValue(
         () => 0.8 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
@@ -359,7 +352,7 @@ export const DisplacementVectorField: React.FC<
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke="hsl(180, 95%, 35%)"
+                  stroke={getRayColor(0)}
                   display={transformValue(() =>
                     currentVectorProgress.get() > 0 ? "block" : "none"
                   )}
