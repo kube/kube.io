@@ -126,13 +126,17 @@ export const DisplacementVectorField: React.FC<
     normalisationProgress.set(0);
 
     currentAnimation.current = animate([
-      [xAxisRotation, 90, { type: "spring", duration: 0.6, bounce: 0.13 }],
-      [radiusProgress, 1, { duration: 2, ease: "linear" }],
+      [xAxisRotation, 90, { type: "spring", duration: 1, bounce: 0.13 }],
+      [radiusProgress, 1, { duration: 2, ease: "linear", at: "-0.6" }],
       [projectRayOnSurfaceProgress, 1, { duration: 0.6, ease: "easeInOut" }],
       [normalisationProgress, 1, { duration: 0.8, ease: "easeInOut" }],
       [xAxisRotation, 65, { type: "spring", duration: 1, bounce: 0.13 }],
       [revolutionProgress, 1, { duration: 2, ease: "easeInOut" }],
-      [xAxisRotation, 0, { type: "spring", duration: 1, bounce: 0.13 }],
+      [
+        xAxisRotation,
+        0,
+        { type: "spring", duration: 2, bounce: 0.13, at: "-0.8" },
+      ],
     ]);
   }
 
@@ -172,7 +176,7 @@ export const DisplacementVectorField: React.FC<
         return (magnitude.get() * scale * plot) / 2;
       });
       const display = transformValue(() =>
-        currentVectorProgress.get() > 0 ? "block" : "none"
+        refractedRayProgress.get() > 0 ? "block" : "none"
       );
       const color = transformValue(
         () =>
