@@ -13,12 +13,12 @@ import {
 } from "./displacementMap";
 import { imageDataToUrl } from "./imageDataToUrl";
 
-type RefractionDetailProps = {
+type PlaygroundProps = {
   equationFn: (x: number) => number;
   equationRender: React.ReactNode;
 };
 
-export const RefractionDetail: React.FC<RefractionDetailProps> = ({
+export const Playground: React.FC<PlaygroundProps> = ({
   equationFn,
   equationRender,
 }) => {

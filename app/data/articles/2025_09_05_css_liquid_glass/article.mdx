@@ -10,9 +10,9 @@ import { Checkbox } from "./Checkbox";
 import { DisplacementVectorField } from "./DisplacementVectorField";
 import { Functions } from "./Functions";
 import { ParallaxImageHero } from "./ParallaxImageHero";
+import { Playground } from "./Playground";
 import { RayRefractionSimulation } from "./RayRefractionSimulation";
 import { RefractionAnglesExplanation } from "./RefractionAnglesExplanation";
-import { RefractionDetail } from "./RefractionDetail";
 import { Slider } from "./Slider";
 import { VectorToRedGreen } from "./VectorToRedGreen";
 
@@ -259,7 +259,7 @@ After converting every vector in the map to color value, we get an image that ca
 
 ## Playground
 
-<RefractionDetail
+<Playground
   equationFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
   equationRender={`<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mi>y</mi><mo>=</mo><msqrt><mrow><mi>x</mi><mo>(</mo><mn>2</mn><mo>-</mo><mi>x</mi><mo>)</mo></mrow></msqrt></math>`}
 />
