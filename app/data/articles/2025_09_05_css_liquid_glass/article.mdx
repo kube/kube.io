@@ -7,6 +7,7 @@ date: 2025-09-06
 
 import { Checkbox } from "./Checkbox";
 import { DisplacementVectorField } from "./DisplacementVectorField";
+import { Functions } from "./Functions";
 import { RayRefractionSimulation } from "./RayRefractionSimulation";
 import { RefractionAnglesExplanation } from "./RefractionAnglesExplanation";
 import { RefractionDetail } from "./RefractionDetail";
@@ -68,6 +69,8 @@ We will also simplify the geometry of any refracting object:
 - There is no physical gap between the object and the background plane (they are in contact).
 - Two parameters can vary: its bezel (edge transition) and its thickness (peak height above the background).
 
+# Surface Function
+
 Surface height across the bezel is described by a single, continuous, differentiable function f over the normalized interval [0,1]. Because incoming rays are orthogonal to the background, the height at a point depends only on its normalized inward distance from the object's outer border. We call this distanceFromSide, defined as the ratio between the start of the bezel (0 at the outer border) and the end of the bezel (1 where the bezel transitions to the flat interior).
 
 ```ts
@@ -84,13 +87,13 @@ const derivative = (y2 - y1) / (2 * delta);
 const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
 ```
 
-> TODO: Merge these two next interactive graphs into one, and animate:
->
-> - [ ] The surface height drawing (to make people understand how the height function works)
-> - [ ] The ray refraction simulation (to show how the angle of incidence is calculated)
-> - [x] Change the height function to show how it affects the refraction
+For this article, we will use three different height functions to demonstrate the effect of the surface shape on the refraction:
 
-<RayRefractionSimulation glassWidth={400} glassHeight={200} />
+<Functions />
+
+## Simulation
+
+<RayRefractionSimulation />
 
 You can see in the above simulations that in concave surfaces, the light ray can go outside of the glass, while in convex surfaces it always stays inside.
 
@@ -109,8 +112,19 @@ The only constraint being that the displacement vector will be oriented along th
 
 ```ts
 displacementVector = {
-  angle: normalOfBorder,
+  angle: normalAtBorder,
   magnitude: displacementMagnitude, // Calculated based on the angle of incidence and refractive index
+};
+```
+
+## Normalizing vectors
+
+To use these vectors in a displacement map, we need to normalize them. Normalization means scaling the vectors so that their maximum magnitude is 1, which allows us to represent them in a fixed range.
+
+```ts
+displacementVector_normalized = {
+  angle: normalAtBorder,
+  magnitude: displacementMagnitude / maximumDisplacement, // Normalize the magnitude to be between 0 and 1
 };
 ```
 

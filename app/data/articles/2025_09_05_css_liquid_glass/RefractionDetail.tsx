@@ -1,3 +1,10 @@
+import type { ImageData as CanvasImageData } from "canvas";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 import { useId, useState } from "react";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 import {
@@ -20,48 +27,97 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
   const width = 400;
   const height = 300;
 
-  const [currentX, setCurrentX] = useState<number>();
-
-  const [glassThickness, setGlassThickness] = useState(50);
-  const [bezelWidth, setBezelWidth] = useState(60);
+  // Inputs as MotionValues to avoid React re-renders
+  const currentX = useMotionValue<number | null>(null);
+  const hasCurrentX = useMotionValue(false);
+  const glassThickness = useMotionValue(50);
+  const bezelWidth = useMotionValue(60);
   const refractiveIndex = 1.5;
   const objectWidth = 200;
   const objectHeight = 200;
   const radius = 100;
-  const [scaleRatio, setScaleRatio] = useState(1);
-
-  const precomputedDisplacementMap = calculateDisplacementMap(
-    glassThickness,
-    bezelWidth,
-    equationFn,
-    refractiveIndex
+  const scaleRatio = useMotionValue(1);
+  // Heavy computations as derived MotionValues
+  const precomputedDisplacementMap = useTransform(
+    [glassThickness, bezelWidth],
+    () =>
+      calculateDisplacementMap(
+        glassThickness.get(),
+        bezelWidth.get(),
+        equationFn,
+        refractiveIndex
+      )
   );
 
-  const maximumDisplacement = Math.max(
-    ...precomputedDisplacementMap.map(Math.abs)
+  const maximumDisplacement = useTransform(
+    precomputedDisplacementMap,
+    (arr: number[]) => Math.max(...arr.map(Math.abs))
   );
 
-  const imageData = calculateDisplacementMap2(
-    width,
-    height,
-    objectWidth,
-    objectHeight,
-    radius,
-    bezelWidth,
-    maximumDisplacement,
-    precomputedDisplacementMap
+  const imageData = useTransform(
+    precomputedDisplacementMap,
+    (arr: number[]): CanvasImageData =>
+      calculateDisplacementMap2(
+        width,
+        height,
+        objectWidth,
+        objectHeight,
+        radius,
+        bezelWidth.get(),
+        maximumDisplacement.get(),
+        arr
+      )
   );
 
-  const displacementMapUrl = imageDataToUrl(imageData);
+  const displacementMapUrl = useTransform(imageData, (img: CanvasImageData) =>
+    imageDataToUrl(img)
+  );
 
-  const pathData = precomputedDisplacementMap
-    .map((d, i) => {
-      const x = (i / precomputedDisplacementMap.length) * width;
-      return `${i === 0 ? "M" : "L"} ${x} ${
-        height / 2 - ((d / maximumDisplacement) * height) / 2
-      }`;
-    })
-    .join(" ");
+  const pathData = useTransform(
+    precomputedDisplacementMap,
+    (arr: number[]): string => {
+      const max = maximumDisplacement.get();
+      return arr
+        .map((d, i) => {
+          const x = (i / arr.length) * width;
+          return `${i === 0 ? "M" : "L"} ${x} ${
+            height / 2 - ((d / max) * height) / 2
+          }`;
+        })
+        .join(" ");
+    }
+  );
+
+  // Derived MotionValues for UI bindings
+  const backgroundImageCss = useTransform(
+    displacementMapUrl,
+    (u) => `url(${u})`
+  );
+  const showCurrentX = useTransform(hasCurrentX, (v) => (v ? "block" : "none"));
+  const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
+  const y2Motion = useTransform(precomputedDisplacementMap, (arr: number[]) => {
+    const vx = currentX.get() ?? 0;
+    const max = maximumDisplacement.get();
+    const idx = Math.min(arr.length - 1, Math.max(0, (vx * arr.length) | 0));
+    const d = arr[idx];
+    return height / 2 - (d / max) * (height / 2);
+  });
+  const scaleMotion = useTransform(
+    scaleRatio,
+    (ratio) => maximumDisplacement.get() * ratio
+  );
+
+  // Bridge MotionValues to React props for the Mini simulation only (cheap re-renders)
+  const [bw, setBw] = useState<number>(bezelWidth.get());
+  const [gt, setGt] = useState<number>(glassThickness.get());
+  const [cx, setCx] = useState<number | undefined>(
+    currentX.get() == null ? undefined : (currentX.get() as number)
+  );
+  useMotionValueEvent(bezelWidth, "change", (v) => setBw(v));
+  useMotionValueEvent(glassThickness, "change", (v) => setGt(v));
+  useMotionValueEvent(currentX, "change", (v) =>
+    setCx(v == null ? undefined : (v as number))
+  );
 
   return (
     <div className="grid grid-cols-2 gap-1 text-black *:rounded *:bg-white *:overflow-hidden *:relative select-none -ml-[15px] w-[calc(100%+30px)]">
@@ -85,33 +141,33 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
         </h4>
         <div className="text-xs grid grid-cols-[25%_1fr] gap-2 p-2">
           <label>Bezel Width</label>
-          <input
+          <motion.input
             type="range"
             min="0"
             max="100"
             step="1"
-            value={bezelWidth}
-            onChange={(e) => setBezelWidth(Number(e.target.value))}
+            defaultValue={bezelWidth.get()}
+            onChange={(e) => bezelWidth.set(Number(e.target.value))}
             className="w-full"
           />
           <label>Glass Thickness</label>
-          <input
+          <motion.input
             type="range"
             min="0"
             max="100"
             step="1"
-            value={glassThickness}
-            onChange={(e) => setGlassThickness(Number(e.target.value))}
+            defaultValue={glassThickness.get()}
+            onChange={(e) => glassThickness.set(Number(e.target.value))}
             className="w-full"
           />
           <label>Scale Ratio</label>
-          <input
+          <motion.input
             type="range"
             min="0"
             max="1"
             step="0.01"
-            value={scaleRatio}
-            onChange={(e) => setScaleRatio(Number(e.target.value))}
+            defaultValue={scaleRatio.get()}
+            onChange={(e) => scaleRatio.set(Number(e.target.value))}
             className="w-full"
           />
         </div>
@@ -123,11 +179,14 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
         <div className="text-sm">
           <RayRefractionSimulationMini
             bezelHeightFn={equationFn}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
+            bezelWidth={bw}
+            glassThickness={gt}
             refractionIndex={refractiveIndex}
-            currentX={currentX}
-            onCurrentXChange={setCurrentX}
+            currentX={cx}
+            onCurrentXChange={(x) => {
+              currentX.set(x);
+              hasCurrentX.set(true);
+            }}
           />
         </div>
       </div>
@@ -136,13 +195,13 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
         <h4 className="text-xs uppercase opacity-60 absolute px-1.5 pt-1 z-40">
           Displacement Map
         </h4>
-        <div
+        <motion.div
           className="text-sm select-none"
           aria-label="Displacement Map"
           style={{
             width: "100%",
             aspectRatio: "4 / 3",
-            backgroundImage: `url(${displacementMapUrl})`,
+            backgroundImage: backgroundImageCss,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -155,14 +214,15 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
           Pre-calculated Displacements
         </h4>
         <div className="text-sm">
-          <svg
+          <motion.svg
             viewBox="-30 -30 460 360"
             width="100%"
             onClick={(e) => {
               const { left, width } = e.currentTarget.getBoundingClientRect();
               const xRatio = (e.clientX - left) / width;
               const newRayOriginX = xRatio * width;
-              setCurrentX(newRayOriginX / width);
+              currentX.set(newRayOriginX / width);
+              hasCurrentX.set(true);
             }}
           >
             <defs>
@@ -179,8 +239,8 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
               </marker>
             </defs>
-            <path
-              d={pathData}
+            <motion.path
+              d={pathData as unknown as string}
               fill="none"
               stroke="black"
               strokeWidth="3"
@@ -229,24 +289,17 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
             >
               Distance to border
             </text>
-            {currentX !== undefined && (
-              <line
-                x1={currentX * width}
-                y1={height / 2}
-                x2={currentX * width}
-                y2={
-                  height / 2 -
-                  precomputedDisplacementMap[
-                    (currentX * precomputedDisplacementMap.length) | 0
-                  ] *
-                    (height / maximumDisplacement / 2)
-                }
-                stroke="red"
-                strokeWidth="2"
-                strokeDasharray="4"
-              />
-            )}
-          </svg>
+            <motion.line
+              style={{ display: showCurrentX }}
+              x1={currentXPos}
+              y1={height / 2}
+              x2={currentXPos}
+              y2={y2Motion}
+              stroke="red"
+              strokeWidth="2"
+              strokeDasharray="4"
+            />
+          </motion.svg>
         </div>
       </div>
 
@@ -255,7 +308,7 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
           Preview
         </h4>
         <div className="text-sm">
-          <svg
+          <motion.svg
             className="object-cover"
             viewBox="0 0 400 300"
             width="100%"
@@ -263,19 +316,18 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
           >
             <defs>
               <filter id={filterId}>
-                <feImage
-                  href={displacementMapUrl}
+                <motion.feImage
+                  href={displacementMapUrl as unknown as string}
                   x={0}
                   y={0}
                   width={width}
                   height={height}
                   result="displacement_map"
                 />
-
-                <feDisplacementMap
+                <motion.feDisplacementMap
                   in="SourceGraphic"
                   in2="displacement_map"
-                  scale={maximumDisplacement * scaleRatio}
+                  scale={scaleMotion}
                   xChannelSelector="R"
                   yChannelSelector="G"
                 />
@@ -328,7 +380,7 @@ export const RefractionDetail: React.FC<RefractionDetailProps> = ({
               <rect width="400" height="300" fill="url(#doubleGradient)" />
               <rect width="400" height="300" fill="url(#grid)" />
             </g>
-          </svg>
+          </motion.svg>
         </div>
       </div>
     </div>

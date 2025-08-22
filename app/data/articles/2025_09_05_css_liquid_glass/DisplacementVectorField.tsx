@@ -1,4 +1,3 @@
-import { RotateCcwIcon, SplineIcon } from "lucide-react";
 import { animate } from "motion";
 import {
   AnimationPlaybackControlsWithThen,
@@ -9,7 +8,13 @@ import {
   useMotionValue,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ConcaveButton,
+  ConvexButton,
+  LipButton,
+  ReplayButton,
+} from "./Buttons";
 import { calculateDisplacementMap } from "./displacementMap";
 import { getRayColor } from "./rayColor";
 
@@ -90,6 +95,9 @@ export const DisplacementVectorField: React.FC = () => {
   const projectRayOnSurfaceProgress = useMotionValue(1);
   const normalisationProgress = useMotionValue(1);
   const revolutionProgress = useMotionValue(1);
+  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
+    "convex"
+  );
 
   const NUMBER_OF_SAMPLES = 64;
 
@@ -392,79 +400,61 @@ export const DisplacementVectorField: React.FC = () => {
         </motion.g>
       </svg>
 
-      <div className="absolute bottom-0 right-4 flex items-end justify-center gap-2">
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={async () => {
-            await animate(xAxisRotation, 65, {
-              duration: 0.6,
-              ease: "easeInOut",
-            });
-            bezelHeightFn_target.set(CONVEX_BEZEL_FN);
-            animate(xAxisRotation, 0, {
-              duration: 0.6,
-              ease: "easeInOut",
-              delay: 1,
-            });
-          }}
-        >
-          <SplineIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-0"
+      <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center">
+        <div className="flex-1" />
+        <div className="flex items-center gap-3">
+          <ConvexButton
+            active={surface === "convex"}
+            onClick={async () => {
+              setSurface("convex");
+              await animate(xAxisRotation, 65, {
+                duration: 0.6,
+                ease: "easeInOut",
+              });
+              bezelHeightFn_target.set(CONVEX_BEZEL_FN);
+              animate(xAxisRotation, 0, {
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 1,
+              });
+            }}
           />
-        </button>
-
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={async () => {
-            await animate(xAxisRotation, 65, {
-              duration: 0.6,
-              ease: "easeInOut",
-            });
-            bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
-            animate(xAxisRotation, 0, {
-              duration: 0.6,
-              ease: "easeInOut",
-              delay: 1,
-            });
-          }}
-        >
-          <SplineIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-270"
+          <ConcaveButton
+            active={surface === "concave"}
+            onClick={async () => {
+              setSurface("concave");
+              await animate(xAxisRotation, 65, {
+                duration: 0.6,
+                ease: "easeInOut",
+              });
+              bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
+              animate(xAxisRotation, 0, {
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 1,
+              });
+            }}
           />
-        </button>
-
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={async () => {
-            await animate(xAxisRotation, 65, {
-              duration: 0.6,
-              ease: "easeInOut",
-            });
-            bezelHeightFn_target.set(LIP_BEZEL_FN);
-            animate(xAxisRotation, 0, {
-              duration: 0.6,
-              ease: "easeInOut",
-              delay: 1,
-            });
-          }}
-        >
-          <SplineIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform rotate-45"
+          <LipButton
+            active={surface === "lip"}
+            onClick={async () => {
+              setSurface("lip");
+              await animate(xAxisRotation, 65, {
+                duration: 0.6,
+                ease: "easeInOut",
+              });
+              bezelHeightFn_target.set(LIP_BEZEL_FN);
+              animate(xAxisRotation, 0, {
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 1,
+              });
+            }}
           />
-        </button>
-
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={startAnimation}
-        >
-          <RotateCcwIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
-          />
-        </button>
+        </div>
+        <div className="flex-1 flex justify-end">
+          <ReplayButton onClick={startAnimation} />
+        </div>
       </div>
     </div>
   );

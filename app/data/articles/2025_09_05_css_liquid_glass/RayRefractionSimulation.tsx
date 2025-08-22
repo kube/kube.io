@@ -1,7 +1,12 @@
-import { RefreshCcw } from "lucide-react";
 import { animate } from "motion";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
+import {
+  ConcaveButton,
+  ConvexButton,
+  LipButton,
+  ReplayButton,
+} from "./Buttons";
 import { getRayColor } from "./rayColor";
 
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
@@ -76,6 +81,9 @@ export const RayRefractionSimulation: React.FC = () => {
 
   const refractionIndex = useMotionValue(GLASS_REFRACTIVE_INDEX);
   const currentX = useMotionValue((glassWidth - viewWidth) / 2);
+  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
+    "convex"
+  );
 
   const backgroundWidth = viewWidth;
   const backgroundHeight = 40;
@@ -368,84 +376,71 @@ export const RayRefractionSimulation: React.FC = () => {
         />
       </motion.svg>
 
-      <div className="p-4 bg-white dark:bg-slate-800 flex items-center gap-4">
-        <div>
-          <label className="text-sm">Bezel Width:</label>
-          <motion.input
-            type="range"
-            min="0"
-            max="200"
-            value={useTransform(() => bezelWidth.get().toString())}
-            onChange={(e) => bezelWidth.set(Number(e.target.value))}
-            className="w-full"
+      <div className="py-8 flex items-center">
+        <div className="flex-1" />
+        <div className="flex items-center gap-4">
+          <ConvexButton
+            active={surface === "convex"}
+            onClick={() => {
+              setSurface("convex");
+              bezelHeightFn_target.set(CONVEX_BEZEL_FN);
+            }}
           />
-          <motion.span className="text-sm">{bezelWidth}</motion.span>
+          <ConcaveButton
+            active={surface === "concave"}
+            onClick={() => {
+              setSurface("concave");
+              bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
+            }}
+          />
+          <LipButton
+            active={surface === "lip"}
+            onClick={() => {
+              setSurface("lip");
+              bezelHeightFn_target.set(LIP_BEZEL_FN);
+            }}
+          />
         </div>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => {
-            bezelHeightFn_target.set(CONVEX_BEZEL_FN);
-          }}
-        >
-          Convex
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => {
-            bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
-          }}
-        >
-          Concave
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => {
-            bezelHeightFn_target.set(LIP_BEZEL_FN);
-          }}
-        >
-          Lip
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => {
-            animate([
-              [
-                currentX,
-                viewWidth / 2,
-                {
-                  duration: 0.5,
-                  ease: "easeInOut",
-                },
-              ],
-              [
-                currentX,
-                (viewWidth - glassWidth) / 2,
-                {
-                  duration: 1,
-                  ease: "easeInOut",
-                },
-              ],
-              [
-                currentX,
-                (viewWidth - glassWidth) / 2 + glassWidth,
-                {
-                  duration: 2,
-                  ease: "easeInOut",
-                },
-              ],
-              [
-                currentX,
-                viewWidth / 2,
-                {
-                  duration: 1,
-                  ease: "easeInOut",
-                },
-              ],
-            ]);
-          }}
-        >
-          <RefreshCcw />
-        </button>
+        <div className="flex-1 flex justify-end">
+          <ReplayButton
+            onClick={() => {
+              animate([
+                [
+                  currentX,
+                  viewWidth / 2,
+                  {
+                    duration: 0.5,
+                    ease: "easeInOut",
+                  },
+                ],
+                [
+                  currentX,
+                  (viewWidth - glassWidth) / 2,
+                  {
+                    duration: 1,
+                    ease: "easeInOut",
+                  },
+                ],
+                [
+                  currentX,
+                  (viewWidth - glassWidth) / 2 + glassWidth,
+                  {
+                    duration: 2,
+                    ease: "easeInOut",
+                  },
+                ],
+                [
+                  currentX,
+                  viewWidth / 2,
+                  {
+                    duration: 1,
+                    ease: "easeInOut",
+                  },
+                ],
+              ]);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
