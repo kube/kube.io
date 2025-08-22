@@ -5,6 +5,7 @@ description: Explore how to recreate Apple's stunning Liquid Glass effect using 
 date: 2025-09-06
 ---
 
+import { SiGooglechrome } from "react-icons/si";
 import { Checkbox } from "./Checkbox";
 import { DisplacementVectorField } from "./DisplacementVectorField";
 import { Functions } from "./Functions";
@@ -25,7 +26,31 @@ Instead of chasing pixel‑perfect parity, we’ll approximate Liquid Glass, rec
 
 We’ll now build up the effect from first principles—starting with how light bends.
 
-> Note: The demo at the end of this article only works in Chrome.
+<div className="relative my-16">
+  {/* Glow frame */}
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  {/* Card */}
+  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+    <div className="flex items-center gap-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white shadow ring-1 ring-white/30">
+        <SiGooglechrome className="h-5 w-5" />
+      </div>
+      <div className="text-sm leading-6">
+        <p className="font-semibold tracking-wide text-base">
+          Chrome‑only demo
+        </p>
+        <p className="opacity-80">
+          The interactive demo at the end currently works in Chrome only (due to
+          SVG filters as backdrop‑filter).
+        </p>
+        <p className="opacity-80">
+          You can still read the article and interact with the inline
+          simulations in other browsers.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
 # Understanding Refraction
 
@@ -243,11 +268,32 @@ After converting every vector in the map to color value, we get an image that ca
 
 ## SVG Filter as `backdrop-filter`
 
-> This is a Chrome-specific feature, as it allows SVG filters to be used as `backdrop-filter`.
-> This is not in the CSS spec, but due to Chrome's implementation of the CSS Filter Effects Module.
->
-> For above renderings, we used the `filter` to make viewable in Safari and Firefox.
-> For the next components, we will use `backdrop-filter` to allow the effect to be applied to the background, which limit to Chrome for now.
+<div className="relative my-8">
+  {/* Glow frame */}
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  {/* Card */}
+  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+    <div className="flex items-center gap-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white shadow ring-1 ring-white/30">
+        <SiGooglechrome className="h-5 w-5" />
+      </div>
+      <div className="text-sm leading-6">
+        <p className="font-semibold tracking-wide text-base">
+          Chrome‑specific feature
+        </p>
+        <p className="opacity-80">
+          Chrome allows using SVG filters as <code>backdrop-filter</code>, which
+          isn’t part of the CSS spec.
+        </p>
+        <p className="opacity-80">
+          Above, we used regular <code>filter</code> so it’s viewable in
+          Safari/Firefox. The next components use <code>backdrop-filter</code>,
+          so they’re Chrome‑only.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
 To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
 
