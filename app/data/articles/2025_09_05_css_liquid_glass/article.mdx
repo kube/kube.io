@@ -195,7 +195,7 @@ SVG filters can only use images as displacement maps, so we need to convert our 
 
 ## Scale
 
-Red and Green channel values, used respectively for X-axis and Y-axis displacement, are 8 bits (0-255), and without scale only means:
+The Red (X) and Green (Y) channels are 8‑bit values (0–255). Interpreted without any extra scaling, they map linearly to a normalized displacement in [−1, 1], with 128 as the neutral value (no displacement):
 
 $$
 \begin{aligned}
@@ -205,7 +205,7 @@ $$
 \end{aligned}
 $$
 
-The `scale` attribute of `<feDisplacementMap />` defines how much the displacement is scaled. So if we set `scale`, the displacement will be:
+The `scale` attribute of `<feDisplacementMap />` multiplies this normalized amount:
 
 $$
 \begin{aligned}
@@ -215,19 +215,19 @@ $$
 \end{aligned}
 $$
 
-Because we normalized our vectors with maximum possible displacement as unit, we can re-use this maximum displacement as scale:
+Because our vectors are normalized using the maximum possible displacement (in pixels) as the unit, we can reuse that maximum directly as the filter’s `scale`:
 
 ```tsx
 <feDisplacementMap
   in="SourceGraphic"
   in2="displacement_map"
-  scale={maximumDisplacement} // Maximum displacement in pixels
+  scale={maximumDisplacement} // max displacement (px) → real pixel shift
   xChannelSelector="R"
   yChannelSelector="G"
 />
 ```
 
-This `scale` property can also be used for animating the displacement effect, without having to recalculate anything, even if not physically accurate.
+You can also animate `scale` to fade the effect in/out—no need to recompute the map (useful for artistic control even if not physically exact).
 
 ## Vector to Red-Green values
 
