@@ -6,6 +6,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useId, useState } from "react";
+import { ConcaveButton, ConvexButton, LipButton } from "./Buttons";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 import {
   calculateDisplacementMap,
@@ -13,15 +14,18 @@ import {
 } from "./displacementMap";
 import { imageDataToUrl } from "./imageDataToUrl";
 
-type PlaygroundProps = {
-  equationFn: (x: number) => number;
-  equationRender: React.ReactNode;
+type BezelFn = (x: number) => number;
+const CONCAVE: BezelFn = (x) => 1 - Math.sqrt(1 - (1 - x) ** 2);
+const CONVEX: BezelFn = (x) => Math.sqrt(1 - (1 - x) ** 2);
+const LIP: BezelFn = (x) => {
+  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  const ratioCircle = 1 - smootherstep;
+  return circle * ratioCircle + sin * (1 - ratioCircle);
 };
 
-export const Playground: React.FC<PlaygroundProps> = ({
-  equationFn,
-  equationRender,
-}) => {
+export const Playground: React.FC = () => {
   const filterId = useId();
 
   const width = 400;
@@ -37,6 +41,13 @@ export const Playground: React.FC<PlaygroundProps> = ({
   const objectHeight = 200;
   const radius = 100;
   const scaleRatio = useMotionValue(1);
+  // Surface selection
+  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
+    "convex"
+  );
+  const equationFn: BezelFn =
+    surface === "convex" ? CONVEX : surface === "concave" ? CONCAVE : LIP;
+
   // Heavy computations as derived MotionValues
   const precomputedDisplacementMap = useTransform(
     [glassThickness, bezelWidth],
@@ -119,27 +130,35 @@ export const Playground: React.FC<PlaygroundProps> = ({
     setCx(v == null ? undefined : (v as number))
   );
 
+  // Swiss-style panel + heading helpers
+  const panel =
+    "relative rounded-sm border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60";
+  const heading =
+    "uppercase tracking-[0.15em] text-[10px] leading-none text-neutral-500 dark:text-neutral-400";
+
   return (
-    <div className="grid grid-cols-2 gap-1 text-black *:rounded *:bg-white *:overflow-hidden *:relative select-none -ml-[15px] w-[calc(100%+30px)]">
-      <div className="flex flex-col">
-        <h4 className="text-xs uppercase opacity-60 px-1.5 pt-1 z-40 grow-0">
-          Bezel Height Function
-        </h4>
-        <div className="text-xl p-5 flex items-center grow">
-          {typeof equationRender === "string" &&
-          equationRender.trim().startsWith("<") ? (
-            <span dangerouslySetInnerHTML={{ __html: equationRender }} />
-          ) : (
-            equationRender
-          )}
+    <div className="grid grid-cols-2 gap-2 text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)]">
+      <div className={`flex flex-col ${panel}`}>
+        <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
+        <div className="p-4 flex items-center justify-center gap-4 grow">
+          <ConvexButton
+            active={surface === "convex"}
+            onClick={() => setSurface("convex")}
+          />
+          <ConcaveButton
+            active={surface === "concave"}
+            onClick={() => setSurface("concave")}
+          />
+          <LipButton
+            active={surface === "lip"}
+            onClick={() => setSurface("lip")}
+          />
         </div>
       </div>
 
-      <div>
-        <h4 className="text-xs uppercase opacity-60 px-1.5 pt-1 z-40">
-          Controls
-        </h4>
-        <div className="text-xs grid grid-cols-[25%_1fr] gap-2 p-2">
+      <div className={`${panel}`}>
+        <h4 className={`${heading} px-2 pt-2 z-40`}>Controls</h4>
+        <div className="text-xs grid grid-cols-[25%_1fr] gap-3 p-3 pt-4">
           <label>Bezel Width</label>
           <motion.input
             type="range"
@@ -148,7 +167,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
             step="1"
             defaultValue={bezelWidth.get()}
             onChange={(e) => bezelWidth.set(Number(e.target.value))}
-            className="w-full"
+            className="w-full accent-neutral-900 dark:accent-neutral-100"
           />
           <label>Glass Thickness</label>
           <motion.input
@@ -158,7 +177,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
             step="1"
             defaultValue={glassThickness.get()}
             onChange={(e) => glassThickness.set(Number(e.target.value))}
-            className="w-full"
+            className="w-full accent-neutral-900 dark:accent-neutral-100"
           />
           <label>Scale Ratio</label>
           <motion.input
@@ -168,14 +187,12 @@ export const Playground: React.FC<PlaygroundProps> = ({
             step="0.01"
             defaultValue={scaleRatio.get()}
             onChange={(e) => scaleRatio.set(Number(e.target.value))}
-            className="w-full"
+            className="w-full accent-neutral-900 dark:accent-neutral-100"
           />
         </div>
       </div>
-      <div className="rounded bg-white">
-        <h4 className="text-xs uppercase opacity-60 absolute px-1.5 pt-1 z-40">
-          Ray Simulation
-        </h4>
+      <div className={`${panel}`}>
+        <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>Ray Simulation</h4>
         <div className="text-sm">
           <RayRefractionSimulationMini
             bezelHeightFn={equationFn}
@@ -191,8 +208,10 @@ export const Playground: React.FC<PlaygroundProps> = ({
         </div>
       </div>
 
-      <div>
-        <h4 className="text-xs uppercase opacity-60 absolute px-1.5 pt-1 z-40">
+      <div className={`${panel}`}>
+        <h4
+          className={`absolute ${heading} px-2 pt-2 z-40 text-white/70 dark:text-white/70`}
+        >
           Displacement Map
         </h4>
         <motion.div
@@ -209,13 +228,14 @@ export const Playground: React.FC<PlaygroundProps> = ({
         />
       </div>
 
-      <div>
-        <h4 className="text-xs uppercase opacity-60 absolute px-1.5 pt-1 z-40">
+      <div className={`${panel}`}>
+        <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>
           Pre-calculated Displacements
         </h4>
         <div className="text-sm">
           <motion.svg
             viewBox="-30 -30 460 360"
+            className="text-neutral-900 dark:text-neutral-100"
             width="100%"
             onClick={(e) => {
               const { left, width } = e.currentTarget.getBoundingClientRect();
@@ -236,13 +256,13 @@ export const Playground: React.FC<PlaygroundProps> = ({
                 orient="auto"
                 markerUnits="strokeWidth"
               >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
               </marker>
             </defs>
             <motion.path
               d={pathData as unknown as string}
               fill="none"
-              stroke="black"
+              stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
             />
@@ -251,7 +271,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               y2={height / 2}
               x1={0}
               x2={width}
-              stroke="black"
+              stroke="currentColor"
               strokeWidth="1"
             />
             <line
@@ -259,7 +279,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               x2={-1}
               y1={height}
               y2={0}
-              stroke="black"
+              stroke="currentColor"
               strokeWidth="1"
               markerEnd="url(#axisArrow)"
             />
@@ -269,6 +289,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               alignmentBaseline="middle"
               textAnchor="end"
               transform="rotate(-90 0 0)"
+              fill="currentColor"
             >
               Ray displacement on background
             </text>
@@ -277,7 +298,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               x2={width}
               y1={height}
               y2={height}
-              stroke="black"
+              stroke="currentColor"
               strokeWidth="1"
               markerEnd="url(#axisArrow)"
             />
@@ -286,6 +307,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
               y={height + 12}
               alignmentBaseline="middle"
               textAnchor="end"
+              fill="currentColor"
             >
               Distance to border
             </text>
@@ -303,8 +325,10 @@ export const Playground: React.FC<PlaygroundProps> = ({
         </div>
       </div>
 
-      <div>
-        <h4 className="text-sm uppercase opacity-60 absolute px-1.5 pt-1 z-40">
+      <div className={`${panel}`}>
+        <h4
+          className={`absolute ${heading} px-2 pt-2 z-40 text-white dark:text-white`}
+        >
           Preview
         </h4>
         <div className="text-sm">

@@ -241,7 +241,7 @@ export const RayRefractionSimulationMini: React.FC<
           x={0}
           y={viewHeight - backgroundHeight}
           rx={2}
-          fill="rgba(200, 200, 200, 0.9)"
+          fill="rgba(100, 100, 110, 0.1)"
         />
         {refractedRay?.segments.map((segment, index) => (
           <line
