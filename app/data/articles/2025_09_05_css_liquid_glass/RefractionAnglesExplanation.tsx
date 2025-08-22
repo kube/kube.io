@@ -1,7 +1,7 @@
 import { RotateCcwIcon } from "lucide-react";
 import { animate } from "motion";
 import { motion, useInView, useMotionValue, useTransform } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { getRayColor } from "./rayColor";
 
 function calculateRefractionAngle(
@@ -9,7 +9,12 @@ function calculateRefractionAngle(
   n2: number,
   theta1: number
 ): number {
-  return Math.asin((n1 / n2) * Math.sin(theta1));
+  const ratio = n1 / n2;
+  const s = ratio * Math.sin(theta1);
+  // Clamp to avoid NaN when |s| > 1 (e.g., when n2 < n1 and beyond critical angle)
+  const clamped = Math.max(-1, Math.min(1, s));
+  const angle = Math.asin(clamped);
+  return angle;
 }
 
 export const RefractionAnglesExplanation: React.FC = () => {
@@ -20,7 +25,11 @@ export const RefractionAnglesExplanation: React.FC = () => {
   }, [isInView]);
 
   const FIRST_MEDIUM_REFRACTIVE_INDEX = 1; // Air
-  const SECOND_MEDIUM_REFRACTIVE_INDEX = 1.5; // Glass
+  // Second medium refractive index is user-controlled between 1 and 5
+  const [n2, setN2] = useState(1.5);
+  const n2MV = useMotionValue(n2);
+  const N2_MIN = 0.01;
+  const N2_MAX = 10;
 
   const INITIAL_RAY_ANGLE = Math.PI / 8; // 45 degrees
   const TARGET_RAY_ANGLE = (Math.PI * 7) / 8; // 135 degrees
@@ -46,7 +55,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const refractedToNormalAngle = useTransform(() =>
     calculateRefractionAngle(
       FIRST_MEDIUM_REFRACTIVE_INDEX,
-      SECOND_MEDIUM_REFRACTIVE_INDEX,
+      n2MV.get(),
       incidentToNormalAngle.get()
     )
   );
@@ -81,6 +90,70 @@ export const RefractionAnglesExplanation: React.FC = () => {
     ]);
   }
 
+  // Keep motion value in sync with React state
+  useEffect(() => {
+    n2MV.set(n2);
+  }, [n2]);
+
+  // Slider for n2: vertical at label x, always visible; label remains the control
+  const labelTextRef = useRef<SVGTextElement | null>(null);
+  const [thumbX, setThumbX] = useState(26); // label x + small margin fallback
+  const sliderX = thumbX; // align with label right-side
+  const sliderTopY = centerY + 25;
+  const sliderBottomY = height - 20;
+  const labelY = centerY + 13;
+  const handleRadius = 7;
+  const handleY =
+    sliderTopY +
+    ((n2 - N2_MIN) / (N2_MAX - N2_MIN)) * (sliderBottomY - sliderTopY);
+  const trackHalf = 30; // visible half-length around handle
+  const visibleTop = Math.max(
+    sliderTopY,
+    Math.min(sliderBottomY, handleY - trackHalf)
+  );
+  const visibleBottom = Math.max(
+    sliderTopY,
+    Math.min(sliderBottomY, handleY + trackHalf)
+  );
+  const railTranslateY = labelY - handleY; // move rail so current value aligns with fixed thumb
+
+  // Measure label to place thumb at the right-side of text
+  useLayoutEffect(() => {
+    const el = labelTextRef.current;
+    if (!el) return;
+    try {
+      const bbox = el.getBBox();
+      setThumbX(bbox.x + bbox.width + 6); // 6px gap to the right of label
+    } catch {
+      // ignore
+    }
+  }, [n2]);
+
+  const isDraggingN2 = useRef(false);
+  const [draggingN2, setDraggingN2] = useState(false);
+
+  function clientToLocalSVGPoint(clientX: number, clientY: number) {
+    const svg = svgRef.current;
+    if (!svg) return null;
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    const local = pt.matrixTransform(ctm.inverse());
+    return { x: local.x, y: local.y };
+  }
+
+  function updateN2FromPointer(clientX: number, clientY: number) {
+    const local = clientToLocalSVGPoint(clientX, clientY);
+    if (!local) return;
+    // Map pointer Y to [N2_MIN,N2_MAX] along vertical slider
+    const y = Math.min(Math.max(local.y, sliderTopY), sliderBottomY);
+    const t = (y - sliderTopY) / (sliderBottomY - sliderTopY);
+    const newN2 = N2_MIN + t * (N2_MAX - N2_MIN); // top=min, bottom=max
+    setN2(Number(newN2.toFixed(3)));
+  }
+
   return (
     <div className="relative w-full h-full">
       <motion.svg
@@ -88,6 +161,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
         viewBox={`0 0 ${width} ${height}`}
         className="select-none"
         onPan={(e) => {
+          if (isDraggingN2.current) return;
           const svg = svgRef.current;
           if (!svg) return;
 
@@ -103,6 +177,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
           const x = local.x - centerX;
           const y = centerY - local.y;
 
+          // Only adjust incident ray when interacting above the surface (y > 0)
           if (y < 1 || x * x + y * y < 100) return;
 
           const angle = Math.atan2(y, x);
@@ -277,14 +352,51 @@ export const RefractionAnglesExplanation: React.FC = () => {
         </motion.text>
 
         <motion.text
+          ref={labelTextRef}
           x={20}
-          y={centerY + 13}
+          y={labelY}
           dominantBaseline="central"
           textAnchor="left"
           fontSize="8"
           className="fill-slate-400 dark:fill-slate-500"
+          style={{ cursor: "ns-resize" }}
+          role="slider"
+          aria-valuemin={N2_MIN}
+          aria-valuemax={N2_MAX}
+          aria-valuenow={Number(n2.toFixed(2))}
+          aria-label="Second medium refractive index"
+          tabIndex={0}
+          onPointerDown={(e) => {
+            isDraggingN2.current = true;
+            setDraggingN2(true);
+            (e.currentTarget as Element).setPointerCapture(e.pointerId);
+            updateN2FromPointer(e.clientX, e.clientY);
+          }}
+          onPointerMove={(e) => {
+            if (!isDraggingN2.current) return;
+            updateN2FromPointer(e.clientX, e.clientY);
+          }}
+          onPointerUp={(e) => {
+            isDraggingN2.current = false;
+            setDraggingN2(false);
+            (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+          }}
+          onPointerCancel={() => {
+            isDraggingN2.current = false;
+            setDraggingN2(false);
+          }}
+          onKeyDown={(e) => {
+            const step = 0.05;
+            if (e.key === "ArrowUp") {
+              setN2((v) => Math.max(N2_MIN, +(v - step).toFixed(3)));
+              e.preventDefault();
+            } else if (e.key === "ArrowDown") {
+              setN2((v) => Math.min(N2_MAX, +(v + step).toFixed(3)));
+              e.preventDefault();
+            }
+          }}
         >
-          Second Medium (n2 = {SECOND_MEDIUM_REFRACTIVE_INDEX})
+          Second Medium (n2 = {n2.toFixed(2)})
         </motion.text>
 
         {/* Incident Ray */}
@@ -368,6 +480,29 @@ export const RefractionAnglesExplanation: React.FC = () => {
           className="stroke-cyan-500 dark:stroke-cyan-600 opacity-70"
           strokeWidth={1}
           strokeDasharray={2}
+        />
+
+        {/* n2 Slider visuals (rail moves, thumb fixed at label's right) */}
+        <g
+          style={{ pointerEvents: "none", display: draggingN2 ? undefined : "none" }}
+          transform={`translate(0 ${railTranslateY})`}
+        >
+          <line
+            x1={sliderX}
+            y1={visibleTop}
+            x2={sliderX}
+            y2={visibleBottom}
+            className="stroke-slate-300 dark:stroke-slate-600"
+            strokeWidth={4}
+            strokeLinecap="round"
+          />
+        </g>
+        <circle
+          cx={sliderX}
+          cy={labelY}
+          r={handleRadius}
+          className="fill-cyan-500 dark:fill-cyan-500 stroke-white/70"
+          style={{ cursor: "ns-resize", pointerEvents: "none", display: draggingN2 ? undefined : "none" }}
         />
       </motion.svg>
 
