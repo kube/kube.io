@@ -400,7 +400,7 @@ export const DisplacementVectorField: React.FC = () => {
         </motion.g>
       </svg>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center">
+  <div className="mt-4 px-4 flex items-center">
         <div className="flex-1" />
         <div className="flex items-center gap-3">
           <ConvexButton
