@@ -72,17 +72,16 @@ export const VectorToRedGreen: React.FC = () => {
     [magnitude, angle],
     ([m, a]: number[]) => (m * Math.sin(a)) / radius
   );
+  // Text-friendly, rounded to two decimals
+  const nxText = useTransform(nx, (v: number) => v.toFixed(2));
+  const nyText = useTransform(ny, (v: number) => v.toFixed(2));
   const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
   const redIntensity = useTransform(nx, (v: number) => clamp01((v + 1) / 2));
   const greenIntensity = useTransform(ny, (v: number) => clamp01((v + 1) / 2));
-  const redColor = useTransform(redIntensity, (ri: number) => {
-    const r = Math.round(ri * 256);
-    return `rgb(${r},0,0)`;
-  });
-  const greenColor = useTransform(greenIntensity, (gi: number) => {
-    const g = Math.round(gi * 256);
-    return `rgb(0,${g},0)`;
-  });
+  const r = useTransform(redIntensity, (v) => Math.round(v * 256));
+  const g = useTransform(greenIntensity, (v) => Math.round(v * 256));
+  const redColor = useTransform(() => `rgb(${r.get()},0,0)`);
+  const greenColor = useTransform(() => `rgb(0,${g.get()},0)`);
   const blendedColor = useTransform(
     [redIntensity, greenIntensity],
     ([ri, gi]: number[]) => {
@@ -125,6 +124,9 @@ export const VectorToRedGreen: React.FC = () => {
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       [angle, Math.PI * 1.5, { duration: 0.01 }],
       [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 2.5, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
       "Center",
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       "Animate X axis",
@@ -132,6 +134,9 @@ export const VectorToRedGreen: React.FC = () => {
       [magnitude, radius, { duration: 0.4, ease: "easeInOut" }],
       [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
       [angle, Math.PI * 1, { duration: 0.01 }],
+      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
+      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
+      [angle, Math.PI * 2, { duration: 0.01 }],
       [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
     ]);
   }
@@ -204,11 +209,13 @@ export const VectorToRedGreen: React.FC = () => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="font-medium mb-2">
-              Red
-              <span className="text-sm opacity-60"> (X axis)</span>
+            <div className="font-medium">
+              Red: <motion.span>{r}</motion.span>
             </div>
-            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full">
+            <div className="font-medium text-sm">
+              X axis: <motion.span>{nxText}</motion.span>
+            </div>
+            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
               <motion.div
                 className="absolute inset-0 rounded"
                 style={{
@@ -226,11 +233,13 @@ export const VectorToRedGreen: React.FC = () => {
             />
           </div>
           <div className="flex flex-col">
-            <div className="font-medium mb-2">
-              Green
-              <span className="text-sm opacity-60"> (Y axis)</span>
+            <div className="font-medium">
+              Green: <motion.span>{g}</motion.span>
             </div>
-            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full">
+            <div className="font-medium text-sm">
+              Y axis: <motion.span>{nyText}</motion.span>
+            </div>
+            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
               <motion.div
                 className="absolute inset-0 rounded"
                 style={{
