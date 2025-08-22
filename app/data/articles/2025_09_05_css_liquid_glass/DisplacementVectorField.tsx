@@ -127,7 +127,7 @@ export const DisplacementVectorField: React.FC = () => {
       [projectRayOnSurfaceProgress, 1, { duration: 0.6, ease: "easeInOut" }],
       [normalisationProgress, 1, { duration: 0.8, ease: "easeInOut" }],
       [xAxisRotation, 65, { type: "spring", duration: 1, bounce: 0.13 }],
-      [revolutionProgress, 1, { duration: 2, ease: "easeInOut" }],
+      [revolutionProgress, 1, { duration: 2, ease: "easeInOut", at: "-0.6" }],
       [
         xAxisRotation,
         0,
@@ -395,7 +395,18 @@ export const DisplacementVectorField: React.FC = () => {
       <div className="absolute bottom-0 right-4 flex items-end justify-center gap-2">
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => bezelHeightFn_target.set(CONVEX_BEZEL_FN)}
+          onClick={async () => {
+            await animate(xAxisRotation, 65, {
+              duration: 0.6,
+              ease: "easeInOut",
+            });
+            bezelHeightFn_target.set(CONVEX_BEZEL_FN);
+            animate(xAxisRotation, 0, {
+              duration: 0.6,
+              ease: "easeInOut",
+              delay: 1,
+            });
+          }}
         >
           <SplineIcon
             size={20}
@@ -405,7 +416,18 @@ export const DisplacementVectorField: React.FC = () => {
 
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => bezelHeightFn_target.set(CONCAVE_BEZEL_FN)}
+          onClick={async () => {
+            await animate(xAxisRotation, 65, {
+              duration: 0.6,
+              ease: "easeInOut",
+            });
+            bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
+            animate(xAxisRotation, 0, {
+              duration: 0.6,
+              ease: "easeInOut",
+              delay: 1,
+            });
+          }}
         >
           <SplineIcon
             size={20}
@@ -415,7 +437,18 @@ export const DisplacementVectorField: React.FC = () => {
 
         <button
           className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={() => bezelHeightFn_target.set(LIP_BEZEL_FN)}
+          onClick={async () => {
+            await animate(xAxisRotation, 65, {
+              duration: 0.6,
+              ease: "easeInOut",
+            });
+            bezelHeightFn_target.set(LIP_BEZEL_FN);
+            animate(xAxisRotation, 0, {
+              duration: 0.6,
+              ease: "easeInOut",
+              delay: 1,
+            });
+          }}
         >
           <SplineIcon
             size={20}
