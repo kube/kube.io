@@ -1,16 +1,10 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { LogoStatic } from "../../../components/Logo";
 import { Filter } from "./Filter";
-
-// Tiny helper to request a centered cropped Unsplash image at a given width
-const unsplashUrl = (id: string, width?: string) =>
-  `https://images.unsplash.com/${id}?fit=crop&crop=center${
-    width ? `&w=${width}` : ""
-  }`;
+import coverAUrl from "./images/cover.jpg";
 
 export const ParallaxImageHero: React.FC = () => {
   const filterId = "parallax-image-hero-filter";
-  const unsplashPhotoId = "photo-1487139975590-b4f1dce9b035"; // change to taste
 
   // Parallax
   const parallaxBaseOffset = -90;
@@ -36,9 +30,11 @@ export const ParallaxImageHero: React.FC = () => {
       <motion.div
         className="relative aspect-[5/3] w-full overflow-hidden rounded-xl bg-red-300 flex items-center justify-center"
         style={{
-          backgroundImage: `url(${unsplashUrl(unsplashPhotoId, "1000")})`,
+          backgroundImage: `url(${coverAUrl})`,
           backgroundSize: "cover",
-          backgroundPositionY: backgroundParallaxOffset,
+          backgroundPositionY: useTransform(
+            () => 80 + backgroundParallaxOffset.get()
+          ),
         }}
       >
         {/* Firefox-compatible: apply filter to an SVG <image> overlay instead of CSS filter */}
@@ -49,8 +45,8 @@ export const ParallaxImageHero: React.FC = () => {
           color-interpolation-filters="sRGB"
           style={{
             pointerEvents: "none",
-            borderRadius: `100%`,
-            boxShadow: "0 2px 20px rgba(0,0,0,0.2)",
+            borderRadius: "100%",
+            boxShadow: "0 2px 20px rgba(0,0,0,0.1)",
           }}
         >
           <Filter
@@ -67,10 +63,12 @@ export const ParallaxImageHero: React.FC = () => {
           />
           <g filter={`url(#${filterId})`}>
             <motion.image
-              href={unsplashUrl(unsplashPhotoId, "800")}
-              width="100%"
-              preserveAspectRatio="xMidYMid slice"
-              style={{ y: backgroundParallaxOffset }}
+              href={coverAUrl}
+              width="362%"
+              style={{
+                x: -195,
+                y: useTransform(() => backgroundParallaxOffset.get()),
+              }}
             />
           </g>
         </svg>
@@ -87,8 +85,8 @@ export const ParallaxImageHero: React.FC = () => {
             <LogoStatic
               className="w-20"
               gradientId="parallax-image-hero-logo-gradient"
-              gradientFrom="rgba(255,255,255,0.6)"
-              gradientTo="rgba(255,255,255,0.9)"
+              gradientFrom="rgba(0,0,0,0.6)"
+              gradientTo="rgba(0,0,0,0.9)"
             />
           </motion.div>
         </motion.button>
