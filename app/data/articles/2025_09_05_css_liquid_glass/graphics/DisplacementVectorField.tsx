@@ -14,9 +14,9 @@ import {
   ConvexButton,
   LipButton,
   ReplayButton,
-} from "./Buttons";
-import { calculateDisplacementMap } from "./displacementMap";
-import { getRayColor } from "./rayColor";
+} from "../components/Buttons";
+import { calculateDisplacementMap } from "../lib/displacementMap";
+import { getRayColor } from "../lib/rayColor";
 
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
 const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
@@ -400,7 +400,7 @@ export const DisplacementVectorField: React.FC = () => {
         </motion.g>
       </svg>
 
-  <div className="mt-4 px-4 flex items-center">
+      <div className="mt-4 px-4 flex items-center">
         <div className="flex-1" />
         <div className="flex items-center gap-3">
           <ConvexButton

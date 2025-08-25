@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import { LogoStatic } from "../../../components/Logo";
-import { Filter } from "./Filter";
-import coverAUrl from "./images/cover.jpg";
+import { LogoStatic } from "../../../../components/Logo";
+import { Filter } from "../components/Filter";
+import coverAUrl from "../images/cover.jpg";
 
 export const ParallaxImageHero: React.FC = () => {
   const filterId = "parallax-image-hero-filter";

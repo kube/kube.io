@@ -6,8 +6,8 @@ import {
   ConvexButton,
   LipButton,
   ReplayButton,
-} from "./Buttons";
-import { getRayColor } from "./rayColor";
+} from "../components/Buttons";
+import { getRayColor } from "../lib/rayColor";
 
 // Bezel profiles
 const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);

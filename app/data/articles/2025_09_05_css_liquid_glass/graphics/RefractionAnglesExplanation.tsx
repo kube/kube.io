@@ -2,7 +2,7 @@ import { RotateCcwIcon } from "lucide-react";
 import { animate } from "motion";
 import { motion, useInView, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getRayColor } from "./rayColor";
+import { getRayColor } from "../lib/rayColor";
 
 function calculateRefractionAngle(
   n1: number,
@@ -484,7 +484,10 @@ export const RefractionAnglesExplanation: React.FC = () => {
 
         {/* n2 Slider visuals (rail moves, thumb fixed at label's right) */}
         <g
-          style={{ pointerEvents: "none", display: draggingN2 ? undefined : "none" }}
+          style={{
+            pointerEvents: "none",
+            display: draggingN2 ? undefined : "none",
+          }}
           transform={`translate(0 ${railTranslateY})`}
         >
           <line
@@ -502,7 +505,11 @@ export const RefractionAnglesExplanation: React.FC = () => {
           cy={labelY}
           r={handleRadius}
           className="fill-cyan-500 dark:fill-cyan-500 stroke-white/70"
-          style={{ cursor: "ns-resize", pointerEvents: "none", display: draggingN2 ? undefined : "none" }}
+          style={{
+            cursor: "ns-resize",
+            pointerEvents: "none",
+            display: draggingN2 ? undefined : "none",
+          }}
         />
       </motion.svg>
 

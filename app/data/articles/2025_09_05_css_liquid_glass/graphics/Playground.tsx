@@ -6,13 +6,13 @@ import {
   useTransform,
 } from "motion/react";
 import { useId, useState } from "react";
-import { ConcaveButton, ConvexButton, LipButton } from "./Buttons";
-import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
+import { ConcaveButton, ConvexButton, LipButton } from "../components/Buttons";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
-} from "./displacementMap";
-import { imageDataToUrl } from "./imageDataToUrl";
+} from "../lib/displacementMap";
+import { imageDataToUrl } from "../lib/imageDataToUrl";
+import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 
 type BezelFn = (x: number) => number;
 const CONCAVE: BezelFn = (x) => 1 - Math.sqrt(1 - (1 - x) ** 2);

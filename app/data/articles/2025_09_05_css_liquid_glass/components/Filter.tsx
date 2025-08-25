@@ -4,10 +4,9 @@ import React from "react";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
-} from "./displacementMap";
-import { LiquidGlassProps } from "./LiquidGlass";
-import { calculateRefractionSpecular } from "./specular";
-import { getValueOrMotion } from "./useValueOrMotion";
+} from "../lib/displacementMap";
+import { calculateRefractionSpecular } from "../lib/specular";
+import { getValueOrMotion } from "../lib/useValueOrMotion";
 
 function imageDataToUrl(imageData: ImageData): string {
   const canvas = createCanvas(imageData.width, imageData.height);
@@ -25,7 +24,16 @@ type FilterProps = {
   scaleRatio?: MotionValue<number>;
   canvasWidth?: number;
   canvasHeight?: number;
-} & LiquidGlassProps;
+  blur: number | MotionValue<number>;
+  width: number | MotionValue<number>;
+  height: number | MotionValue<number>;
+  radius: number | MotionValue<number>;
+  glassThickness: number | MotionValue<number>;
+  bezelWidth: number | MotionValue<number>;
+  refractiveIndex: number | MotionValue<number>;
+  specularOpacity: number | MotionValue<number>;
+  bezelHeightFn?: (x: number) => number;
+};
 
 export const Filter: React.FC<FilterProps> = ({
   id,
