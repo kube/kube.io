@@ -1,4 +1,4 @@
-import { Vector, Matrix } from "@kube/math";
+import { Matrix, Vector } from "@kube/math";
 
 export function createCubeStripes(
   STRIPES_COUNT = 3,

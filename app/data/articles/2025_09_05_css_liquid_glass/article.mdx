@@ -1,0 +1,357 @@
+---
+title: Recreating Apple Liquid Glass with CSS & SVG
+slug: css-liquid-glass
+description: Explore how to recreate Apple's stunning Liquid Glass effect using CSS, SVG Displacement Maps, and refraction calculations.
+date: 2025-09-06
+---
+
+import { SiGooglechrome } from "react-icons/si";
+import { Checkbox } from "./components/Checkbox";
+import { Functions } from "./components/Functions";
+import { Slider } from "./components/Slider";
+import { DisplacementVectorField } from "./graphics/DisplacementVectorField";
+import { ParallaxImageHero } from "./graphics/ParallaxImageHero";
+import { Playground } from "./graphics/Playground";
+import { RayRefractionSimulation } from "./graphics/RayRefractionSimulation";
+import { RefractionAnglesExplanation } from "./graphics/RefractionAnglesExplanation";
+import { VectorToRedGreen } from "./graphics/VectorToRedGreen";
+
+<ParallaxImageHero />
+
+# Introduction
+
+Apple [introduced the Liquid Glass effect during WWDC 2025](https://www.youtube.com/watch?v=jGztGfRujSE) in June. This piece is a hands‑on exploration of how to recreate a similar, physics‑inspired UI effect on the web using CSS, SVG displacement maps, and refraction math. Over a decade ago I wrote a tiny [raytracer](https://www.youtube.com/watch?v=1JoTZg4Ulo0) at school; it only did reflections, but it planted the seed for my curiosity about how light bends.
+
+Instead of chasing pixel‑perfect parity, we’ll approximate Liquid Glass, recreating the core refraction and a specular highlight, as a focused proof‑of‑concept you can extend.
+
+We’ll now build up the effect from first principles—starting with how light bends.
+
+<div className="relative my-16">
+  {/* Glow frame */}
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  {/* Card */}
+  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+    <div className="flex items-center gap-3">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white">
+        <SiGooglechrome className="h-6 w-6" />
+      </div>
+      <div className="text-sm leading-6">
+        <p className="font-semibold tracking-wide text-base">
+          Chrome‑only demo
+        </p>
+        <p className="opacity-80">
+          The interactive demo at the end currently works in Chrome only (due to
+          SVG filters as backdrop‑filter).
+        </p>
+        <p className="opacity-80">
+          You can still read the article and interact with the inline
+          simulations in other browsers.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+# Understanding Refraction
+
+Refraction is the change in direction (bending) of a wave (in our case a light wave) as it passes between media with different refractive indices, caused by a change in propagation speed.
+The relationship between the incident and refracted angles is given by Snell's Law:
+
+<div className="pt-6 w-full flex justify-center">
+  $$ n_1 \sin(\theta_1) = n_2 \sin(\theta_2) $$
+</div>
+
+<div className="text-base grid grid-cols-1 sm:grid-cols-[65%_35%] gap-1 p-7">
+
+$$n_1 = \text{refractive index of first medium}$$
+
+$$\theta_1 = \text{angle of incidence}$$
+
+$$n_2 = \text{refractive index of second medium}$$
+
+$$\theta_2 = \text{angle of refraction}$$
+
+</div>
+
+<RefractionAnglesExplanation />
+
+When light travels from a higher refractive index medium into a lower one, Snell's Law eventually has no real solution beyond a critical angle: the wave undergoes total internal reflection instead of refracting out. To keep things focused we avoid that branch of behavior by constraining the scenario. We will:
+
+- Treat the ambient medium as air with index 1.
+- Use materials with refractive index > 1 (so rays always enter the higher index first).
+- Consider only a single refraction event (ignore any later exit / second refraction).
+- Assume incident rays start orthogonal to the background plane.
+
+Under these assumptions every ray we care about has a well-defined refracted direction via Snell's Law, and we can postpone handling internal reflection or multi-interface paths.
+
+> If you want to understand a it more about why refraction works like this, check out this [video by Veritasium about Infinite Paths](https://www.youtube.com/watch?v=qJZ1Ez28C-A). Though what we'll do here is simply applying Snell's Law to calculate the refraction angle based on the incident angle and the refractive index of the glass.
+
+## Limitations in this project
+
+We will also simplify the geometry of any refracting object:
+
+- Objects are defined by a 2D footprint (plan shape) that lies in a plane strictly parallel to the background. (No 3D shapes, no perspective).
+- There is no physical gap between the object and the background plane (they are in contact).
+- Two parameters can vary: its bezel (edge transition) and its thickness (peak height above the background).
+
+# Surface Function
+
+Surface height across the bezel is described by a single, continuous, differentiable function f over the normalized interval [0,1]. Because incoming rays are orthogonal to the background, the height at a point depends only on its normalized inward distance from the object's outer border. We call this distanceFromSide, defined as the ratio between the start of the bezel (0 at the outer border) and the end of the bezel (1 where the bezel transitions to the flat interior).
+
+```ts
+const height = f(distanceFromSide);
+```
+
+From the height we can calculate the angle of incidence, which is the angle between the incoming ray and the normal to the surface at that point. The normal is simply the derivative of the height function at that point, rotated by -90 degrees:
+
+```ts
+const delta = 0.001; // Small value to approximate derivative
+const y1 = f(distanceFromSide - delta);
+const y2 = f(distanceFromSide + delta);
+const derivative = (y2 - y1) / (2 * delta);
+const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
+```
+
+For this article, we will use three different height functions to demonstrate the effect of the surface shape on the refraction:
+
+<Functions />
+
+## Simulation
+
+<RayRefractionSimulation />
+
+You can see in the above simulations that in concave surfaces, the light ray can go outside of the glass, while in convex surfaces it always stays inside.
+
+Displacing the ray OUTSIDE of the object is less performant, and Apple seems to only do convex surfaces (with the exception of the Switch and Slider components, which we will cover later). It is important then to understand that the final displacement will be less performant if we try to simulate concave surfaces.
+
+# Displacement Vector Field
+
+Now that we know how to calculate the displacement at a distance from border, let's calculate the displacement vector field for the entire glass surface.
+
+The vector field here just describes at every position on the glass surface how much the light ray is displaced from its original position. This displacement is a vector calculated based on the angle of incidence and the refractive index of the glass.
+
+The translational symmetry along the edge normal allows us to re-use the same displacement magnitudes all around the bezel.
+The only constraint being that the displacement vector will be oriented along the normal at the border.
+
+<DisplacementVectorField />
+
+```ts
+displacementVector = {
+  angle: normalAtBorder,
+  magnitude: displacementMagnitude, // Calculated based on the angle of incidence and refractive index
+};
+```
+
+## Normalizing vectors
+
+To use these vectors in a displacement map, we need to normalize them. Normalization means scaling the vectors so that their maximum magnitude is 1, which allows us to represent them in a fixed range.
+
+```ts
+displacementVector_normalized = {
+  angle: normalAtBorder,
+  magnitude: displacementMagnitude / maximumDisplacement, // Normalize the magnitude to be between 0 and 1
+};
+```
+
+# SVG Displacement Map
+
+## What is a Displacement Map?
+
+A displacement map is an image that defines how pixels in a target image should be displaced. In our case, we will use a displacement map to create the distortion effect of the Liquid Glass.
+
+Displacement maps are typically images with each pixel encoding a vector in multiple channels (e.g., RGB).
+
+SVG's `<feDisplacementMap />` encodes these pixels in a 32 bit RGBA image, where each channel represents a different axis of displacement.
+
+It's up to the user to define which channel corresponds to which axis, but it is important to understand the constraint:
+Because each channel is 8 bits, the displacement is limited to a range of -128 to 127 pixels in each direction. (256 values possible in total).
+128 is the neutral value, meaning no displacement.
+
+SVG filters can only use images as displacement maps, so we need to convert our displacement vector field into an image format.
+
+```tsx
+<svg color-interpolation-filters="sRGB">
+  <filter id={id}>
+    <feImage
+      href={displacementMapDataUrl}
+      x={0}
+      y={0}
+      width={width}
+      height={height}
+      result="displacement_map"
+    />
+    <feDisplacementMap
+      in="SourceGraphic"
+      in2="displacement_map"
+      scale={scale}
+      xChannelSelector="R" // Red Channel for displacement in X axis
+      yChannelSelector="G" // Green Channel for displacement in Y axis
+    />
+  </filter>
+</svg>
+```
+
+`<feDisplacementMap />` uses the red channel for the X axis and the green channel for the Y axis. The blue and alpha channels are ignored.
+
+## Scale
+
+The Red (X) and Green (Y) channels are 8‑bit values (0–255). Interpreted without any extra scaling, they map linearly to a normalized displacement in [−1, 1], with 128 as the neutral value (no displacement):
+
+$$
+\begin{aligned}
+0 &\mapsto -1 \\
+128 &\mapsto 0 \\
+255 &\mapsto 1
+\end{aligned}
+$$
+
+The `scale` attribute of `<feDisplacementMap />` multiplies this normalized amount:
+
+$$
+\begin{aligned}
+0 &\mapsto -scale \\
+128 &\mapsto 0 \\
+255 &\mapsto scale
+\end{aligned}
+$$
+
+Because our vectors are normalized using the maximum possible displacement (in pixels) as the unit, we can reuse that maximum directly as the filter’s `scale`:
+
+```tsx
+<feDisplacementMap
+  in="SourceGraphic"
+  in2="displacement_map"
+  scale={maximumDisplacement} // max displacement (px) → real pixel shift
+  xChannelSelector="R"
+  yChannelSelector="G"
+/>
+```
+
+You can also animate `scale` to fade the effect in/out—no need to recompute the map (useful for artistic control even if not physically exact).
+
+## Vector to Red-Green values
+
+To convert our displacement vector field into a displacement map, we need to convert each vector into a color value. The red channel will represent the X component of the vector, and the green channel will represent the Y component.
+
+We currently have polar coordinates (angle and magnitude) for each vector, so we need to convert them to Cartesian coordinates (X and Y) before mapping them to the red and green channels.
+
+```tsx
+const x = Math.cos(angle) * magnitude;
+const y = Math.sin(angle) * magnitude;
+```
+
+Because we normalised our vectors already, `magnitude` here is between 0 and 1.
+
+From here, we just remap the values to the range of 0 to 255 for the red and green channels:
+
+<VectorToRedGreen />
+
+```tsx
+const result = {
+  r: 128 + x * 127, // Red channel is the X component, remapped to 0-255
+  g: 128 + y * 127, // Green channel is the Y component, remapped to 0-255
+  b: 128, // Blue channel is ignored
+  a: 255, // Alpha channel is fully opaque
+};
+```
+
+After converting every vector in the map to color value, we get an image that can be used as a displacement map in the SVG filter.
+
+## Playground
+
+This playground applies the SVG displacement filter to a simple scene and lets you tweak surface shape, bezel width, glass thickness, and effect scale. Watch how these inputs change the refraction field, the generated displacement map, and the final rendering.
+
+<Playground />
+
+# Creating Components
+
+With the refraction math and displacement map in place, the next step is packaging them into real-world UI components.
+
+## SVG Filter as `backdrop-filter`
+
+<div className="relative my-8">
+  {/* Glow frame */}
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  {/* Card */}
+  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+    <div className="flex items-center gap-3">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white">
+        <SiGooglechrome className="h-6 w-6" />
+      </div>
+      <div className="text-sm leading-6">
+        <p className="font-semibold tracking-wide text-base">
+          Chrome‑specific feature
+        </p>
+        <p className="opacity-80">
+          Chrome allows using SVG filters as <code>backdrop-filter</code>, which
+          isn’t part of the CSS spec.
+        </p>
+        <p className="opacity-80">
+          Above, we used regular <code>filter</code> so it’s viewable in
+          Safari/Firefox.
+        </p>
+        <p className="opacity-80">
+          The next components use <code>backdrop-filter</code>, so they’re
+          Chrome‑only.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
+
+```css
+.glass-panel {
+  backdrop-filter: url(#liquidGlassFilterId);
+}
+```
+
+Now that we have all the pieces in place, we can create components that use this effect.
+
+## Switch
+
+Switch uses a lipped bezel, which is a bit more complex than the simple convex bezel we used for the glass panel.
+
+The lip makes the surface convex on the outside and concave in the middle, which make the center slider zoomed out, while the edges refract the inside.
+
+<Checkbox />
+
+## Slider
+
+Slider re-uses the same logic as the Switch, and lets user see the current value of the slider behind the thumb glass.
+
+<Slider />
+
+# Conclusion
+
+This proof‑of‑concept reconstructs the core of Apple’s Liquid Glass look by focusing on refraction and a displacement workflow using pure CSS + SVG. While it already yields a convincing, extensible effect, today it’s Chrome‑only because Chrome uniquely lets SVG filters act as backdrop-filter.
+
+The approach is intentionally minimal, to make it easy to understand and extend. The core steps are:
+
+$$
+surface → normals → refraction → vector field → displacement map
+$$
+
+Each step is swappable (better height functions, different optical models, added highlights).
+
+## When to Use
+
+- Polished glassy panels, HUD cards, controls needing subtle depth.
+- Interfaces where motion + distortion can guide attention.
+- Electron applications, or every runtime that can afford Chrome‑only features.
+
+## Fallbacks for Non-Chrome Browsers
+
+Provide a graceful static blur / translucency for browsers without SVG backdrop support.
+
+## Next Steps
+
+- Add squircle / organic bezel profiles.
+- Optimize: replace base64 intermediates with SVG filter stages.
+- Expand component set (Switch, Slider) with parameter presets.
+- Support arbitrary shapes.
+
+## Performance Notes
+
+- Stay convex when possible; concave geometries increase overdraw and cost.

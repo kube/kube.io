@@ -24,6 +24,7 @@ export const scrollDerivedVariables = style({
     "--header-pattern-opacity": map([0, 160], [0, 40], "%"),
     "--navbar-opacity": threshold(200, [100, 0], "%"),
     "--navbar-translate-x": threshold(200, [0, -13], "px"),
+    "--navbar-z-index": threshold(200, [0, -10]),
     "--logo-width": map([70, 160], [54, 38], "px"),
     "--header-blur": map([150, 220], [0, 9], "px"),
     "--margin-top": map([0, 160], [70, 0], "px"),

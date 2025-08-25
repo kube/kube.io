@@ -6,11 +6,7 @@ export default [
   index("./routes/hello/page.tsx"),
   route("cv", "./routes/cv/page.tsx"),
   route("cv.pdf", "./routes/cv/pdf.tsx"),
-  ...(FLAGS.BLOG
-    ? [
-        route("blog", "./routes/blog/index.tsx"),
-        route("blog/:slug", "./routes/blog/post.tsx"),
-      ]
-    : []),
+  route("blog", "./routes/blog/index.tsx"),
+  route("blog/:slug", "./routes/blog/post.tsx"),
   ...(FLAGS.WORKSHOP ? [route("workshop", "./routes/workshop/page.tsx")] : []),
 ] satisfies RouteConfig;

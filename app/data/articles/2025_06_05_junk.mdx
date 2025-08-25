@@ -1,0 +1,111 @@
+---
+title: Junk for Testing Mermaid
+slug: junk-for-testing-mermaid
+date: 2025-06-09
+description: A quick intro to my blog, sharing my 12-year journey in software development with TypeScript and Node.js, and my plans to explore new projects, insights, and software design principles here.
+---
+
+
+# Hello
+
+This is the problem
+
+I recently decided to use recent CSS features in my website, like Scroll-Timeline animations, and View Transitions.
+
+CSS is always a domain in which I feel that I don't have the basics.
+
+It is an awesome tool, which seems to be very powerful, but I never took the time to learn it properly.
+
+It is also a domain in which there is a lot of abstraction, and almost nobody use the system as it is intended to be used.
+
+For instance, most people (including me), use an higher-level framework like Tailwind, or CSS-in-JS libraries like styled-components, or Emotion.
+
+For animations, I was previously using `motion` (previously `framer-motion`) to animate the header on scroll, and for page transitions on page titles.
+
+Motion is a really powerful library, but like all JavaScript ...
+
+
+## Second-level heading
+
+```ts
+const x = 42 + 1337;
+```
+
+```ts hello
+const x = 42 + 1337;
+console.log(x);
+```
+```ts world
+const x = 42 + 1337;
+console.log(x);
+```
+
+```mermaid
+graph LR
+  A -. hello .-> B
+  B --> C
+  C --> D
+```
+
+## Second Example
+
+### TFM API
+
+```mermaid
+graph BT
+  classDef database fill:#d99e1e,color:black;
+
+  subgraph TFM API
+    Database[(Database)]:::database
+    Resolver((Resolver))
+
+    Resolver --> Database
+  end
+
+  subgraph PollyJS Mocks
+    MA(("{A}"))
+    MB(("{B}"))
+    MC(("{C}"))
+    MD(("{D}"))
+    ME(("{E}"))
+  end
+
+  subgraph Requests
+    A((A))
+    B((B))
+    C((C))
+    D((D))
+    E((E))
+  end
+
+  A --> MA --> Resolver
+  B --> MB --> Resolver
+  C --> MC --> Resolver
+  D --> MD --> Resolver
+  E --> ME --> Resolver
+```
+
+## Third Example
+
+```mermaid
+graph LR
+  classDef database fill:#d99e1e,color:black;
+  classDef frontend fill:#6F549A,color:white;
+  classDef api fill:#CA2A8A,color:white;
+
+  Frontend([Frontend]):::frontend
+    --> Internet
+    --> VPN
+    --> API((API)):::api
+    --> DB[(Database)]:::database
+```
+
+## Fourth Example
+
+```mermaid
+graph BT
+  VirtualServer
+  VirtualCLI -.Instantiates.-> VirtualServer
+  VirtualCLI -.Exposes.-> VirtualDashboard
+  VirtualDashboard --> VirtualServer
+```
