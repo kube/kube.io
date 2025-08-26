@@ -232,7 +232,7 @@ export const RayRefractionSimulationMini: React.FC<
           }
           Z`}
           fill="rgba(60, 60, 90, 0.1)"
-          stroke="rgba(120, 120, 150, 0.3)"
+          stroke="rgba(120, 120, 150, 0.4)"
           strokeWidth="2"
         />
         <rect

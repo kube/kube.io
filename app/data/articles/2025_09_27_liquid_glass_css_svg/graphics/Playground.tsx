@@ -230,7 +230,7 @@ export const Playground: React.FC = () => {
 
       <div className={`${panel}`}>
         <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>
-          Pre-calculated Displacements
+          Calculated Displacements
         </h4>
         <div className="text-sm">
           <motion.svg
@@ -256,7 +256,11 @@ export const Playground: React.FC = () => {
                 orient="auto"
                 markerUnits="strokeWidth"
               >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+                <path
+                  d="M 0 0 L 10 5 L 0 10 z"
+                  fill="currentColor"
+                  opacity="0.3"
+                />
               </marker>
             </defs>
             <motion.path
@@ -264,6 +268,7 @@ export const Playground: React.FC = () => {
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
+              strokeOpacity="0.7"
               strokeLinecap="round"
             />
             <line
@@ -273,6 +278,7 @@ export const Playground: React.FC = () => {
               x2={width}
               stroke="currentColor"
               strokeWidth="1"
+              strokeOpacity="0.34"
             />
             <line
               x1={-1}
@@ -281,17 +287,19 @@ export const Playground: React.FC = () => {
               y2={0}
               stroke="currentColor"
               strokeWidth="1"
+              strokeOpacity="0.34"
               markerEnd="url(#axisArrow)"
             />
             <text
-              x={0}
+              x={-10}
               y={-12}
               alignmentBaseline="middle"
               textAnchor="end"
               transform="rotate(-90 0 0)"
               fill="currentColor"
+              opacity="0.6"
             >
-              Ray displacement on background
+              Displacement on background
             </text>
             <line
               x1={0}
@@ -300,14 +308,16 @@ export const Playground: React.FC = () => {
               y2={height}
               stroke="currentColor"
               strokeWidth="1"
+              strokeOpacity="0.28"
               markerEnd="url(#axisArrow)"
             />
             <text
-              x={width}
+              x={width - 10}
               y={height + 12}
               alignmentBaseline="middle"
               textAnchor="end"
               fill="currentColor"
+              opacity="0.5"
             >
               Distance to border
             </text>
