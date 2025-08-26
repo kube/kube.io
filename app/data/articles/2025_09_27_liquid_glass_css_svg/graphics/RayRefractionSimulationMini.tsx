@@ -265,12 +265,12 @@ export const RayRefractionSimulationMini: React.FC<
 
           L ${glassX + glassWidth - bezelWidth} ${
             glassY + glassThickness + bezelWidth
-          }
-          Z`}
+          }`}
           fill="rgba(60, 60, 90, 0.1)"
           stroke="rgba(120, 120, 150, 0.4)"
           strokeWidth="1.5"
         />
+
         <rect
           width={backgroundWidth}
           height={backgroundHeight}

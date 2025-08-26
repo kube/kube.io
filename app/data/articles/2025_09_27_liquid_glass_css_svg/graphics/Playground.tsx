@@ -284,10 +284,10 @@ export const Playground: React.FC = () => {
               </marker>
             </defs>
             <motion.path
-              d={pathData as unknown as string}
+              d={pathData}
               fill="none"
               stroke="currentColor"
-              strokeWidth="3"
+              strokeWidth="2.5"
               strokeOpacity="0.7"
               strokeLinecap="round"
             />
