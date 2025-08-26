@@ -313,9 +313,8 @@ export const RayRefractionSimulation: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
       <motion.svg
-        className="w-full"
         viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns="http://www.w3.org/2000/svg"
         onClick={(e) =>

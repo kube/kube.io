@@ -1,19 +1,20 @@
 ---
-title: Recreating Apple Liquid Glass with CSS & SVG
-slug: css-liquid-glass
+title: "Liquid Glass in the Browser: Refraction with CSS and SVG"
+slug: liquid-glass-css-svg
 description: Explore how to recreate Apple's stunning Liquid Glass effect using CSS, SVG Displacement Maps, and refraction calculations.
-date: 2025-09-06
+date: 2025-09-27
+published: true
 ---
 
 import { SiGooglechrome } from "react-icons/si";
-import { Checkbox } from "./components/Checkbox";
 import { Functions } from "./components/Functions";
-import { Slider } from "./components/Slider";
 import { DisplacementVectorField } from "./graphics/DisplacementVectorField";
 import { ParallaxImageHero } from "./graphics/ParallaxImageHero";
 import { Playground } from "./graphics/Playground";
 import { RayRefractionSimulation } from "./graphics/RayRefractionSimulation";
 import { RefractionAnglesExplanation } from "./graphics/RefractionAnglesExplanation";
+import { Slider } from "./graphics/Slider";
+import { Switch } from "./graphics/Switch";
 import { VectorToRedGreen } from "./graphics/VectorToRedGreen";
 
 <ParallaxImageHero />
@@ -75,7 +76,7 @@ $$\theta_2 = \text{angle of refraction}$$
 
 <RefractionAnglesExplanation />
 
-When light travels from a higher refractive index medium into a lower one, Snell's Law eventually has no real solution beyond a critical angle: the wave undergoes total internal reflection instead of refracting out. To keep things focused we avoid that branch of behavior by constraining the scenario. We will:
+When light travels from a higher refractive index medium into a lower one, Snell's Law eventually has no real solution beyond a critical angle: the wave undergoes [Total Internal Reflection](https://en.wikipedia.org/wiki/Total_internal_reflection) instead of refracting out. To keep things focused we avoid that branch of behavior by constraining the scenario. We will:
 
 - Treat the ambient medium as air with index 1.
 - Use materials with refractive index > 1 (so rays always enter the higher index first).
@@ -154,8 +155,6 @@ displacementVector_normalized = {
 ```
 
 # SVG Displacement Map
-
-## What is a Displacement Map?
 
 A displacement map is an image that defines how pixels in a target image should be displaced. In our case, we will use a displacement map to create the distortion effect of the Liquid Glass.
 
@@ -315,7 +314,7 @@ Switch uses a lipped bezel, which is a bit more complex than the simple convex b
 
 The lip makes the surface convex on the outside and concave in the middle, which make the center slider zoomed out, while the edges refract the inside.
 
-<Checkbox />
+<Switch />
 
 ## Slider
 
@@ -335,23 +334,23 @@ $$
 
 Each step is swappable (better height functions, different optical models, added highlights).
 
-## When to Use
+### When to Use
 
 - Polished glassy panels, HUD cards, controls needing subtle depth.
 - Interfaces where motion + distortion can guide attention.
 - Electron applications, or every runtime that can afford Chrome‑only features.
 
-## Fallbacks for Non-Chrome Browsers
+### Fallbacks for Non-Chrome Browsers
 
 Provide a graceful static blur / translucency for browsers without SVG backdrop support.
 
-## Next Steps
+### Next Steps
 
 - Add squircle / organic bezel profiles.
 - Optimize: replace base64 intermediates with SVG filter stages.
 - Expand component set (Switch, Slider) with parameter presets.
 - Support arbitrary shapes.
 
-## Performance Notes
+### Performance Notes
 
 - Stay convex when possible; concave geometries increase overdraw and cost.

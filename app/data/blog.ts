@@ -4,6 +4,7 @@ export type Post = {
   date: string;
   description: string;
   content: any;
+  published?: boolean;
 };
 
 let posts: Post[] = [];
@@ -19,6 +20,7 @@ export function getAllPosts() {
       ...article.frontmatter,
       content: article.default,
     }))
+    .filter((post) => post.published !== false) // Only published posts
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return posts;

@@ -132,7 +132,7 @@ export const Playground: React.FC = () => {
 
   // Swiss-style panel + heading helpers
   const panel =
-    "relative rounded-sm border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60";
+    "relative rounded-lg border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden";
   const heading =
     "uppercase tracking-[0.15em] text-[10px] leading-none text-neutral-500 dark:text-neutral-400";
 
@@ -331,81 +331,79 @@ export const Playground: React.FC = () => {
         >
           Preview
         </h4>
-        <div className="text-sm">
-          <motion.svg
-            className="object-cover"
-            viewBox="0 0 400 300"
-            width="100%"
-            color-interpolation-filters="sRGB"
-          >
-            <defs>
-              <filter id={filterId}>
-                <motion.feImage
-                  href={displacementMapUrl as unknown as string}
-                  x={0}
-                  y={0}
-                  width={width}
-                  height={height}
-                  result="displacement_map"
-                />
-                <motion.feDisplacementMap
-                  in="SourceGraphic"
-                  in2="displacement_map"
-                  scale={scaleMotion}
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-              <pattern
-                id="grid"
-                x={-25}
-                y={-25}
-                width="50"
-                height="50"
-                patternUnits="userSpaceOnUse"
-              >
-                {/* Safari workaround: animate x/y instead of patternTransform */}
-                <animate
-                  attributeName="x"
-                  from="-25"
-                  to="25"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="y"
-                  from="-25"
-                  to="25"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-                <path
-                  d="M 50 0 L 0 0 0 50"
-                  fill="none"
-                  stroke="#D7E8E6"
-                  strokeWidth="3"
-                  opacity={0.8}
-                />
-              </pattern>
-              <linearGradient
-                id="doubleGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
-              >
-                <stop offset="0%" stopColor="#4FBDBB" /> {/* Top-left */}
-                <stop offset="50%" stopColor="#AFBDBB" /> {/* Center */}
-                <stop offset="100%" stopColor="#DFBDBB" /> {/* Bottom-right */}
-              </linearGradient>
-            </defs>
+        <motion.svg
+          className="object-cover"
+          viewBox="0 0 400 300"
+          height="100%"
+          color-interpolation-filters="sRGB"
+        >
+          <defs>
+            <filter id={filterId} colorInterpolationFilters="sRGB">
+              <motion.feImage
+                href={displacementMapUrl as unknown as string}
+                x={0}
+                y={0}
+                width={width}
+                height={height}
+                result="displacement_map"
+              />
+              <motion.feDisplacementMap
+                in="SourceGraphic"
+                in2="displacement_map"
+                scale={scaleMotion}
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+            <pattern
+              id="grid"
+              x={-25}
+              y={-25}
+              width="50"
+              height="50"
+              patternUnits="userSpaceOnUse"
+            >
+              {/* Safari workaround: animate x/y instead of patternTransform */}
+              <animate
+                attributeName="x"
+                from="-25"
+                to="25"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="y"
+                from="-25"
+                to="25"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+              <path
+                d="M 50 0 L 0 0 0 50"
+                fill="none"
+                stroke="#D7E8E6"
+                strokeWidth="3"
+                opacity={0.8}
+              />
+            </pattern>
+            <linearGradient
+              id="doubleGradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor="#4FBDBB" /> {/* Top-left */}
+              <stop offset="50%" stopColor="#AFBDBB" /> {/* Center */}
+              <stop offset="100%" stopColor="#DFBDBB" /> {/* Bottom-right */}
+            </linearGradient>
+          </defs>
 
-            <g filter={`url(#${filterId})`}>
-              <rect width="400" height="300" fill="url(#doubleGradient)" />
-              <rect width="400" height="300" fill="url(#grid)" />
-            </g>
-          </motion.svg>
-        </div>
+          <g filter={`url(#${filterId})`}>
+            <rect width="400" height="300" fill="url(#doubleGradient)" />
+            <rect width="400" height="300" fill="url(#grid)" />
+          </g>
+        </motion.svg>
       </div>
     </div>
   );

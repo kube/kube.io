@@ -1,8 +1,8 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { Filter } from "./Filter";
+import { Filter } from "../components/Filter";
 
-export const Checkbox: React.FC = () => {
+export const Switch: React.FC = () => {
   const [checked, setChecked] = useState(true);
   const motionChecked = useMotionValue(checked ? 1 : 0);
 
@@ -51,7 +51,7 @@ export const Checkbox: React.FC = () => {
   );
 
   return (
-    <div className="p-40 bg-slate-100 dark:bg-[#232328] rounded-xl">
+    <div className="p-40 bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)]">
       <motion.div
         style={{
           display: "inline-block",

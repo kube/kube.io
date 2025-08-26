@@ -1,7 +1,7 @@
 import { RotateCcwIcon } from "lucide-react";
 import { animate } from "motion";
 import { motion, useInView, useMotionValue, useTransform } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getRayColor } from "../lib/rayColor";
 
 function calculateRefractionAngle(
@@ -12,8 +12,8 @@ function calculateRefractionAngle(
   const ratio = n1 / n2;
   const s = ratio * Math.sin(theta1);
   // Clamp to avoid NaN when |s| > 1 (e.g., when n2 < n1 and beyond critical angle)
-  const clamped = Math.max(-1, Math.min(1, s));
-  const angle = Math.asin(clamped);
+  // const clamped = Math.max(-1, Math.min(1, s));
+  const angle = Math.asin(s);
   return angle;
 }
 
@@ -25,11 +25,28 @@ export const RefractionAnglesExplanation: React.FC = () => {
   }, [isInView]);
 
   const FIRST_MEDIUM_REFRACTIVE_INDEX = 1; // Air
-  // Second medium refractive index is user-controlled between 1 and 5
-  const [n2, setN2] = useState(1.5);
-  const n2MV = useMotionValue(n2);
+  // Second medium refractive index as MotionValue
+  const n2 = useMotionValue(1.5);
+  // Local display state to trigger re-render when MotionValue changes
+  const [n2Display, setN2Display] = useState(n2.get());
+  useEffect(() => {
+    const unsub = n2.on("change", (v) => setN2Display(v));
+    return () => unsub();
+  }, [n2]);
+  // Ref to the range input to update its value without re-render
+  const n2SliderRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    return n2.on("change", (v: number) => {
+      const el = n2SliderRef.current;
+      if (!el) return;
+      const newVal = String(v);
+      if (el.value !== newVal) {
+        el.value = newVal;
+      }
+    });
+  }, [n2]);
   const N2_MIN = 0.01;
-  const N2_MAX = 10;
+  const N2_MAX = 3;
 
   const INITIAL_RAY_ANGLE = Math.PI / 8; // 45 degrees
   const TARGET_RAY_ANGLE = (Math.PI * 7) / 8; // 135 degrees
@@ -55,7 +72,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const refractedToNormalAngle = useTransform(() =>
     calculateRefractionAngle(
       FIRST_MEDIUM_REFRACTIVE_INDEX,
-      n2MV.get(),
+      n2.get(),
       incidentToNormalAngle.get()
     )
   );
@@ -68,6 +85,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   function startAnimation() {
     currentAnimation.current?.stop();
 
+    n2.set(1.5);
     incidentRayProgress.set(0);
     refractedRayProgress.set(0);
     arcAngleProgress.set(0);
@@ -80,79 +98,34 @@ export const RefractionAnglesExplanation: React.FC = () => {
       [
         incidentRayAngle,
         TARGET_RAY_ANGLE,
-        { type: "spring", damping: 18, stiffness: 100 },
+        { type: "tween", ease: "easeInOut", duration: 1 },
       ],
       [
         incidentRayAngle,
         INITIAL_RAY_ANGLE,
-        { type: "spring", damping: 18, stiffness: 100 },
+        { type: "tween", ease: "easeInOut", duration: 1 },
       ],
+      [n2, 0.1, { type: "tween", ease: "easeInOut", duration: 2 }],
+      [
+        incidentRayAngle,
+        TARGET_RAY_ANGLE,
+        { type: "tween", ease: "easeInOut", duration: 1 },
+      ],
+      [
+        incidentRayAngle,
+        INITIAL_RAY_ANGLE,
+        { type: "tween", ease: "easeInOut", duration: 1 },
+      ],
+      [n2, 1.5, { type: "tween", ease: "easeInOut", duration: 2 }],
     ]);
   }
 
-  // Keep motion value in sync with React state
-  useEffect(() => {
-    n2MV.set(n2);
-  }, [n2]);
+  // MotionValue n2MV is the source of truth; no sync needed
 
   // Slider for n2: vertical at label x, always visible; label remains the control
   const labelTextRef = useRef<SVGTextElement | null>(null);
-  const [thumbX, setThumbX] = useState(26); // label x + small margin fallback
-  const sliderX = thumbX; // align with label right-side
-  const sliderTopY = centerY + 25;
-  const sliderBottomY = height - 20;
+
   const labelY = centerY + 13;
-  const handleRadius = 7;
-  const handleY =
-    sliderTopY +
-    ((n2 - N2_MIN) / (N2_MAX - N2_MIN)) * (sliderBottomY - sliderTopY);
-  const trackHalf = 30; // visible half-length around handle
-  const visibleTop = Math.max(
-    sliderTopY,
-    Math.min(sliderBottomY, handleY - trackHalf)
-  );
-  const visibleBottom = Math.max(
-    sliderTopY,
-    Math.min(sliderBottomY, handleY + trackHalf)
-  );
-  const railTranslateY = labelY - handleY; // move rail so current value aligns with fixed thumb
-
-  // Measure label to place thumb at the right-side of text
-  useLayoutEffect(() => {
-    const el = labelTextRef.current;
-    if (!el) return;
-    try {
-      const bbox = el.getBBox();
-      setThumbX(bbox.x + bbox.width + 6); // 6px gap to the right of label
-    } catch {
-      // ignore
-    }
-  }, [n2]);
-
-  const isDraggingN2 = useRef(false);
-  const [draggingN2, setDraggingN2] = useState(false);
-
-  function clientToLocalSVGPoint(clientX: number, clientY: number) {
-    const svg = svgRef.current;
-    if (!svg) return null;
-    const pt = svg.createSVGPoint();
-    pt.x = clientX;
-    pt.y = clientY;
-    const ctm = svg.getScreenCTM();
-    if (!ctm) return null;
-    const local = pt.matrixTransform(ctm.inverse());
-    return { x: local.x, y: local.y };
-  }
-
-  function updateN2FromPointer(clientX: number, clientY: number) {
-    const local = clientToLocalSVGPoint(clientX, clientY);
-    if (!local) return;
-    // Map pointer Y to [N2_MIN,N2_MAX] along vertical slider
-    const y = Math.min(Math.max(local.y, sliderTopY), sliderBottomY);
-    const t = (y - sliderTopY) / (sliderBottomY - sliderTopY);
-    const newN2 = N2_MIN + t * (N2_MAX - N2_MIN); // top=min, bottom=max
-    setN2(Number(newN2.toFixed(3)));
-  }
 
   return (
     <div className="relative w-full h-full">
@@ -161,7 +134,6 @@ export const RefractionAnglesExplanation: React.FC = () => {
         viewBox={`0 0 ${width} ${height}`}
         className="select-none"
         onPan={(e) => {
-          if (isDraggingN2.current) return;
           const svg = svgRef.current;
           if (!svg) return;
 
@@ -359,44 +331,8 @@ export const RefractionAnglesExplanation: React.FC = () => {
           textAnchor="left"
           fontSize="8"
           className="fill-slate-400 dark:fill-slate-500"
-          style={{ cursor: "ns-resize" }}
-          role="slider"
-          aria-valuemin={N2_MIN}
-          aria-valuemax={N2_MAX}
-          aria-valuenow={Number(n2.toFixed(2))}
-          aria-label="Second medium refractive index"
-          tabIndex={0}
-          onPointerDown={(e) => {
-            isDraggingN2.current = true;
-            setDraggingN2(true);
-            (e.currentTarget as Element).setPointerCapture(e.pointerId);
-            updateN2FromPointer(e.clientX, e.clientY);
-          }}
-          onPointerMove={(e) => {
-            if (!isDraggingN2.current) return;
-            updateN2FromPointer(e.clientX, e.clientY);
-          }}
-          onPointerUp={(e) => {
-            isDraggingN2.current = false;
-            setDraggingN2(false);
-            (e.currentTarget as Element).releasePointerCapture(e.pointerId);
-          }}
-          onPointerCancel={() => {
-            isDraggingN2.current = false;
-            setDraggingN2(false);
-          }}
-          onKeyDown={(e) => {
-            const step = 0.05;
-            if (e.key === "ArrowUp") {
-              setN2((v) => Math.max(N2_MIN, +(v - step).toFixed(3)));
-              e.preventDefault();
-            } else if (e.key === "ArrowDown") {
-              setN2((v) => Math.min(N2_MAX, +(v + step).toFixed(3)));
-              e.preventDefault();
-            }
-          }}
         >
-          Second Medium (n2 = {n2.toFixed(2)})
+          Second Medium (n2 = {n2Display.toFixed(2)})
         </motion.text>
 
         {/* Incident Ray */}
@@ -481,47 +417,47 @@ export const RefractionAnglesExplanation: React.FC = () => {
           strokeWidth={1}
           strokeDasharray={2}
         />
-
-        {/* n2 Slider visuals (rail moves, thumb fixed at label's right) */}
-        <g
-          style={{
-            pointerEvents: "none",
-            display: draggingN2 ? undefined : "none",
-          }}
-          transform={`translate(0 ${railTranslateY})`}
-        >
-          <line
-            x1={sliderX}
-            y1={visibleTop}
-            x2={sliderX}
-            y2={visibleBottom}
-            className="stroke-slate-300 dark:stroke-slate-600"
-            strokeWidth={4}
-            strokeLinecap="round"
-          />
-        </g>
-        <circle
-          cx={sliderX}
-          cy={labelY}
-          r={handleRadius}
-          className="fill-cyan-500 dark:fill-cyan-500 stroke-white/70"
-          style={{
-            cursor: "ns-resize",
-            pointerEvents: "none",
-            display: draggingN2 ? undefined : "none",
-          }}
-        />
       </motion.svg>
 
-      <button
-        className="group absolute bottom-4 right-4 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={startAnimation}
-      >
-        <RotateCcwIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
+      <div className="mt-4 w-full flex items-center">
+        {/* left spacer */}
+        <div className="flex-1" />
+
+        {/* centered slider */}
+        <div className=" backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-3">
+          <label
+            htmlFor="n2-slider"
+            className="text-xs text-slate-900/90 dark:text-slate-100/90"
+          >
+            n2
+          </label>
+          <input
+            id="n2-slider"
+            type="range"
+            min={N2_MIN}
+            max={N2_MAX}
+            step={0.01}
+            ref={n2SliderRef}
+            defaultValue={n2.get()}
+            onChange={(e) => n2.set(parseFloat(e.target.value))}
+            aria-label="Second medium refractive index"
+            className="w-56 accent-cyan-500"
+          />
+        </div>
+
+        {/* right-aligned replay button */}
+        <div className="flex-1 flex justify-end">
+          <button
+            className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+            onClick={startAnimation}
+          >
+            <RotateCcwIcon
+              size={20}
+              className="group-hover:scale-110 group-active:scale-90 transition-transform"
+            />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

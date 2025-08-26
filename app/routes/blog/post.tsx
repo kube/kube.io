@@ -83,17 +83,17 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
           <Article
             components={{
               h1: ({ children }) => (
-                <h1 className="text-[36px] leading-[38px] mt-[100px] font-bold font-sans">
+                <h1 className="text-[34px] sm:text-[38px] leading-[38px] mt-[120px] font-bold font-sans">
                   {children}
                 </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-[26px] leading-[28px] mt-[70px] font-bold font-sans">
+                <h2 className="text-[27px] leading-[28px] mt-[60px] font-bold font-sans">
                   {children}
                 </h2>
               ),
               h3: ({ children }) => (
-                <h3 className="text-[24px] leading-[26px] font-semibold font-sans">
+                <h3 className="text-[24px] leading-[26px] mt-[40px] font-semibold font-sans">
                   {children}
                 </h3>
               ),

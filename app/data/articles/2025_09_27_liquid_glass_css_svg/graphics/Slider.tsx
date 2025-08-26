@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { Filter } from "./Filter";
+import { Filter } from "../components/Filter";
 
 export const Slider: React.FC = () => {
   const min = 0;
@@ -39,13 +39,6 @@ export const Slider: React.FC = () => {
     stiffness: 2000,
   });
 
-  const buttonX = useSpring(
-    useTransform(() => `${motionValue.get()}%`),
-    {
-      damping: 60,
-      stiffness: 800,
-    }
-  );
   const backgroundOpacity = useSpring(
     useTransform(() => (isMouseDown.get() ? 0.1 : 1)),
     {
@@ -55,7 +48,7 @@ export const Slider: React.FC = () => {
   );
 
   return (
-    <div className="py-40 px-5 bg-slate-100 dark:bg-[#232328] rounded-xl">
+    <div className="py-40 px-5 bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)]">
       <motion.div
         ref={constraintsRef}
         style={{

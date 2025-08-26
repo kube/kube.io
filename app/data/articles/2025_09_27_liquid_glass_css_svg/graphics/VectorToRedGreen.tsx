@@ -142,140 +142,143 @@ export const VectorToRedGreen: React.FC = () => {
   }
 
   return (
-    <div
-      ref={wrapperRef}
-      className="relative w-full h-full grid grid-cols-2 select-none"
-    >
-      <motion.svg
-        viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
+    <>
+      <div
+        ref={wrapperRef}
+        className="relative h-full grid grid-cols-2 select-none -ml-[15px] w-[calc(100%+30px)]"
       >
-        <defs>
-          <marker
-            id="arrow-vrg"
-            markerWidth="4"
-            markerHeight="4"
-            refX="0"
-            refY="2"
-            orient="auto"
-          >
-            <motion.polygon points="0 0, 4 2, 0 4" fill={vectorColor} />
-          </marker>
-          <marker
-            id="dot-vrg"
-            markerWidth="2"
-            markerHeight="2"
-            refX="1"
-            refY="1"
-            orient="auto"
-          >
-            <motion.circle cx="1" cy="1" r="1" fill={vectorColor} />
-          </marker>
-        </defs>
+        <motion.svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+        >
+          <defs>
+            <marker
+              id="arrow-vrg"
+              markerWidth="4"
+              markerHeight="4"
+              refX="0"
+              refY="2"
+              orient="auto"
+            >
+              <motion.polygon points="0 0, 4 2, 0 4" fill={vectorColor} />
+            </marker>
+            <marker
+              id="dot-vrg"
+              markerWidth="2"
+              markerHeight="2"
+              refX="1"
+              refY="1"
+              orient="auto"
+            >
+              <motion.circle cx="1" cy="1" r="1" fill={vectorColor} />
+            </marker>
+          </defs>
 
-        {/* Vector in circle */}
-        <g>
-          <circle
-            cx={vectorCenterX}
-            cy={vectorCenterY}
-            r={radius}
-            fill="none"
-            strokeWidth={1}
-            className="stroke-slate-400/30 dark:stroke-slate-500/30 fill-slate-500/10 dark:fill-slate-500/10"
-          />
-          <motion.line
-            x1={vectorCenterX}
-            y1={vectorCenterY}
-            x2={endX}
-            y2={endY}
-            strokeWidth={vectorStrokeWidth}
-            markerStart="url(#dot-vrg)"
-            markerEnd="url(#arrow-vrg)"
-            stroke={vectorColor}
-          />
-        </g>
-      </motion.svg>
-
-      <div className="flex items-center justify-center relative">
-        <div className="grid grid-cols-[auto_1fr] gap-4 w-full items-start px-4 py-8">
-          <div className="flex items-center justify-center">
-            <motion.div
-              className="w-8 h-8 rounded"
-              style={{ backgroundColor: redColor }}
+          {/* Vector in circle */}
+          <g>
+            <circle
+              cx={vectorCenterX}
+              cy={vectorCenterY}
+              r={radius}
+              fill="none"
+              strokeWidth={1}
+              className="stroke-slate-400/30 dark:stroke-slate-500/30 fill-slate-500/10 dark:fill-slate-500/10"
             />
-          </div>
-          <div className="flex flex-col">
-            <div className="font-medium">
-              Red: <motion.span>{r}</motion.span>
-            </div>
-            <div className="font-medium text-sm">
-              X axis: <motion.span>{nxText}</motion.span>
-            </div>
-            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
+            <motion.line
+              x1={vectorCenterX}
+              y1={vectorCenterY}
+              x2={endX}
+              y2={endY}
+              strokeWidth={vectorStrokeWidth}
+              markerStart="url(#dot-vrg)"
+              markerEnd="url(#arrow-vrg)"
+              stroke={vectorColor}
+            />
+          </g>
+        </motion.svg>
+
+        <div className="flex items-center justify-center relative">
+          <div className="grid grid-cols-[auto_1fr] gap-4 w-full items-start px-4 py-8">
+            <div className="flex items-center justify-center">
               <motion.div
-                className="absolute inset-0 rounded"
+                className="w-8 h-8 rounded"
+                style={{ backgroundColor: redColor }}
+              />
+            </div>
+            <div className="flex flex-col">
+              <div className="font-medium">
+                Red: <motion.span>{r}</motion.span>
+              </div>
+              <div className="font-medium text-sm">
+                X axis: <motion.span>{nxText}</motion.span>
+              </div>
+              <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
+                <motion.div
+                  className="absolute inset-0 rounded"
+                  style={{
+                    backgroundColor: redColor,
+                    width: useTransform(() => `${redIntensity.get() * 100}%`),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <motion.div
+                className="w-8 h-8 rounded"
+                style={{ backgroundColor: greenColor }}
+              />
+            </div>
+            <div className="flex flex-col">
+              <div className="font-medium">
+                Green: <motion.span>{g}</motion.span>
+              </div>
+              <div className="font-medium text-sm">
+                Y axis: <motion.span>{nyText}</motion.span>
+              </div>
+              <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
+                <motion.div
+                  className="absolute inset-0 rounded"
+                  style={{
+                    backgroundColor: greenColor,
+                    width: useTransform(() => `${greenIntensity.get() * 100}%`),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <motion.div
+                className="w-8 h-8 rounded"
                 style={{
-                  backgroundColor: redColor,
-                  width: useTransform(() => `${redIntensity.get() * 100}%`),
+                  backgroundColor: blendedColor,
                 }}
               />
             </div>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <motion.div
-              className="w-8 h-8 rounded"
-              style={{ backgroundColor: greenColor }}
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="font-medium">
-              Green: <motion.span>{g}</motion.span>
-            </div>
-            <div className="font-medium text-sm">
-              Y axis: <motion.span>{nyText}</motion.span>
-            </div>
-            <div className="relative h-3 rounded bg-white/70 dark:bg-white/10 w-full max-w-full mt-2">
-              <motion.div
-                className="absolute inset-0 rounded"
-                style={{
-                  backgroundColor: greenColor,
-                  width: useTransform(() => `${greenIntensity.get() * 100}%`),
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center">
-            <motion.div
-              className="w-8 h-8 rounded"
-              style={{
-                backgroundColor: blendedColor,
-              }}
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="font-medium mb-2">
-              Result
-              <span className="text-sm opacity-60"> (Blended)</span>
+            <div className="flex flex-col">
+              <div className="font-medium mb-2">
+                Result
+                <span className="text-sm opacity-60"> (Blended)</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <button
-        className="group absolute bottom-4 right-4 bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-        onClick={startAnimation}
-      >
-        <RotateCcwIcon
-          size={20}
-          className="group-hover:scale-110 group-active:scale-90 transition-transform"
-        />
-      </button>
-    </div>
+      <div className="flex justify-end">
+        <button
+          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
+          onClick={startAnimation}
+        >
+          <RotateCcwIcon
+            size={20}
+            className="group-hover:scale-110 group-active:scale-90 transition-transform"
+          />
+        </button>
+      </div>
+    </>
   );
 };

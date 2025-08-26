@@ -82,13 +82,13 @@ export const DisplacementVectorField: React.FC = () => {
   const NUMBER_OF_RADIUSES = 48;
   const NUMBER_OF_VECTORS_PER_RADIUS = 10;
 
-  const canvasWidth = 400;
+  const canvasWidth = 300;
   const canvasHeight = 300;
 
-  const centerX = 200;
-  const centerY = 150;
+  const centerX = canvasWidth / 2;
+  const centerY = canvasHeight / 2;
 
-  const radius = 130;
+  const radius = 135;
 
   const xAxisRotation = useMotionValue(0);
   const radiusProgress = useMotionValue(1);
@@ -214,10 +214,13 @@ export const DisplacementVectorField: React.FC = () => {
   );
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div
+      ref={wrapperRef}
+      className="relative -ml-[15px] w-[calc(100%+30px)] my-10"
+    >
       <svg
-        viewBox="0 0 400 300"
-        className="w-full h-full"
+        viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+        className="w-full max-h-[500px]"
         transform="translate(0, 0)"
       >
         <defs>
