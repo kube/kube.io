@@ -134,7 +134,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
             category="Blog"
             categoryId="DIC_kwDOFWIVtM4Cq5qX"
             mapping="specific"
-            term={"kube.io/blog/post/" + slug}
+            term={article.title}
             theme="preferred_color_scheme"
             reactionsEnabled="1"
             emitMetadata="0"
