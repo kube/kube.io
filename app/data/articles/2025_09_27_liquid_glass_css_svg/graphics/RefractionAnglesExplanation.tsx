@@ -8,11 +8,11 @@ function calculateRefractionAngle(
   n1: number,
   n2: number,
   theta1: number
-): number {
+): number | null {
   const ratio = n1 / n2;
   const s = ratio * Math.sin(theta1);
-  // Clamp to avoid NaN when |s| > 1 (e.g., when n2 < n1 and beyond critical angle)
-  // const clamped = Math.max(-1, Math.min(1, s));
+  // If Total Internal Reflection occurs, return null
+  if (s > 1 || s < -1) return null;
   const angle = Math.asin(s);
   return angle;
 }
@@ -57,9 +57,9 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const centerX = width / 2;
   const centerY = height / 2;
 
-  const segmentLength = 130;
+  const segmentLength = 150;
   const normalLength = 150;
-  const angleArcLength = 50;
+  const angleArcLength = 60;
   const angleLableOffset = 15;
 
   const incidentRayProgress = useMotionValue(0);
@@ -76,9 +76,18 @@ export const RefractionAnglesExplanation: React.FC = () => {
       incidentToNormalAngle.get()
     )
   );
-  const refractedRayAngle = useTransform(
-    () => refractedToNormalAngle.get() + Math.PI / 2
-  );
+  const refractedRayAngle = useTransform(() => {
+    const angle = refractedToNormalAngle.get();
+    return angle !== null ? angle + Math.PI / 2 : null;
+  });
+  const incidentRayColor = getRayColor(0);
+  const refractedRayColor = useTransform(() => {
+    const angle = refractedToNormalAngle.get();
+    if (angle === null) return incidentRayColor;
+    return getRayColor(
+      (Math.abs(incidentRayAngle.get() - refractedRayAngle.get()) / Math.PI) * 4
+    );
+  });
 
   const currentAnimation = useRef<ReturnType<typeof animate> | null>(null);
 
@@ -128,7 +137,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const labelY = centerY + 13;
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
       <motion.svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
@@ -158,7 +167,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
       >
         <defs>
           <marker
-            id="rayArrow"
+            id="ray-arrow-incident"
             viewBox="0 0 10 10"
             refX="7"
             refY="5"
@@ -167,16 +176,29 @@ export const RefractionAnglesExplanation: React.FC = () => {
             orient="auto"
             markerUnits="strokeWidth"
           >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={getRayColor(0)} />
+          </marker>
+          <marker
+            id="ray-arrow-refracted"
+            viewBox="0 0 10 10"
+            refX="7"
+            refY="5"
+            markerWidth="4"
+            markerHeight="4"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <motion.path d="M 0 0 L 10 5 L 0 10 z" fill={refractedRayColor} />
           </marker>
         </defs>
+
         {/* Surface */}
         <line
-          x1={20}
+          x1={0}
           y1={centerY}
-          x2={width - 20}
+          x2={width}
           y2={centerY}
-          className="stroke-slate-700 dark:stroke-slate-200"
+          className="stroke-slate-700 dark:stroke-slate-400"
           strokeWidth="1.5"
         />
 
@@ -186,7 +208,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
           y1={centerY - normalLength}
           x2={centerX}
           y2={centerY + normalLength}
-          className="stroke-black dark:stroke-white"
+          className="stroke-slate-700 dark:stroke-slate-400"
           opacity={0.6}
           strokeWidth={1}
           strokeDasharray={2}
@@ -206,7 +228,28 @@ export const RefractionAnglesExplanation: React.FC = () => {
             return `M ${startX} ${startY} A ${angleArcLength} ${angleArcLength} 0 0 ${largeArcFlag} ${endX} ${endY}`;
           })}
           fill="none"
-          className="stroke-slate-400 dark:stroke-slate-500"
+          className="stroke-slate-400 dark:stroke-slate-600"
+          strokeWidth="1"
+        />
+
+        {/* Arc between Normal and Reflected Ray */}
+        <motion.path
+          d={useTransform(() => {
+            const currentAngle =
+              Math.PI / 2 +
+              (incidentRayAngle.get() - Math.PI / 2) * arcAngleProgress.get();
+            const startX = centerX;
+            const startY = centerY - angleArcLength;
+            const endX = centerX - angleArcLength * Math.cos(currentAngle);
+            const endY = centerY - angleArcLength * Math.sin(currentAngle);
+            const largeArcFlag = currentAngle > Math.PI / 2 ? 1 : 0;
+            return `M ${startX} ${startY} A ${angleArcLength} ${angleArcLength} 0 0 ${largeArcFlag} ${endX} ${endY}`;
+          })}
+          display={useTransform(() =>
+            refractedRayAngle.get() === null ? "block" : "none"
+          )}
+          fill="none"
+          className="stroke-slate-400 dark:stroke-slate-600"
           strokeWidth="1"
         />
 
@@ -237,7 +280,46 @@ export const RefractionAnglesExplanation: React.FC = () => {
           })}
           dominantBaseline="central"
           textAnchor="middle"
-          fontSize="9"
+          fontSize="10"
+          className="fill-slate-500 dark:fill-slate-400"
+        >
+          θ
+          <tspan baselineShift="sub" fontSize="70%">
+            1
+          </tspan>
+        </motion.text>
+
+        {/* Angle label between normal and Reflected Ray */}
+        <motion.text
+          opacity={arcAngleProgress}
+          x={useTransform(() => {
+            const currentAngle =
+              Math.PI / 2 +
+              ((incidentRayAngle.get() - Math.PI / 2) *
+                arcAngleProgress.get()) /
+                2;
+            const endX =
+              centerX -
+              (angleArcLength + angleLableOffset) * Math.cos(currentAngle);
+            return endX;
+          })}
+          y={useTransform(() => {
+            const currentAngle =
+              Math.PI / 2 +
+              ((incidentRayAngle.get() - Math.PI / 2) *
+                arcAngleProgress.get()) /
+                2;
+            const endY =
+              centerY -
+              (angleArcLength + angleLableOffset) * Math.sin(currentAngle);
+            return endY;
+          })}
+          dominantBaseline="central"
+          textAnchor="middle"
+          fontSize="10"
+          display={useTransform(() =>
+            refractedRayAngle.get() === null ? "block" : "none"
+          )}
           className="fill-slate-500 dark:fill-slate-400"
         >
           θ
@@ -260,7 +342,10 @@ export const RefractionAnglesExplanation: React.FC = () => {
             return `M ${startX} ${startY} A ${angleArcLength} ${angleArcLength} 0 0 ${largeArcFlag} ${endX} ${endY}`;
           })}
           fill="none"
-          className="stroke-slate-400 dark:stroke-slate-500"
+          display={useTransform(() =>
+            refractedRayAngle.get() === null ? "none" : "block"
+          )}
+          className="stroke-slate-400 dark:stroke-slate-600"
           strokeWidth="1"
         />
 
@@ -289,9 +374,12 @@ export const RefractionAnglesExplanation: React.FC = () => {
               (angleArcLength + angleLableOffset) * Math.sin(currentAngle);
             return endY;
           })}
+          display={useTransform(() =>
+            refractedRayAngle.get() === null ? "none" : "block"
+          )}
           dominantBaseline="central"
           textAnchor="middle"
-          fontSize="9"
+          fontSize="10"
           className="fill-slate-500 dark:fill-slate-400"
         >
           θ
@@ -306,39 +394,52 @@ export const RefractionAnglesExplanation: React.FC = () => {
           textAnchor="right"
           dominantBaseline="central"
           fontSize="8"
-          className="fill-slate-400 dark:fill-slate-500"
+          className="fill-slate-500 dark:fill-slate-400"
           transform={`rotate(-90 ${centerX} 30)`}
         >
           Normal
         </motion.text>
 
         <motion.text
-          x={20}
+          x={0}
           y={centerY - 13}
           textAnchor="left"
           dominantBaseline="central"
           fontSize={8}
-          className="fill-slate-400 dark:fill-slate-500"
+          className="fill-slate-500 dark:fill-slate-400"
         >
-          First Medium (n1 = {FIRST_MEDIUM_REFRACTIVE_INDEX})
+          First Medium (n
+          <tspan baselineShift="sub" fontSize="70%">
+            1
+          </tspan>{" "}
+          = {FIRST_MEDIUM_REFRACTIVE_INDEX})
         </motion.text>
 
         <motion.text
           ref={labelTextRef}
-          x={20}
+          x={0}
           y={labelY}
           dominantBaseline="central"
           textAnchor="left"
           fontSize="8"
-          className="fill-slate-400 dark:fill-slate-500"
+          className="fill-slate-500 dark:fill-slate-400"
         >
-          Second Medium (n2 = {n2Display.toFixed(2)})
+          Second Medium (n
+          <tspan baselineShift="sub" fontSize="70%">
+            2
+          </tspan>{" "}
+          = {n2Display.toFixed(2)})
         </motion.text>
 
         {/* Incident Ray */}
         <motion.line
+          opacity={useTransform(() =>
+            incidentRayProgress.get() === 0 ? 0 : 1
+          )}
           markerEnd={useTransform(() =>
-            incidentRayProgress.get() === 1 ? undefined : "url(#rayArrow)"
+            incidentRayProgress.get() === 1
+              ? undefined
+              : "url(#ray-arrow-incident)"
           )}
           x1={useTransform(
             () => centerX + segmentLength * Math.cos(incidentRayAngle.get())
@@ -360,38 +461,59 @@ export const RefractionAnglesExplanation: React.FC = () => {
                 Math.sin(incidentRayAngle.get()) *
                 (1 - incidentRayProgress.get())
           )}
-          stroke={getRayColor(0)}
+          stroke={incidentRayColor}
           strokeWidth={2}
         />
 
         {/* Refracted Ray */}
         <motion.line
-          markerEnd={useTransform(() =>
-            refractedRayProgress.get() === 0 ? undefined : "url(#rayArrow)"
+          opacity={useTransform(() =>
+            refractedRayProgress.get() === 0 ? 0 : 1
           )}
+          markerEnd="url(#ray-arrow-refracted)"
           x1={centerX}
           y1={centerY}
-          x2={useTransform(
-            () =>
-              centerX -
-              segmentLength *
-                Math.cos(refractedRayAngle.get()) *
-                refractedRayProgress.get()
-          )}
-          y2={useTransform(
-            () =>
-              centerY +
-              segmentLength *
-                Math.sin(refractedRayAngle.get()) *
-                refractedRayProgress.get()
-          )}
-          stroke={useTransform(() =>
-            getRayColor(
-              (Math.abs(incidentRayAngle.get() - refractedRayAngle.get()) /
-                Math.PI) *
-                4
-            )
-          )}
+          x2={useTransform(() => {
+            const refractedAngle = refractedRayAngle.get();
+
+            if (refractedAngle === null) {
+              // Total Internal Reflection: extend incident ray instead
+              return (
+                centerX -
+                segmentLength *
+                  Math.cos(incidentRayAngle.get()) *
+                  refractedRayProgress.get()
+              );
+            } else {
+              return (
+                centerX -
+                segmentLength *
+                  Math.cos(refractedAngle) *
+                  refractedRayProgress.get()
+              );
+            }
+          })}
+          y2={useTransform(() => {
+            const refractedAngle = refractedRayAngle.get();
+
+            if (refractedAngle === null) {
+              // Total Internal Reflection: extend incident ray instead
+              return (
+                centerY -
+                segmentLength *
+                  Math.sin(incidentRayAngle.get()) *
+                  refractedRayProgress.get()
+              );
+            } else {
+              return (
+                centerY +
+                segmentLength *
+                  Math.sin(refractedRayAngle.get()) *
+                  refractedRayProgress.get()
+              );
+            }
+          })}
+          stroke={refractedRayColor}
           strokeWidth={2}
         />
 
@@ -424,12 +546,15 @@ export const RefractionAnglesExplanation: React.FC = () => {
         <div className="flex-1" />
 
         {/* centered slider */}
-        <div className=" backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-3">
+        <div className="rounded-full px-4 py-0 flex flex-col items-center gap-1">
           <label
             htmlFor="n2-slider"
             className="text-xs text-slate-900/90 dark:text-slate-100/90"
           >
-            n2
+            n<span className="align-sub text-[8px]">2</span> =
+            <motion.span className="pl-1 w-4 inline-block">
+              {useTransform(() => n2.get().toFixed(2))}
+            </motion.span>
           </label>
           <input
             id="n2-slider"
