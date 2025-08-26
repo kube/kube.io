@@ -104,9 +104,9 @@ export const RayRefractionSimulationMini: React.FC<
     const y = bezelHeightFn(x);
 
     if (x === 1) {
-      // Ray hits the bottom of the glass
+      // Ray hits the flat top surface of the glass interior
       return {
-        point: [ray.originX, glassY + glassThickness],
+        point: [ray.originX, glassY + (1 - y) * bezelWidth],
         normal: [0, -1],
       };
     }
