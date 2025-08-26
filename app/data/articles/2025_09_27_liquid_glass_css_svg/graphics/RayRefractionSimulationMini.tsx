@@ -1,5 +1,5 @@
-import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { motion, type MotionValue, useMotionValueEvent } from "motion/react";
+import { useState } from "react";
 
 type Ray = {
   originX: number;
@@ -43,9 +43,8 @@ type RayRefractionSimulationMiniProps = {
   bezelWidth?: number;
   glassThickness?: number;
   refractionIndex?: number;
-  // Optional props for interaction
-  currentX?: number;
-  onCurrentXChange?: (x: number) => void;
+  // Interaction via MotionValue: normalized [0..1] within bezel width; null = no ray
+  currentX: MotionValue<number | null>;
 };
 
 export const RayRefractionSimulationMini: React.FC<
@@ -56,7 +55,6 @@ export const RayRefractionSimulationMini: React.FC<
   glassThickness = 200,
   refractionIndex = GLASS_REFRACTIVE_INDEX,
   currentX,
-  onCurrentXChange,
 }) => {
   const viewWidth = 320;
   const viewHeight = 240;
@@ -68,16 +66,9 @@ export const RayRefractionSimulationMini: React.FC<
   const glassX = 50;
   const glassY = viewHeight - backgroundHeight - glassThickness - bezelWidth;
 
-  function toRayX(x: number): number {
-    return glassX + x * bezelWidth;
-  }
-  function toCurrentX(x: number): number {
-    return (x - glassX) / bezelWidth;
-  }
-
   const ray: Ray | null =
-    typeof currentX === "number"
-      ? { originX: toRayX(currentX), vector: [0, 1] }
+    typeof currentX.get() === "number"
+      ? { originX: (currentX.get() as number) * viewWidth, vector: [0, 1] }
       : null;
 
   function getRayHit(
@@ -176,14 +167,11 @@ export const RayRefractionSimulationMini: React.FC<
 
   const refractedRay = ray && calculateRefraction(ray);
 
-  const [isPanning, setIsPanning] = useState(false);
-  useEffect(() => {
-    if (!isPanning) return;
-    // Add event listener for mouse up to stop panning
-    const handleMouseUp = () => setIsPanning(false);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => window.removeEventListener("mouseup", handleMouseUp);
-  }, [isPanning]);
+  // Force a lightweight re-render when currentX MotionValue changes so geometry updates.
+  const [, forceRender] = useState(0);
+  useMotionValueEvent(currentX, "change", () =>
+    forceRender((t) => (t + 1) % 1000)
+  );
 
   const NUMBER_OF_SAMPLES = 1024;
 
@@ -193,22 +181,21 @@ export const RayRefractionSimulationMini: React.FC<
         className="w-full"
         viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns="http://www.w3.org/2000/svg"
-        onClick={(e) => {
+        onPointerDown={(e) => {
+          const { left, width } = e.currentTarget.getBoundingClientRect();
+          const xRatio = (e.clientX - left) / width; // 0..1 across the SVG element width
+          currentX.set(Math.max(0, Math.min(1, xRatio)));
+          try {
+            (
+              e.currentTarget as Element & { setPointerCapture: any }
+            ).setPointerCapture((e as any).pointerId);
+          } catch {}
+        }}
+        onPointerMove={(e) => {
+          if (!(e.buttons & 1)) return; // Only when primary button pressed
           const { left, width } = e.currentTarget.getBoundingClientRect();
           const xRatio = (e.clientX - left) / width;
-
-          const newRay: Ray = { originX: xRatio * viewWidth, vector: [0, 1] };
-          onCurrentXChange?.(toCurrentX(newRay.originX));
-        }}
-        onMouseDown={() => setIsPanning(true)}
-        onMouseUp={() => setIsPanning(false)}
-        onMouseMove={(e) => {
-          if (!isPanning) return;
-          const { left, width } = e.currentTarget!.getBoundingClientRect();
-          const xRatio = (e.clientX - left) / width;
-
-          const newRay: Ray = { originX: xRatio * viewWidth, vector: [0, 1] };
-          onCurrentXChange?.(toCurrentX(newRay.originX));
+          currentX.set(Math.max(0, Math.min(1, xRatio)));
         }}
       >
         <path

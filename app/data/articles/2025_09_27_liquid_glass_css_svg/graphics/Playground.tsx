@@ -33,7 +33,6 @@ export const Playground: React.FC = () => {
 
   // Inputs as MotionValues to avoid React re-renders
   const currentX = useMotionValue<number | null>(null);
-  const hasCurrentX = useMotionValue(false);
   const glassThickness = useMotionValue(50);
   const bezelWidth = useMotionValue(60);
   const refractiveIndex = 1.5;
@@ -104,15 +103,24 @@ export const Playground: React.FC = () => {
     displacementMapUrl,
     (u) => `url(${u})`
   );
-  const showCurrentX = useTransform(hasCurrentX, (v) => (v ? "block" : "none"));
+  const showCurrentX = useTransform(currentX, (v) =>
+    v == null ? "none" : "block"
+  );
   const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
-  const y2Motion = useTransform(precomputedDisplacementMap, (arr: number[]) => {
-    const vx = currentX.get() ?? 0;
-    const max = maximumDisplacement.get();
-    const idx = Math.min(arr.length - 1, Math.max(0, (vx * arr.length) | 0));
+  const y2Motion = useMotionValue(height / 2);
+  const recomputeY2 = () => {
+    const arr = precomputedDisplacementMap.get();
+    const v = currentX.get() ?? 0;
+    const max = maximumDisplacement.get() || 1;
+    const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
     const d = arr[idx];
-    return height / 2 - (d / max) * (height / 2);
-  });
+    y2Motion.set(height / 2 - (d / max) * (height / 2));
+  };
+  useMotionValueEvent(precomputedDisplacementMap, "change", recomputeY2);
+  useMotionValueEvent(currentX, "change", recomputeY2);
+  useMotionValueEvent(maximumDisplacement, "change", recomputeY2);
+  // Initialize once
+  recomputeY2();
   const scaleMotion = useTransform(
     scaleRatio,
     (ratio) => maximumDisplacement.get() * ratio
@@ -121,14 +129,8 @@ export const Playground: React.FC = () => {
   // Bridge MotionValues to React props for the Mini simulation only (cheap re-renders)
   const [bw, setBw] = useState<number>(bezelWidth.get());
   const [gt, setGt] = useState<number>(glassThickness.get());
-  const [cx, setCx] = useState<number | undefined>(
-    currentX.get() == null ? undefined : (currentX.get() as number)
-  );
   useMotionValueEvent(bezelWidth, "change", (v) => setBw(v));
   useMotionValueEvent(glassThickness, "change", (v) => setGt(v));
-  useMotionValueEvent(currentX, "change", (v) =>
-    setCx(v == null ? undefined : (v as number))
-  );
 
   // Swiss-style panel + heading helpers
   const panel =
@@ -199,11 +201,7 @@ export const Playground: React.FC = () => {
             bezelWidth={bw}
             glassThickness={gt}
             refractionIndex={refractiveIndex}
-            currentX={cx}
-            onCurrentXChange={(x) => {
-              currentX.set(x);
-              hasCurrentX.set(true);
-            }}
+            currentX={currentX}
           />
         </div>
       </div>
@@ -237,12 +235,21 @@ export const Playground: React.FC = () => {
             viewBox="-30 -30 460 360"
             className="text-neutral-900 dark:text-neutral-100"
             width="100%"
-            onClick={(e) => {
+            onPointerDown={(e) => {
               const { left, width } = e.currentTarget.getBoundingClientRect();
               const xRatio = (e.clientX - left) / width;
-              const newRayOriginX = xRatio * width;
-              currentX.set(newRayOriginX / width);
-              hasCurrentX.set(true);
+              currentX.set(Math.max(0, Math.min(1, xRatio)));
+              try {
+                (
+                  e.currentTarget as Element & { setPointerCapture: any }
+                ).setPointerCapture((e as any).pointerId);
+              } catch {}
+            }}
+            onPointerMove={(e) => {
+              if (!(e.buttons & 1)) return;
+              const { left, width } = e.currentTarget.getBoundingClientRect();
+              const xRatio = (e.clientX - left) / width;
+              currentX.set(Math.max(0, Math.min(1, xRatio)));
             }}
           >
             <defs>
