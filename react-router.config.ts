@@ -10,7 +10,7 @@ export const POSTS = glob
   .sync("./app/data/articles/*/article.mdx")
   .map((file) => {
     const post = fs.readFileSync(file, "utf-8");
-    return fm(post).attributes as { slug: string };
+    return fm(post).attributes as { slug: string; published?: boolean };
   });
 
 export default {
@@ -22,7 +22,9 @@ export default {
       "/cv.pdf",
 
       "/blog",
-      ...POSTS.map((post) => `/blog/${post.slug}`),
+      ...POSTS.filter((_) => _.published !== false).map(
+        (post) => `/blog/${post.slug}`
+      ),
 
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];
