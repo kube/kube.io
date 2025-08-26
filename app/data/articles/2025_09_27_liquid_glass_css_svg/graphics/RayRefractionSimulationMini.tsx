@@ -1,5 +1,11 @@
-import { motion, type MotionValue, useMotionValueEvent } from "motion/react";
+import {
+  motion,
+  type MotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 import { useState } from "react";
+import { getRayColor } from "../lib/rayColor";
 
 type Ray = {
   originX: number;
@@ -68,7 +74,11 @@ export const RayRefractionSimulationMini: React.FC<
 
   const ray: Ray | null =
     typeof currentX.get() === "number"
-      ? { originX: (currentX.get() as number) * viewWidth, vector: [0, 1] }
+      ? {
+          // Map normalized distance [0..1] to left bezel [glassX .. glassX + bezelWidth]
+          originX: glassX + (currentX.get() as number) * bezelWidth,
+          vector: [0, 1],
+        }
       : null;
 
   function getRayHit(
@@ -167,6 +177,40 @@ export const RayRefractionSimulationMini: React.FC<
 
   const refractedRay = ray && calculateRefraction(ray);
 
+  // Compute maximum displacement across the viewport to normalize intensity
+  const maximumDisplacement = useTransform(() => {
+    const samples = 256;
+    let max = 0;
+    for (let i = 0; i < samples; i++) {
+      const sampleX = (i / (samples - 1)) * viewWidth;
+      const r = calculateRefraction({ originX: sampleX, vector: [0, 1] });
+      const hasRefracted = r.segments.length > 1;
+      const bottomX = hasRefracted
+        ? r.segments[r.segments.length - 1].x2
+        : r.originX;
+      const disp = Math.abs(bottomX - r.originX);
+      if (disp > max) max = disp;
+    }
+    return max;
+  });
+
+  const displacementIntensity = useTransform(() => {
+    if (!refractedRay) return 0;
+    const hasRefracted = refractedRay.segments.length > 1;
+    const bottomX = hasRefracted
+      ? refractedRay.segments[refractedRay.segments.length - 1].x2
+      : refractedRay.originX;
+    const disp = Math.abs(bottomX - refractedRay.originX);
+    const max = maximumDisplacement.get() || 1;
+    return disp / max;
+  });
+
+  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const displacementThickness = useTransform(
+    displacementIntensity,
+    (intensity) => 0.3 + intensity * 4
+  );
+
   // Force a lightweight re-render when currentX MotionValue changes so geometry updates.
   const [, forceRender] = useState(0);
   useMotionValueEvent(currentX, "change", () =>
@@ -184,7 +228,10 @@ export const RayRefractionSimulationMini: React.FC<
         onPointerDown={(e) => {
           const { left, width } = e.currentTarget.getBoundingClientRect();
           const xRatio = (e.clientX - left) / width; // 0..1 across the SVG element width
-          currentX.set(Math.max(0, Math.min(1, xRatio)));
+          const pointerX = xRatio * viewWidth;
+          // Normalize to distance from left border within the left bezel
+          const normalized = (pointerX - glassX) / bezelWidth;
+          currentX.set(normalized);
           try {
             (
               e.currentTarget as Element & { setPointerCapture: any }
@@ -195,7 +242,9 @@ export const RayRefractionSimulationMini: React.FC<
           if (!(e.buttons & 1)) return; // Only when primary button pressed
           const { left, width } = e.currentTarget.getBoundingClientRect();
           const xRatio = (e.clientX - left) / width;
-          currentX.set(Math.max(0, Math.min(1, xRatio)));
+          const pointerX = xRatio * viewWidth;
+          const normalized = (pointerX - glassX) / bezelWidth;
+          currentX.set(normalized);
         }}
       >
         <path
@@ -220,7 +269,7 @@ export const RayRefractionSimulationMini: React.FC<
           Z`}
           fill="rgba(60, 60, 90, 0.1)"
           stroke="rgba(120, 120, 150, 0.4)"
-          strokeWidth="2"
+          strokeWidth="1.5"
         />
         <rect
           width={backgroundWidth}
@@ -237,8 +286,8 @@ export const RayRefractionSimulationMini: React.FC<
             y1={segment.y1}
             x2={segment.x2}
             y2={segment.y2}
-            stroke={["blue", "green", "red"][index % 3]}
-            strokeWidth="3"
+            stroke={index === 0 ? getRayColor(0) : getRayColor(0.3)}
+            strokeWidth="2"
           />
         ))}
         {ray && (
@@ -249,18 +298,37 @@ export const RayRefractionSimulationMini: React.FC<
             y2={viewHeight - backgroundHeight}
             stroke="black"
             strokeWidth="1"
-            strokeDasharray="3"
+            strokeDasharray="2"
           />
         )}
 
+        <defs>
+          <marker
+            id="arrow-displacement-vector-mini"
+            viewBox="0 0 4 4"
+            markerWidth="4"
+            markerHeight="4"
+            refX="0"
+            refY="2"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <motion.path d="M0,0 L4,2 L0,4 Z" fill={displacementColor} />
+          </marker>
+        </defs>
+
         {refractedRay && (
-          <line
+          <motion.line
+            style={{
+              display: refractedRay.segments.length > 1 ? "block" : "none",
+            }}
             x1={refractedRay.originX}
             y1={viewHeight - backgroundHeight}
             x2={refractedRay.segments[refractedRay.segments.length - 1].x2}
             y2={viewHeight - backgroundHeight}
-            stroke="red"
-            strokeWidth="2"
+            stroke={displacementColor as unknown as string}
+            strokeWidth={displacementThickness as unknown as number}
+            markerEnd="url(#arrow-displacement-vector-mini)"
           />
         )}
       </motion.svg>

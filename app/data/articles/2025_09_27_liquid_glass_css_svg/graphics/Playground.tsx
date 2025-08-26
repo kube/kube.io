@@ -12,6 +12,7 @@ import {
   calculateDisplacementMap2,
 } from "../lib/displacementMap";
 import { imageDataToUrl } from "../lib/imageDataToUrl";
+import { getRayColor } from "../lib/rayColor";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 
 type BezelFn = (x: number) => number;
@@ -103,9 +104,6 @@ export const Playground: React.FC = () => {
     displacementMapUrl,
     (u) => `url(${u})`
   );
-  const showCurrentX = useTransform(currentX, (v) =>
-    v == null ? "none" : "block"
-  );
   const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
   const y2Motion = useMotionValue(height / 2);
   const recomputeY2 = () => {
@@ -131,6 +129,21 @@ export const Playground: React.FC = () => {
   const [gt, setGt] = useState<number>(glassThickness.get());
   useMotionValueEvent(bezelWidth, "change", (v) => setBw(v));
   useMotionValueEvent(glassThickness, "change", (v) => setGt(v));
+
+  // Color for the displacement indicator based on normalized intensity at currentX
+  const displacementIntensity = useTransform(currentX, () => {
+    const arr = precomputedDisplacementMap.get();
+    const v = currentX.get();
+    if (v == null || v < 0 || v > 1) return 0;
+    const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
+    const d = Math.abs(arr[idx]);
+    const max = maximumDisplacement.get() || 1;
+    return d / max;
+  });
+  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const showIndicator = useTransform(currentX, (v) =>
+    v == null || v < 0 || v > 1 ? "none" : "block"
+  );
 
   // Swiss-style panel + heading helpers
   const panel =
@@ -329,14 +342,14 @@ export const Playground: React.FC = () => {
               Distance to border
             </text>
             <motion.line
-              style={{ display: showCurrentX }}
+              style={{ display: showIndicator }}
               x1={currentXPos}
               y1={height / 2}
               x2={currentXPos}
               y2={y2Motion}
-              stroke="red"
-              strokeWidth="2"
-              strokeDasharray="4"
+              stroke={displacementColor}
+              strokeWidth="2.5"
+              strokeDasharray="3"
             />
           </motion.svg>
         </div>
