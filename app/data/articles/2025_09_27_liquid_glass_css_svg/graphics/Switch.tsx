@@ -1,4 +1,10 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import React, { useEffect, useState } from "react";
 import { Filter } from "../components/Filter";
 
@@ -29,25 +35,32 @@ export const Switch: React.FC = () => {
   const scaleRatio = useSpring(isMouseDown.get() ? 0.9 : 0.4);
   const specularOpacity = 0.9;
 
-  const scale = useTransform(() => (isMouseDown.get() ? 1 : 0.6));
-  const scaleSpring = useSpring(scale, {
+  const scale = useMotionValue(1);
+  useMotionValueEvent(isMouseDown, "change", (down) =>
+    scale.set(down ? 1 : 0.6)
+  );
+  const scaleSpring = useSpring(scale.get(), {
     damping: 80,
     stiffness: 2000,
   });
+  useMotionValueEvent(scale, "change", (v) => scaleSpring.set(v));
 
-  const buttonX = useSpring(
-    useTransform(() => (motionChecked.get() ? "-31%" : "-69%")),
-    {
-      damping: 60,
-      stiffness: 800,
-    }
+  const buttonXMV = useMotionValue(motionChecked.get() ? -31 : -69);
+  useMotionValueEvent(motionChecked, "change", (c) =>
+    buttonXMV.set(c ? -31 : -69)
   );
-  const backgroundOpacity = useSpring(
-    useTransform(() => (isMouseDown.get() ? 0.1 : 1)),
-    {
-      damping: 80,
-      stiffness: 2000,
-    }
+  const buttonX = useSpring(buttonXMV.get(), { damping: 60, stiffness: 800 });
+  useMotionValueEvent(buttonXMV, "change", (v) => buttonX.set(v));
+  const backgroundOpacityMV = useMotionValue(1);
+  useMotionValueEvent(isMouseDown, "change", (down) =>
+    backgroundOpacityMV.set(down ? 0.1 : 1)
+  );
+  const backgroundOpacity = useSpring(backgroundOpacityMV.get(), {
+    damping: 80,
+    stiffness: 2000,
+  });
+  useMotionValueEvent(backgroundOpacityMV, "change", (v) =>
+    backgroundOpacity.set(v)
   );
 
   return (
@@ -108,7 +121,7 @@ export const Switch: React.FC = () => {
           style={{
             height,
             width,
-            x: buttonX,
+            x: useTransform(buttonX, (v) => `${v}%`),
             y: "-50%",
             borderRadius: radius,
             top: sliderHeight / 2,
@@ -117,7 +130,8 @@ export const Switch: React.FC = () => {
             scale: scaleSpring,
 
             backgroundColor: useTransform(
-              () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`
+              backgroundOpacity,
+              (op) => `rgba(255, 255, 255, ${op})`
             ),
           }}
         />

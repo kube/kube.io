@@ -1,4 +1,10 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import React, { useEffect, useState } from "react";
 import { Filter } from "../components/Filter";
 
@@ -33,18 +39,27 @@ export const Slider: React.FC = () => {
   const specularOpacity = 0.9;
 
   const constraintsRef = React.useRef<HTMLDivElement>(null);
-  const scale = useTransform(() => (isMouseDown.get() ? 1 : 0.6));
-  const scaleSpring = useSpring(scale, {
+  const scale = useMotionValue(1);
+  useMotionValueEvent(isMouseDown, "change", (down) =>
+    scale.set(down ? 1 : 0.6)
+  );
+  const scaleSpring = useSpring(scale.get(), {
     damping: 80,
     stiffness: 2000,
   });
+  // Keep spring in sync with MotionValue source
+  useMotionValueEvent(scale, "change", (v) => scaleSpring.set(v));
 
-  const backgroundOpacity = useSpring(
-    useTransform(() => (isMouseDown.get() ? 0.1 : 1)),
-    {
-      damping: 80,
-      stiffness: 2000,
-    }
+  const backgroundOpacityMV = useMotionValue(1);
+  useMotionValueEvent(isMouseDown, "change", (down) =>
+    backgroundOpacityMV.set(down ? 0.1 : 1)
+  );
+  const backgroundOpacity = useSpring(backgroundOpacityMV.get(), {
+    damping: 80,
+    stiffness: 2000,
+  });
+  useMotionValueEvent(backgroundOpacityMV, "change", (v) =>
+    backgroundOpacity.set(v)
   );
 
   return (
@@ -88,7 +103,7 @@ export const Slider: React.FC = () => {
               top: 0,
               left: 0,
               height: sliderHeight,
-              width: useTransform(() => `${motionValue.get()}%`),
+              width: useTransform(motionValue, (v) => `${v}%`),
               borderRadius: `${sliderHeight / 2}px 2px 2px ${
                 sliderHeight / 2
               }px`,
@@ -140,7 +155,8 @@ export const Slider: React.FC = () => {
             scale: scaleSpring,
 
             backgroundColor: useTransform(
-              () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`
+              backgroundOpacity,
+              (op) => `rgba(255, 255, 255, ${op})`
             ),
           }}
         />
