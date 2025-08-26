@@ -1,11 +1,6 @@
 import type { ImageData as CanvasImageData } from "canvas";
-import {
-  motion,
-  useMotionValue,
-  useMotionValueEvent,
-  useTransform,
-} from "motion/react";
-import { useId, useState } from "react";
+import { motion, useMotionValue, useTransform } from "motion/react";
+import { useId } from "react";
 import { ConcaveButton, ConvexButton, LipButton } from "../components/Buttons";
 import {
   calculateDisplacementMap,
@@ -41,33 +36,30 @@ export const Playground: React.FC = () => {
   const objectHeight = 200;
   const radius = 100;
   const scaleRatio = useMotionValue(1);
-  // Surface selection
-  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
-    "convex"
-  );
-  const equationFn: BezelFn =
-    surface === "convex" ? CONVEX : surface === "concave" ? CONCAVE : LIP;
+  // Surface selection (pure Motion)
+  const surface = useMotionValue<"convex" | "concave" | "lip">("convex");
 
   // Heavy computations as derived MotionValues
-  const precomputedDisplacementMap = useTransform(
-    [glassThickness, bezelWidth],
-    () =>
-      calculateDisplacementMap(
-        glassThickness.get(),
-        bezelWidth.get(),
-        equationFn,
-        refractiveIndex
-      )
+  const precomputedDisplacementMap = useTransform(() =>
+    calculateDisplacementMap(
+      glassThickness.get(),
+      bezelWidth.get(),
+      (surface.get() === "convex"
+        ? CONVEX
+        : surface.get() === "concave"
+        ? CONCAVE
+        : LIP) as BezelFn,
+      refractiveIndex
+    )
   );
 
-  const maximumDisplacement = useTransform(
-    precomputedDisplacementMap,
-    (arr: number[]) => Math.max(...arr.map(Math.abs))
-  );
+  const maximumDisplacement = useTransform(() => {
+    const arr = precomputedDisplacementMap.get() as number[];
+    return Math.max(...arr.map(Math.abs));
+  });
 
   const imageData = useTransform(
-    precomputedDisplacementMap,
-    (arr: number[]): CanvasImageData =>
+    () =>
       calculateDisplacementMap2(
         width,
         height,
@@ -75,29 +67,27 @@ export const Playground: React.FC = () => {
         objectHeight,
         radius,
         bezelWidth.get(),
-        maximumDisplacement.get(),
-        arr
-      )
+        (maximumDisplacement.get() as unknown as number) || 1,
+        (precomputedDisplacementMap.get() as unknown as number[]) || []
+      ) as CanvasImageData
   );
 
-  const displacementMapUrl = useTransform(imageData, (img: CanvasImageData) =>
-    imageDataToUrl(img)
+  const displacementMapUrl = useTransform(() =>
+    imageDataToUrl(imageData.get() as unknown as CanvasImageData)
   );
 
-  const pathData = useTransform(
-    precomputedDisplacementMap,
-    (arr: number[]): string => {
-      const max = maximumDisplacement.get();
-      return arr
-        .map((d, i) => {
-          const x = (i / arr.length) * width;
-          return `${i === 0 ? "M" : "L"} ${x} ${
-            height / 2 - ((d / max) * height) / 2
-          }`;
-        })
-        .join(" ");
-    }
-  );
+  const pathData = useTransform(() => {
+    const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
+    const max = (maximumDisplacement.get() as unknown as number) || 1;
+    return arr
+      .map((d, i) => {
+        const x = (i / arr.length) * width;
+        return `${i === 0 ? "M" : "L"} ${x} ${
+          height / 2 - ((d / max) * height) / 2
+        }`;
+      })
+      .join(" ");
+  });
 
   // Derived MotionValues for UI bindings
   const backgroundImageCss = useTransform(
@@ -105,39 +95,29 @@ export const Playground: React.FC = () => {
     (u) => `url(${u})`
   );
   const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
-  const y2Motion = useMotionValue(height / 2);
-  const recomputeY2 = () => {
-    const arr = precomputedDisplacementMap.get();
+  const y2Motion = useTransform(() => {
+    const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
     const v = currentX.get() ?? 0;
-    const max = maximumDisplacement.get() || 1;
+    const max = (maximumDisplacement.get() as unknown as number) || 1;
     const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
-    const d = arr[idx];
-    y2Motion.set(height / 2 - (d / max) * (height / 2));
-  };
-  useMotionValueEvent(precomputedDisplacementMap, "change", recomputeY2);
-  useMotionValueEvent(currentX, "change", recomputeY2);
-  useMotionValueEvent(maximumDisplacement, "change", recomputeY2);
-  // Initialize once
-  recomputeY2();
+    const d = arr[idx] ?? 0;
+    return height / 2 - (d / max) * (height / 2);
+  });
   const scaleMotion = useTransform(
     scaleRatio,
     (ratio) => maximumDisplacement.get() * ratio
   );
 
-  // Bridge MotionValues to React props for the Mini simulation only (cheap re-renders)
-  const [bw, setBw] = useState<number>(bezelWidth.get());
-  const [gt, setGt] = useState<number>(glassThickness.get());
-  useMotionValueEvent(bezelWidth, "change", (v) => setBw(v));
-  useMotionValueEvent(glassThickness, "change", (v) => setGt(v));
+  // No React state: pass MotionValues to the Mini directly
 
   // Color for the displacement indicator based on normalized intensity at currentX
-  const displacementIntensity = useTransform(currentX, () => {
-    const arr = precomputedDisplacementMap.get();
+  const displacementIntensity = useTransform(() => {
+    const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
     const v = currentX.get();
     if (v == null || v < 0 || v > 1) return 0;
     const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
-    const d = Math.abs(arr[idx]);
-    const max = maximumDisplacement.get() || 1;
+    const d = Math.abs(arr[idx] ?? 0);
+    const max = (maximumDisplacement.get() as unknown as number) || 1;
     return d / max;
   });
   const displacementColor = useTransform(displacementIntensity, getRayColor);
@@ -157,16 +137,16 @@ export const Playground: React.FC = () => {
         <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
         <div className="p-4 flex items-center justify-center gap-4 grow">
           <ConvexButton
-            active={surface === "convex"}
-            onClick={() => setSurface("convex")}
+            active={useTransform(surface, (s) => s === "convex")}
+            onClick={() => surface.set("convex")}
           />
           <ConcaveButton
-            active={surface === "concave"}
-            onClick={() => setSurface("concave")}
+            active={useTransform(surface, (s) => s === "concave")}
+            onClick={() => surface.set("concave")}
           />
           <LipButton
-            active={surface === "lip"}
-            onClick={() => setSurface("lip")}
+            active={useTransform(surface, (s) => s === "lip")}
+            onClick={() => surface.set("lip")}
           />
         </div>
       </div>
@@ -210,9 +190,9 @@ export const Playground: React.FC = () => {
         <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>Ray Simulation</h4>
         <div className="text-sm">
           <RayRefractionSimulationMini
-            bezelHeightFn={equationFn}
-            bezelWidth={bw}
-            glassThickness={gt}
+            surface={surface}
+            bezelWidth={bezelWidth}
+            glassThickness={glassThickness}
             refractionIndex={refractiveIndex}
             currentX={currentX}
           />

@@ -1,20 +1,9 @@
-import {
-  motion,
-  type MotionValue,
-  useMotionValueEvent,
-  useTransform,
-} from "motion/react";
-import { useState } from "react";
+import { motion, type MotionValue, useTransform } from "motion/react";
 import { getRayColor } from "../lib/rayColor";
 
-type Ray = {
-  originX: number;
-  vector: [number, number];
-};
+// Ray type removed; values are derived via Motion transforms
 
-type RayWithRefraction = Ray & {
-  segments: { x1: number; y1: number; x2: number; y2: number }[];
-};
+// Note: RayWithRefraction no longer needed; we render directly from Motion transforms
 
 const AIR_REFRACTIVE_INDEX = 1;
 const GLASS_REFRACTIVE_INDEX = 1.5;
@@ -25,8 +14,6 @@ function refract(
   n1: number,
   n2: number
 ): [number, number] | null {
-  console.log("Refracting", incident, normal, n1, n2);
-
   const dot = incident[0] * normal[0] + incident[1] * normal[1];
   const eta = n1 / n2;
   const k = 1 - eta * eta * (1 - dot * dot);
@@ -74,10 +61,21 @@ function buildGlassOutlinePath(
   return [head, leftBezel, bottomJoin, rightBezel, tail].join("\n");
 }
 
+type BezelFn = (x: number) => number;
+const CONCAVE: BezelFn = (x) => 1 - Math.sqrt(1 - (1 - x) ** 2);
+const CONVEX: BezelFn = (x) => Math.sqrt(1 - (1 - x) ** 2);
+const LIP: BezelFn = (x) => {
+  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  const ratioCircle = 1 - smootherstep;
+  return circle * ratioCircle + sin * (1 - ratioCircle);
+};
+
 type RayRefractionSimulationMiniProps = {
-  bezelHeightFn?: (x: number) => number;
-  bezelWidth?: number;
-  glassThickness?: number;
+  surface?: MotionValue<"convex" | "concave" | "lip">;
+  bezelWidth: MotionValue<number>;
+  glassThickness: MotionValue<number>;
   refractionIndex?: number;
   // Interaction via MotionValue: normalized [0..1] within bezel width; null = no ray
   currentX: MotionValue<number | null>;
@@ -86,9 +84,9 @@ type RayRefractionSimulationMiniProps = {
 export const RayRefractionSimulationMini: React.FC<
   RayRefractionSimulationMiniProps
 > = ({
-  bezelHeightFn = (x) => x * x,
-  bezelWidth = 150,
-  glassThickness = 200,
+  surface,
+  bezelWidth,
+  glassThickness,
   refractionIndex = GLASS_REFRACTIVE_INDEX,
   currentX,
 }) => {
@@ -100,113 +98,73 @@ export const RayRefractionSimulationMini: React.FC<
   const glassWidth = 500;
 
   const glassX = 50;
-  const glassY = viewHeight - backgroundHeight - glassThickness - bezelWidth;
-  const glassHeight = glassThickness + bezelWidth;
+  const glassY = useTransform(
+    () =>
+      viewHeight - backgroundHeight - glassThickness.get() - bezelWidth.get()
+  );
+  const glassHeight = useTransform(
+    () => glassThickness.get() + bezelWidth.get()
+  );
 
-  const ray: Ray | null =
-    typeof currentX.get() === "number"
-      ? {
-          // Map normalized distance [0..1] to left bezel [glassX .. glassX + bezelWidth]
-          originX: glassX + (currentX.get() as number) * bezelWidth,
-          vector: [0, 1],
-        }
-      : null;
+  const bezelFn = (x: number) => {
+    const s = surface?.get() ?? "convex";
+    return s === "convex" ? CONVEX(x) : s === "concave" ? CONCAVE(x) : LIP(x);
+  };
 
-  function getRayHit(
-    ray: Ray
-  ): { point: [number, number]; normal: [number, number] } | null {
-    if (ray.vector[0] !== 0 || ray.vector[1] !== 1) {
-      throw new Error("Only vertical rays are supported for this example.");
+  const incidentX = useTransform(
+    () => glassX + (currentX.get() ?? 0) * bezelWidth.get()
+  );
+
+  // Build ray and refraction like the main simulation, driven by Motion
+  const ray = useTransform(() => {
+    const ox = incidentX.get();
+    const bw = bezelWidth.get();
+    const gy = glassY.get();
+    // Outside glass horizontally
+    if (ox < glassX || ox >= glassX + glassWidth) {
+      return {
+        originX: ox,
+        hitPoint: [ox, viewHeight - backgroundHeight] as [number, number],
+        refracted: null,
+      };
     }
-
-    // Ray does not hit glass
-    if (ray.originX < glassX || ray.originX >= glassX + glassWidth) {
-      return null;
-    }
-
-    const isLeftSide = ray.originX < glassX + bezelWidth;
-    const isRightSide = ray.originX > glassX + glassWidth - bezelWidth;
-
-    const x = isLeftSide
-      ? (ray.originX - glassX) / bezelWidth
+    const isLeftSide = ox < glassX + bw;
+    const isRightSide = ox > glassX + glassWidth - bw;
+    const t = isLeftSide
+      ? (ox - glassX) / bw
       : isRightSide
-      ? (glassX + glassWidth - ray.originX) / bezelWidth
-      : 1; // Middle of the glass
-
-    const y = bezelHeightFn(x);
-
-    if (x === 1) {
-      // Ray hits the flat top surface of the glass interior
-      return {
-        point: [ray.originX, glassY + (1 - y) * bezelWidth],
-        normal: [0, -1],
-      };
+      ? (glassX + glassWidth - ox) / bw
+      : 1;
+    const y = bezelFn(t);
+    const point: [number, number] = [ox, gy + (1 - y) * bw];
+    let normal: [number, number];
+    if (t === 1) normal = [0, -1];
+    else {
+      const dx = 0.0001;
+      const y2 = bezelFn(t + dx);
+      const derivative = (y2 - y) / dx;
+      const magnitude = Math.sqrt(derivative * derivative + 1);
+      normal = isRightSide
+        ? ([derivative / magnitude, -1 / magnitude] as [number, number])
+        : ([-derivative / magnitude, -1 / magnitude] as [number, number]);
     }
-
-    const dx = 0.0001; // Small delta for derivative calculation
-    const y2 = bezelHeightFn(x + dx);
-    const derivative = (y2 - y) / dx;
-    const magnitude = Math.sqrt(derivative * derivative + 1);
-    const normal: [number, number] = isRightSide
-      ? [derivative / magnitude, -1 / magnitude]
-      : [-derivative / magnitude, -1 / magnitude];
-    const point: [number, number] = [
-      ray.originX,
-      glassY + (1 - y) * bezelWidth,
-    ];
-    return { point, normal };
-  }
-
-  function calculateRefraction(ray: Ray): RayWithRefraction {
-    const hit = getRayHit(ray);
-    if (!hit) {
-      return {
-        ...ray,
-        segments: [
-          {
-            x1: ray.originX,
-            x2: ray.originX,
-            y1: 0,
-            y2: viewHeight - backgroundHeight,
-          },
-        ],
-      };
+    const v = refract([0, 1], normal, AIR_REFRACTIVE_INDEX, refractionIndex);
+    if (!v) {
+      return { originX: ox, hitPoint: point, refracted: null };
     }
-    const refractedVector = refract(
-      ray.vector,
-      hit.normal,
-      AIR_REFRACTIVE_INDEX,
-      refractionIndex
-    );
-
-    const firstSegment: {
-      x1: number;
-      x2: number;
-      y1: number;
-      y2: number;
-    } = { x1: ray.originX, y1: 0, x2: hit.point[0], y2: hit.point[1] };
-
-    const remainingHeight = viewHeight - backgroundHeight - hit.point[1];
-
+    const remainingHeight = viewHeight - backgroundHeight - point[1];
+    const x2 = point[0] + (v[0] / v[1]) * remainingHeight;
     return {
-      ...ray,
-      segments: refractedVector
-        ? [
-            firstSegment,
-            {
-              x1: hit.point[0],
-              y1: hit.point[1],
-              x2:
-                hit.point[0] +
-                (refractedVector[0] / refractedVector[1]) * remainingHeight,
-              y2: viewHeight - backgroundHeight,
-            },
-          ]
-        : [firstSegment],
+      originX: ox,
+      hitPoint: point,
+      refracted: {
+        x1: point[0],
+        y1: point[1],
+        x2,
+        y2: viewHeight - backgroundHeight,
+      },
     };
-  }
-
-  const refractedRay = ray && calculateRefraction(ray);
+  });
 
   // Compute maximum displacement across the viewport to normalize intensity
   const maximumDisplacement = useTransform(() => {
@@ -214,25 +172,45 @@ export const RayRefractionSimulationMini: React.FC<
     let max = 0;
     for (let i = 0; i < samples; i++) {
       const sampleX = (i / (samples - 1)) * viewWidth;
-      const r = calculateRefraction({ originX: sampleX, vector: [0, 1] });
-      const hasRefracted = r.segments.length > 1;
-      const bottomX = hasRefracted
-        ? r.segments[r.segments.length - 1].x2
-        : r.originX;
-      const disp = Math.abs(bottomX - r.originX);
+      const ox = sampleX;
+      const bw = bezelWidth.get();
+      const gy = glassY.get();
+      if (ox < glassX || ox >= glassX + glassWidth) continue;
+      const isLeftSide = ox < glassX + bw;
+      const isRightSide = ox > glassX + glassWidth - bw;
+      const t = isLeftSide
+        ? (ox - glassX) / bw
+        : isRightSide
+        ? (glassX + glassWidth - ox) / bw
+        : 1;
+      const y = bezelFn(t);
+      const py = gy + (1 - y) * bw;
+      let normal: [number, number];
+      if (t === 1) normal = [0, -1];
+      else {
+        const dx = 0.0001;
+        const y2 = bezelFn(t + dx);
+        const derivative = (y2 - y) / dx;
+        const magnitude = Math.sqrt(derivative * derivative + 1);
+        normal = isRightSide
+          ? ([derivative / magnitude, -1 / magnitude] as [number, number])
+          : ([-derivative / magnitude, -1 / magnitude] as [number, number]);
+      }
+      const v = refract([0, 1], normal, AIR_REFRACTIVE_INDEX, refractionIndex);
+      if (!v) continue;
+      const remainingHeight = viewHeight - backgroundHeight - py;
+      const x2 = ox + (v[0] / v[1]) * remainingHeight;
+      const disp = Math.abs(x2 - ox);
       if (disp > max) max = disp;
     }
     return max;
   });
 
   const displacementIntensity = useTransform(() => {
-    if (!refractedRay) return 0;
-    const hasRefracted = refractedRay.segments.length > 1;
-    const bottomX = hasRefracted
-      ? refractedRay.segments[refractedRay.segments.length - 1].x2
-      : refractedRay.originX;
-    const disp = Math.abs(bottomX - refractedRay.originX);
-    const max = maximumDisplacement.get() || 1;
+    const r = ray.get() as any;
+    if (!r || !r.refracted) return 0;
+    const disp = Math.abs((r.refracted.x2 as number) - (r.originX as number));
+    const max = (maximumDisplacement.get() as number) || 1;
     return disp / max;
   });
 
@@ -240,12 +218,6 @@ export const RayRefractionSimulationMini: React.FC<
   const displacementThickness = useTransform(
     displacementIntensity,
     (intensity) => 0.3 + intensity * 4
-  );
-
-  // Force a lightweight re-render when currentX MotionValue changes so geometry updates.
-  const [, forceRender] = useState(0);
-  useMotionValueEvent(currentX, "change", () =>
-    forceRender((t) => (t + 1) % 1000)
   );
 
   // samples handled inside buildGlassOutlinePath
@@ -261,7 +233,7 @@ export const RayRefractionSimulationMini: React.FC<
           const xRatio = (e.clientX - left) / width; // 0..1 across the SVG element width
           const pointerX = xRatio * viewWidth;
           // Normalize to distance from left border within the left bezel
-          const normalized = (pointerX - glassX) / bezelWidth;
+          const normalized = (pointerX - glassX) / bezelWidth.get();
           currentX.set(normalized);
           try {
             (
@@ -274,20 +246,24 @@ export const RayRefractionSimulationMini: React.FC<
           const { left, width } = e.currentTarget.getBoundingClientRect();
           const xRatio = (e.clientX - left) / width;
           const pointerX = xRatio * viewWidth;
-          const normalized = (pointerX - glassX) / bezelWidth;
+          const normalized = (pointerX - glassX) / bezelWidth.get();
           currentX.set(normalized);
         }}
       >
-        <path
-          d={buildGlassOutlinePath(
-            glassX,
-            glassY,
-            glassWidth,
-            glassHeight,
-            bezelWidth,
-            bezelHeightFn,
-            64
-          )}
+        <motion.path
+          d={
+            useTransform(() =>
+              buildGlassOutlinePath(
+                glassX,
+                glassY.get(),
+                glassWidth,
+                glassHeight.get(),
+                bezelWidth.get(),
+                bezelFn,
+                64
+              )
+            ) as unknown as string
+          }
           className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/20"
           strokeWidth="1.5"
         />
@@ -300,30 +276,42 @@ export const RayRefractionSimulationMini: React.FC<
           rx={2}
           fill="rgba(100, 100, 110, 0.1)"
         />
-        {refractedRay?.segments.map((segment, index) => (
-          <line
-            key={index}
-            x1={segment.x1}
-            y1={segment.y1}
-            x2={segment.x2}
-            y2={segment.y2}
-            stroke={index === 0 ? getRayColor(0) : getRayColor(0.3)}
-            strokeWidth="3"
-          />
-        ))}
-        {/* Incident Ray Projection (to the background), matching the main sim */}
-        {refractedRay && (
-          <line
-            x1={refractedRay.originX}
-            y1={refractedRay.segments[0].y2}
-            x2={refractedRay.originX}
-            y2={viewHeight - backgroundHeight}
-            stroke={getRayColor(0)}
-            strokeWidth="1"
-            strokeDasharray="3"
-            strokeOpacity="0.5"
-          />
-        )}
+        {/* Incident Ray */}
+        <motion.line
+          x1={incidentX}
+          y1={0}
+          x2={incidentX}
+          y2={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
+          stroke={getRayColor(0)}
+          strokeWidth="3"
+        />
+
+        {/* Refracted Ray */}
+        <motion.line
+          style={{
+            display: useTransform(ray, (r: any) =>
+              r?.refracted ? "block" : "none"
+            ) as unknown as string,
+          }}
+          x1={useTransform(ray, (r: any) => r?.refracted?.x1 ?? 0)}
+          y1={useTransform(ray, (r: any) => r?.refracted?.y1 ?? 0)}
+          x2={useTransform(ray, (r: any) => r?.refracted?.x2 ?? 0)}
+          y2={useTransform(ray, (r: any) => r?.refracted?.y2 ?? 0)}
+          stroke={getRayColor(0.3)}
+          strokeWidth="3"
+        />
+
+        {/* Incident Ray Projection to background */}
+        <motion.line
+          x1={incidentX}
+          y1={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
+          x2={incidentX}
+          y2={viewHeight - backgroundHeight}
+          stroke={getRayColor(0)}
+          strokeWidth="1"
+          strokeDasharray="3"
+          strokeOpacity="0.5"
+        />
 
         <defs>
           <marker
@@ -339,21 +327,20 @@ export const RayRefractionSimulationMini: React.FC<
             <motion.path d="M0,0 L4,2 L0,4 Z" fill={displacementColor} />
           </marker>
         </defs>
-
-        {refractedRay && (
-          <motion.line
-            style={{
-              display: refractedRay.segments.length > 1 ? "block" : "none",
-            }}
-            x1={refractedRay.originX}
-            y1={viewHeight - backgroundHeight}
-            x2={refractedRay.segments[refractedRay.segments.length - 1].x2}
-            y2={viewHeight - backgroundHeight}
-            stroke={displacementColor as unknown as string}
-            strokeWidth={displacementThickness as unknown as number}
-            markerEnd="url(#arrow-displacement-vector-mini)"
-          />
-        )}
+        <motion.line
+          style={{
+            display: useTransform(ray, (r: any) =>
+              r?.refracted ? "block" : "none"
+            ),
+          }}
+          x1={incidentX}
+          y1={viewHeight - backgroundHeight}
+          x2={useTransform(ray, (r: any) => r?.refracted?.x2 ?? 0)}
+          y2={viewHeight - backgroundHeight}
+          stroke={displacementColor as unknown as string}
+          strokeWidth={displacementThickness as unknown as number}
+          markerEnd="url(#arrow-displacement-vector-mini)"
+        />
       </motion.svg>
     </>
   );

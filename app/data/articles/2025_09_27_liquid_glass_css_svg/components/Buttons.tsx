@@ -1,16 +1,19 @@
 import { RotateCcwIcon } from "lucide-react";
+import { motion, type MotionValue, useTransform } from "motion/react";
 import * as React from "react";
 import { ConcavePath24, ConvexPath24, LipPath24 } from "./Functions";
 
 type ButtonProps = {
   onClick?: () => void;
   title?: string;
-  active?: boolean;
+  active?: boolean | MotionValue<boolean>;
   className?: string;
+  // Optional Motion-driven ring opacity for active state without React re-renders
+  ringOpacity?: MotionValue<number>;
 };
 
 const baseBtn =
-  "group inline-flex items-center justify-center bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors";
+  "group relative inline-flex items-center justify-center bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors";
 
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -22,14 +25,20 @@ export const ReplayButton: React.FC<ButtonProps> = ({
   active,
   className,
 }) => {
+  const activeBool = typeof active === "boolean" ? active : false;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={title}
       title={title}
-      className={cx(baseBtn, active && "ring-2 ring-blue-400/70", className)}
+      className={cx(
+        baseBtn,
+        activeBool && "ring-2 ring-blue-400/70",
+        className
+      )}
     >
+      {/* Static icon; no active overlay needed here */}
       <RotateCcwIcon
         size={20}
         className="group-hover:scale-110 group-active:scale-90 transition-transform"
@@ -62,15 +71,31 @@ function SurfaceButtonBase({
   active,
   className,
   d,
+  ringOpacity,
 }: ButtonProps & { d: string }) {
+  const activeOpacity =
+    typeof active === "object" && active && "get" in active
+      ? useTransform(active as MotionValue<boolean>, (v) => (v ? 1 : 0))
+      : undefined;
+  const activeBool = typeof active === "boolean" ? active : false;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={title}
       title={title}
-      className={cx(baseBtn, active && "ring-2 ring-blue-400/70", className)}
+      className={cx(
+        baseBtn,
+        activeBool && "ring-2 ring-blue-400/70",
+        className
+      )}
     >
+      {(ringOpacity || activeOpacity) && (
+        <motion.span
+          className="absolute inset-0 rounded-full ring-2 ring-blue-400/70 pointer-events-none"
+          style={{ opacity: (ringOpacity ?? activeOpacity)! }}
+        />
+      )}
       <SurfaceIcon d={d} />
     </button>
   );
