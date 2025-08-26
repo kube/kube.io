@@ -44,6 +44,36 @@ function refract(
   return refracted;
 }
 
+/** Build the glass outline with symmetric bezels (similar to the full simulation). */
+function buildGlassOutlinePath(
+  glassX: number,
+  glassY: number,
+  glassWidth: number,
+  glassHeight: number,
+  bezelWidth: number,
+  bezelHeightFn: (x: number) => number,
+  samples: number
+): string {
+  const head = `M ${glassX} ${glassY + glassHeight}`;
+  const leftBezel = Array.from({ length: samples }, (_, i) => {
+    const x = i / samples;
+    const y = bezelHeightFn(x);
+    return `L ${glassX + x * bezelWidth} ${glassY + (1 - y) * bezelWidth}`;
+  }).join(" ");
+  const bottomJoin = `L ${glassX + glassWidth - bezelWidth} ${
+    glassY + (1 - bezelHeightFn(1)) * bezelWidth
+  }`;
+  const rightBezel = Array.from({ length: samples }, (_, i) => {
+    const x = 1 - i / samples;
+    const y = bezelHeightFn(x);
+    return `L ${glassX + glassWidth - x * bezelWidth} ${
+      glassY + (1 - y) * bezelWidth
+    }`;
+  }).join(" ");
+  const tail = `L ${glassX + glassWidth} ${glassY + glassHeight} Z`;
+  return [head, leftBezel, bottomJoin, rightBezel, tail].join("\n");
+}
+
 type RayRefractionSimulationMiniProps = {
   bezelHeightFn?: (x: number) => number;
   bezelWidth?: number;
@@ -71,6 +101,7 @@ export const RayRefractionSimulationMini: React.FC<
 
   const glassX = 50;
   const glassY = viewHeight - backgroundHeight - glassThickness - bezelWidth;
+  const glassHeight = glassThickness + bezelWidth;
 
   const ray: Ray | null =
     typeof currentX.get() === "number"
@@ -217,7 +248,7 @@ export const RayRefractionSimulationMini: React.FC<
     forceRender((t) => (t + 1) % 1000)
   );
 
-  const NUMBER_OF_SAMPLES = 1024;
+  // samples handled inside buildGlassOutlinePath
 
   return (
     <>
@@ -248,26 +279,16 @@ export const RayRefractionSimulationMini: React.FC<
         }}
       >
         <path
-          d={`
-          M ${glassX} ${glassY + glassThickness + bezelWidth}
-
-          ${Array.from({ length: NUMBER_OF_SAMPLES }, (_, i) => {
-            const x = i / NUMBER_OF_SAMPLES;
-            const y = bezelHeightFn(x);
-            return `L ${glassX + x * bezelWidth} ${
-              glassY + (1 - y) * bezelWidth
-            }`;
-          }).join(" ")}
-          
-          L ${glassX + glassWidth - bezelWidth} ${
-            glassY + (1 - bezelHeightFn(1)) * bezelWidth
-          }
-
-          L ${glassX + glassWidth - bezelWidth} ${
-            glassY + glassThickness + bezelWidth
-          }`}
-          fill="rgba(60, 60, 90, 0.1)"
-          stroke="rgba(120, 120, 150, 0.4)"
+          d={buildGlassOutlinePath(
+            glassX,
+            glassY,
+            glassWidth,
+            glassHeight,
+            bezelWidth,
+            bezelHeightFn,
+            64
+          )}
+          className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/20"
           strokeWidth="1.5"
         />
 
@@ -287,18 +308,20 @@ export const RayRefractionSimulationMini: React.FC<
             x2={segment.x2}
             y2={segment.y2}
             stroke={index === 0 ? getRayColor(0) : getRayColor(0.3)}
-            strokeWidth="2"
+            strokeWidth="3"
           />
         ))}
-        {ray && (
+        {/* Incident Ray Projection (to the background), matching the main sim */}
+        {refractedRay && (
           <line
-            x1={ray.originX}
-            y1={0}
-            x2={ray.originX}
+            x1={refractedRay.originX}
+            y1={refractedRay.segments[0].y2}
+            x2={refractedRay.originX}
             y2={viewHeight - backgroundHeight}
-            stroke="black"
+            stroke={getRayColor(0)}
             strokeWidth="1"
-            strokeDasharray="2"
+            strokeDasharray="3"
+            strokeOpacity="0.5"
           />
         )}
 
