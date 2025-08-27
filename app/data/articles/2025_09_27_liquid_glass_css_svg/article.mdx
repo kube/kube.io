@@ -29,9 +29,9 @@ We’ll now build up the effect from first principles—starting with how light 
 
 <div className="relative my-16">
   {/* Glow frame */}
-  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-lg opacity-60" />
   {/* Card */}
-  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+  <div className="relative rounded-xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg shadow-black/5 ring-1 ring-black/5">
     <div className="flex items-center gap-3">
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white">
         <SiGooglechrome className="h-6 w-6" />
@@ -270,9 +270,9 @@ With the refraction math and displacement map in place, the next step is packagi
 
 <div className="relative my-8">
   {/* Glow frame */}
-  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-md opacity-70" />
+  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-lg opacity-60" />
   {/* Card */}
-  <div className="relative rounded-2xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg ring-1 ring-black/5">
+  <div className="relative rounded-xl border border-white/20 bg-white/70 dark:bg-zinc-900/60 backdrop-blur p-4 sm:p-5 shadow-lg shadow-black/5 ring-1 ring-black/5">
     <div className="flex items-center gap-3">
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-amber-400 text-white">
         <SiGooglechrome className="h-6 w-6" />
