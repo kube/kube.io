@@ -69,8 +69,8 @@ export const MixedUI: React.FC = () => {
   const sbHeight = 56;
   const sbWidth = 560;
   const sbRadius = sbHeight / 2;
-  const bezelWidth = 28;
-  const glassThickness = 110;
+  const bezelWidth = 13;
+  const glassThickness = 130;
   const refractiveIndex = 1.8;
   const blur = 4;
 
@@ -193,7 +193,7 @@ export const MixedUI: React.FC = () => {
               backgroundOpacity,
               (op) => `rgba(255,255,255,${op})`
             ),
-            boxShadow: "0 12px 20px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           }}
         />
 
@@ -232,8 +232,8 @@ export const MixedUI: React.FC = () => {
           width={920}
           height={68}
           radius={34}
-          bezelWidth={22}
-          glassThickness={100}
+          bezelWidth={20}
+          glassThickness={130}
           refractiveIndex={1.8}
           blur={1.5}
           scaleRatio={useSpring(0.55)}
@@ -246,7 +246,7 @@ export const MixedUI: React.FC = () => {
             borderRadius: 34,
             backdropFilter: `url(#mixed-ui-player-filter)`,
             backgroundColor: "rgba(255,255,255,0.7)",
-            boxShadow: "0 12px 20px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.13)",
           }}
         />
 
