@@ -1,30 +1,12 @@
-import {
-  motion,
-  useMotionValue,
-  useMotionValueEvent,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import React, { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import React, { useEffect } from "react";
 import { Filter } from "../components/Filter";
 
 export const Switch: React.FC = () => {
-  const [checked, setChecked] = useState(true);
-  const motionChecked = useMotionValue(checked ? 1 : 0);
-
-  useEffect(() => {
-    motionChecked.set(checked ? 1 : 0);
-  }, [checked]);
-
-  const toggleChecked = () => {
-    setChecked(!checked);
-  };
-
+  // —————————————————————————————————————————————
+  // CONSTANTS (layout + optics)
   const sliderHeight = 166;
   const sliderWidth = 418;
-
-  const isMouseDown = useMotionValue(true);
-
   const width = 390;
   const height = 230;
   const radius = 115;
@@ -32,71 +14,79 @@ export const Switch: React.FC = () => {
   const glassThickness = 130;
   const refractiveIndex = 1.9;
   const blur = 0;
-  const scaleRatio = useSpring(isMouseDown.get() ? 0.9 : 0.4);
   const specularOpacity = 0.9;
 
-  const scale = useMotionValue(1);
-  useMotionValueEvent(isMouseDown, "change", (down) =>
-    scale.set(down ? 1 : 0.6)
-  );
-  const scaleSpring = useSpring(scale.get(), {
-    damping: 80,
-    stiffness: 2000,
-  });
-  useMotionValueEvent(scale, "change", (v) => scaleSpring.set(v));
+  // —————————————————————————————————————————————
+  // SOURCES OF TRUTH (Motion)
+  const checkedMV = useMotionValue<number>(1); // 0->off, 1->on
+  const pointerDownMV = useMotionValue<number>(0); // 0->idle, 1->pressed
 
-  const buttonXMV = useMotionValue(motionChecked.get() ? -31 : -69);
-  useMotionValueEvent(motionChecked, "change", (c) =>
-    buttonXMV.set(c ? -31 : -69)
-  );
-  const buttonX = useSpring(buttonXMV.get(), { damping: 60, stiffness: 800 });
-  useMotionValueEvent(buttonXMV, "change", (v) => buttonX.set(v));
-  const backgroundOpacityMV = useMotionValue(1);
-  useMotionValueEvent(isMouseDown, "change", (down) =>
-    backgroundOpacityMV.set(down ? 0.1 : 1)
-  );
-  const backgroundOpacity = useSpring(backgroundOpacityMV.get(), {
+  const toggleChecked = () => {
+    checkedMV.set(checkedMV.get() ? 0 : 1);
+  };
+
+  // End press when releasing outside the element
+  useEffect(() => {
+    const onPointerUp = () => pointerDownMV.set(0);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("mouseup", onPointerUp);
+    window.addEventListener("touchend", onPointerUp);
+    return () => {
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("mouseup", onPointerUp);
+      window.removeEventListener("touchend", onPointerUp);
+    };
+  }, [pointerDownMV]);
+
+  // —————————————————————————————————————————————
+  // DERIVED TRANSFORMS (pure)
+  const trackBg = useTransform(checkedMV, [0, 1], ["#ccc", "#5BBF5E"]);
+  const buttonXTarget = useTransform(checkedMV, [0, 1], [-69, -31]); // in %
+  const backgroundOpacityTarget = useTransform(pointerDownMV, [0, 1], [1, 0.1]);
+  const thumbScaleTarget = useTransform(pointerDownMV, [0, 1], [0.6, 1]);
+  const scaleRatioTarget = useTransform(pointerDownMV, [0, 1], [0.4, 0.9]);
+
+  // —————————————————————————————————————————————
+  // SPRINGS (animated derivatives)
+  const buttonX = useSpring(buttonXTarget, { damping: 60, stiffness: 800 });
+  const backgroundOpacity = useSpring(backgroundOpacityTarget, {
     damping: 80,
     stiffness: 2000,
   });
-  useMotionValueEvent(backgroundOpacityMV, "change", (v) =>
-    backgroundOpacity.set(v)
+  const thumbScale = useSpring(thumbScaleTarget, {
+    damping: 80,
+    stiffness: 2000,
+  });
+  const scaleRatio = useSpring(scaleRatioTarget, {
+    damping: 80,
+    stiffness: 2000,
+  });
+
+  // —————————————————————————————————————————————
+  // STYLE TRANSFORMS (stringified values for JSX styles)
+  const thumbXPercent = useTransform(buttonX, (v) => `${v}%`);
+  const thumbBgColor = useTransform(
+    backgroundOpacity,
+    (op) => `rgba(255, 255, 255, ${op})`
   );
 
   return (
-    <div className="p-40 bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)]">
+    <div className="h-96 flex items-center justify-center bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)]">
       <motion.div
         style={{
           display: "inline-block",
           width: sliderWidth,
           height: sliderHeight,
-          backgroundColor: checked ? "#5BBF5E" : "#ccc",
+          backgroundColor: trackBg,
           transition: "background-color 0.3s ease-in-out",
           borderRadius: sliderHeight / 2,
           position: "relative",
           cursor: "pointer",
         }}
         onClick={toggleChecked}
-        onMouseDown={() => {
-          isMouseDown.set(true);
-          scaleRatio.set(0.9);
-        }}
-        onMouseUp={() => {
-          isMouseDown.set(false);
-          scaleRatio.set(0.4);
-        }}
+        onMouseDown={() => pointerDownMV.set(1)}
+        onMouseUp={() => pointerDownMV.set(0)}
       >
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={toggleChecked}
-          style={{
-            position: "absolute",
-            opacity: 0,
-            width: 0,
-            height: 0,
-          }}
-        />
         <Filter
           id="thumb-filter"
           width={width}
@@ -116,23 +106,20 @@ export const Switch: React.FC = () => {
             return circle * ratioCircle + sin * (1 - ratioCircle);
           }}
         />
+
         <motion.div
           className="absolute"
           style={{
             height,
             width,
-            x: useTransform(buttonX, (v) => `${v}%`),
+            x: thumbXPercent,
             y: "-50%",
             borderRadius: radius,
             top: sliderHeight / 2,
             left: sliderWidth / 2,
             backdropFilter: `url(#thumb-filter)`,
-            scale: scaleSpring,
-
-            backgroundColor: useTransform(
-              backgroundOpacity,
-              (op) => `rgba(255, 255, 255, ${op})`
-            ),
+            scale: thumbScale,
+            backgroundColor: thumbBgColor,
           }}
         />
       </motion.div>

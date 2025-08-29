@@ -1,116 +1,99 @@
-import {
-  motion,
-  useMotionValue,
-  useMotionValueEvent,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import React, { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import React, { useEffect, useRef } from "react";
 import { Filter } from "../components/Filter";
 
 export const Slider: React.FC = () => {
   const min = 0;
   const max = 100;
-  const [value, setValue] = useState(50);
-  const motionValue = useMotionValue(value);
+  const value = useMotionValue(50);
 
-  useEffect(() => {
-    motionValue.set(value);
-  }, [value]);
+  const sliderHeight = 28;
+  const sliderWidth = 450;
 
-  const sliderHeight = 30;
-  const sliderWidth = 600;
+  // Use numeric MotionValue (0/1) instead of boolean for compatibility with transforms
+  const pointerDown = useMotionValue(0);
 
-  const isMouseDown = useMotionValue(true);
-
-  const updateValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Math.max(min, Math.min(max, Number(e.target.value)));
-    setValue(newValue);
-  };
-
-  const width = 220;
-  const height = 130;
-  const radius = 65;
+  const width = 160;
+  const height = 100;
+  const radius = 50;
   const bezelWidth = 40;
   const glassThickness = 90;
   const refractiveIndex = 1.9;
   const blur = 0;
-  const scaleRatio = useSpring(isMouseDown.get() ? 0.9 : 0.4);
+  const scaleRatioTarget = useTransform(pointerDown, [0, 1], [0.4, 0.9]);
+  const scaleRatio = useSpring(scaleRatioTarget);
   const specularOpacity = 0.9;
 
-  const constraintsRef = React.useRef<HTMLDivElement>(null);
-  const scale = useMotionValue(1);
-  useMotionValueEvent(isMouseDown, "change", (down) =>
-    scale.set(down ? 1 : 0.6)
-  );
-  const scaleSpring = useSpring(scale.get(), {
-    damping: 80,
-    stiffness: 2000,
-  });
-  // Keep spring in sync with MotionValue source
-  useMotionValueEvent(scale, "change", (v) => scaleSpring.set(v));
+  const constraintsRef = useRef<HTMLDivElement>(null);
+  const scaleTarget = useTransform(pointerDown, [0, 1], [0.6, 1]);
+  const scaleSpring = useSpring(scaleTarget, { damping: 80, stiffness: 2000 });
 
-  const backgroundOpacityMV = useMotionValue(1);
-  useMotionValueEvent(isMouseDown, "change", (down) =>
-    backgroundOpacityMV.set(down ? 0.1 : 1)
-  );
-  const backgroundOpacity = useSpring(backgroundOpacityMV.get(), {
+  const backgroundOpacityTarget = useTransform(pointerDown, [0, 1], [1, 0.1]);
+  const backgroundOpacity = useSpring(backgroundOpacityTarget, {
     damping: 80,
     stiffness: 2000,
   });
-  useMotionValueEvent(backgroundOpacityMV, "change", (v) =>
-    backgroundOpacity.set(v)
-  );
+
+  // End drag when releasing outside the element
+  useEffect(() => {
+    function onPointerUp() {
+      pointerDown.set(0);
+    }
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("mouseup", onPointerUp);
+    window.addEventListener("touchend", onPointerUp);
+    return () => {
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("mouseup", onPointerUp);
+      window.removeEventListener("touchend", onPointerUp);
+    };
+  }, []);
 
   return (
-    <div className="py-40 px-5 bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)]">
+    <div className="h-96 flex justify-center items-center bg-slate-100 dark:bg-[#232328] rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none">
       <motion.div
-        ref={constraintsRef}
         style={{
-          display: "inline-block",
-          width: sliderWidth,
-          height: sliderHeight,
-          backgroundColor: "#ccc",
-          transition: "background-color 0.3s ease-in-out",
-          borderRadius: sliderHeight / 2,
           position: "relative",
-          cursor: "pointer",
-        }}
-        onMouseDown={() => {
-          isMouseDown.set(true);
-          scaleRatio.set(0.9);
-        }}
-        onMouseUp={() => {
-          isMouseDown.set(false);
-          scaleRatio.set(0.4);
+          width: sliderWidth,
+          height: height,
         }}
       >
-        <input
-          type="number"
-          value={value}
-          onChange={updateValue}
+        <motion.div
+          ref={constraintsRef}
           style={{
+            display: "inline-block",
+            width: sliderWidth,
+            height: sliderHeight,
+            left: 0,
+            top: (height - sliderHeight) / 2,
+            backgroundColor: "#ccc",
+            transition: "background-color 0.3s ease-in-out",
+            borderRadius: sliderHeight / 2,
             position: "absolute",
-            opacity: 0,
-            width: 0,
-            height: 0,
+            cursor: "pointer",
           }}
-        />
-
-        <div className="w-full h-full overflow-hidden rounded-full">
-          <motion.div
-            style={{
-              top: 0,
-              left: 0,
-              height: sliderHeight,
-              width: useTransform(motionValue, (v) => `${v}%`),
-              borderRadius: `${sliderHeight / 2}px 2px 2px ${
-                sliderHeight / 2
-              }px`,
-              backgroundColor: true ? "#0377F7" : "#ccc",
-            }}
-          />
-        </div>
+          onMouseDown={() => {
+            pointerDown.set(1);
+          }}
+          onMouseUp={() => {
+            pointerDown.set(0);
+          }}
+        >
+          <div className="w-full h-full overflow-hidden rounded-full">
+            <motion.div
+              style={{
+                top: 0,
+                left: 0,
+                height: sliderHeight,
+                width: useTransform(value, (v) => `${v}%`),
+                borderRadius: `${sliderHeight / 2}px 2px 2px ${
+                  sliderHeight / 2
+                }px`,
+                backgroundColor: true ? "#0377F7" : "#ccc",
+              }}
+            />
+          </div>
+        </motion.div>
 
         <Filter
           id="thumb-filter-slider"
@@ -135,24 +118,28 @@ export const Slider: React.FC = () => {
         <motion.div
           drag="x"
           dragConstraints={constraintsRef}
+          onDragStart={() => {
+            pointerDown.set(1);
+          }}
           onDrag={(_, info) => {
             const { x, width } =
               constraintsRef.current!.getBoundingClientRect();
             const ratio = (info.point.x - x) / width;
-            motionValue.set(
-              Math.max(min, Math.min(max, ratio * (max - min) + min))
-            );
+            value.set(Math.max(min, Math.min(max, ratio * (max - min) + min)));
+          }}
+          onDragEnd={() => {
+            pointerDown.set(0);
           }}
           dragMomentum={false}
           className="absolute"
           style={{
             height,
             width,
-            y: "-50%",
+            top: 0,
             borderRadius: radius,
-            top: sliderHeight / 2,
             backdropFilter: `url(#thumb-filter-slider)`,
             scale: scaleSpring,
+            cursor: "pointer",
 
             backgroundColor: useTransform(
               backgroundOpacity,
