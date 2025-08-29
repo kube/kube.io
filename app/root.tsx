@@ -54,12 +54,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
           rel="stylesheet"
         />
 
-        <script
-          defer
-          data-domain="kube.io"
-          src="https://plausible.io/js/script.outbound-links.tagged-events.js"
-        />
-        <script children="window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }" />
+        {import.meta.env.PROD && (
+          <>
+            <script
+              defer
+              data-domain="kube.io"
+              src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+            />
+            <script children="window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }" />
+          </>
+        )}
 
         <Favicons />
         <Meta />
