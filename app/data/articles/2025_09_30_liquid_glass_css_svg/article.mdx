@@ -9,6 +9,7 @@ published: true
 import { SiGooglechrome } from "react-icons/si";
 import { Functions } from "./components/Functions";
 import { DisplacementVectorField } from "./graphics/DisplacementVectorField";
+import { MixedUI } from "./graphics/MixedUI";
 import { ParallaxImageHero } from "./graphics/ParallaxImageHero";
 import { Playground } from "./graphics/Playground";
 import { RayRefractionSimulation } from "./graphics/RayRefractionSimulation";
@@ -328,6 +329,12 @@ The lip makes the surface convex on the outside and concave in the middle, which
 Slider re-uses the same logic as the Switch, and lets user see the current value of the slider behind the thumb glass.
 
 <Slider />
+
+## Mixed UI
+
+A composite UI showcasing a glass search field over a live album grid. The grid is 4×5 and uses public iTunes Search API data (no auth) for album images and titles.
+
+<MixedUI />
 
 # Conclusion
 
