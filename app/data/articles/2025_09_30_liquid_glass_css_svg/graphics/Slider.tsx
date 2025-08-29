@@ -5,7 +5,7 @@ import { Filter } from "../components/Filter";
 export const Slider: React.FC = () => {
   const min = 0;
   const max = 100;
-  const value = useMotionValue(50);
+  const value = useMotionValue(10);
 
   const sliderHeight = 28;
   const sliderWidth = 450;
@@ -25,14 +25,18 @@ export const Slider: React.FC = () => {
   const specularOpacity = 0.9;
 
   const constraintsRef = useRef<HTMLDivElement>(null);
-  const scaleTarget = useTransform(pointerDown, [0, 1], [0.6, 1]);
-  const scaleSpring = useSpring(scaleTarget, { damping: 80, stiffness: 2000 });
-
-  const backgroundOpacityTarget = useTransform(pointerDown, [0, 1], [1, 0.1]);
-  const backgroundOpacity = useSpring(backgroundOpacityTarget, {
+  const scaleSpring = useSpring(useTransform(pointerDown, [0, 1], [0.6, 1]), {
     damping: 80,
     stiffness: 2000,
   });
+
+  const backgroundOpacity = useSpring(
+    useTransform(pointerDown, [0, 1], [1, 0.1]),
+    {
+      damping: 80,
+      stiffness: 2000,
+    }
+  );
 
   // End drag when releasing outside the element
   useEffect(() => {
@@ -117,7 +121,14 @@ export const Slider: React.FC = () => {
 
         <motion.div
           drag="x"
-          dragConstraints={constraintsRef}
+          dragConstraints={{ left: -40, right: sliderWidth - width + 40 }}
+          dragElastic={0.02}
+          onMouseDown={() => {
+            pointerDown.set(1);
+          }}
+          onMouseUp={() => {
+            pointerDown.set(0);
+          }}
           onDragStart={() => {
             pointerDown.set(1);
           }}
@@ -132,6 +143,7 @@ export const Slider: React.FC = () => {
           }}
           dragMomentum={false}
           className="absolute"
+          // initial={{ x: `calc(${value.get()}% - ${width / 2}px)`, y: 0 }}
           style={{
             height,
             width,
