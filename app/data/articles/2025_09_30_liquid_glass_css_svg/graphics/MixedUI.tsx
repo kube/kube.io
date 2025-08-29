@@ -198,7 +198,7 @@ export const MixedUI: React.FC = () => {
             backdropFilter: `url(#mixed-ui-search-filter)`,
             backgroundColor: useTransform(
               backgroundOpacity,
-              (op) => `rgba(255,255,255,${op})`
+              (op) => `rgba(0,0,0,${op})`
             ),
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           }}
@@ -228,6 +228,11 @@ export const MixedUI: React.FC = () => {
         </div>
       </motion.div>
 
+      <div className="absolute top-0 left-0 right-0 w-full h-[175px] backdrop-blur-[1px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
+      <div className="absolute top-0 left-0 right-0 w-full h-[125px] backdrop-blur-[3px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
+      <div className="absolute top-0 left-0 right-0 w-full h-[75px] backdrop-blur-[6px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-black/70 to-transparent" />
+
       {/* Bottom player overlay (Apple Music–like) */}
       <div
         className="pointer-events-none absolute left-1/2 bottom-6 -translate-x-1/2 z-10"
@@ -252,7 +257,7 @@ export const MixedUI: React.FC = () => {
           style={{
             borderRadius: 34,
             backdropFilter: `url(#mixed-ui-player-filter)`,
-            backgroundColor: "rgba(255,255,255,0.7)",
+            backgroundColor: "rgba(0,0,0,0.7)",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.13)",
           }}
         />
