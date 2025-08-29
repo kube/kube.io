@@ -8,5 +8,6 @@ export default [
   route("cv.pdf", "./routes/cv/pdf.tsx"),
   route("blog", "./routes/blog/index.tsx"),
   route("blog/:slug", "./routes/blog/post.tsx"),
+  route("rss.xml", "./routes/rss.xml.tsx"),
   ...(FLAGS.WORKSHOP ? [route("workshop", "./routes/workshop/page.tsx")] : []),
 ] satisfies RouteConfig;

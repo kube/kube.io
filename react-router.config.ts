@@ -26,6 +26,8 @@ export default {
         (post) => `/blog/${post.slug}`
       ),
 
+  "/rss.xml",
+
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];
   },

@@ -1,3 +1,4 @@
+import { FaRss } from "react-icons/fa";
 import { Link } from "react-router";
 import { H1 } from "../../components/Typography";
 
@@ -42,7 +43,20 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
 export default function BlogIndex() {
   return (
     <>
-      <H1 id="blog">Articles</H1>
+      <div className="flex items-center justify-between gap-4">
+        <H1 id="blog">Articles</H1>
+
+        <a
+          href="/rss.xml"
+          rel="alternate"
+          type="application/rss+xml"
+          className="inline-flex items-center gap-2 text-sm rounded border border-current/20 px-3 py-1 hover:bg-black/5 dark:hover:bg-white/5"
+          aria-label="Subscribe to RSS feed"
+        >
+          <FaRss aria-hidden size={14} />
+          RSS feed
+        </a>
+      </div>
 
       <ol className="flex flex-col gap-12 mt-8">
         {getAllPosts().map((post) => (
