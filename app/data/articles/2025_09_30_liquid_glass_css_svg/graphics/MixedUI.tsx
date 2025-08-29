@@ -78,6 +78,13 @@ export const MixedUI: React.FC = () => {
   const pointerDown = useMotionValue(0);
   const focused = useMotionValue(0);
 
+  // Floating player dimensions (used to pad the scroll area bottom)
+  const playerHeight = 68; // must match the player container height
+  const playerBottomOffset = 24; // Tailwind bottom-6 = 1.5rem = 24px
+  const extraBreathingRoom = 24; // small gap so the last row isn't glued to the player
+  const listBottomPadding =
+    playerHeight + playerBottomOffset + extraBreathingRoom; // 68 + 24 + 24 = 116
+
   const bgFromPointer = useTransform(pointerDown, [0, 1], [0.2, 0.5]);
   const bgFromFocus = useTransform(focused, [0, 1], [0.2, 0.6]);
   const bgTarget = useTransform([bgFromPointer, bgFromFocus], (vals) =>
@@ -105,8 +112,8 @@ export const MixedUI: React.FC = () => {
     <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none">
       {/* Albums grid layer (behind) */}
       <div
-        className="absolute inset-0 overflow-y-auto px-6 pb-6 z-0"
-        style={{ paddingTop: sbHeight + 42 }}
+        className="absolute inset-0 overflow-y-auto px-6 z-0"
+        style={{ paddingTop: sbHeight + 42, paddingBottom: listBottomPadding }}
       >
         {error && <div className="text-center text-red-500/80">{error}</div>}
         <h3 className="text-xl text-black dark:text-white mb-5 select-none">
@@ -144,7 +151,7 @@ export const MixedUI: React.FC = () => {
                     <img
                       src={upscaleArtwork((item as Album).artworkUrl100)}
                       alt={title}
-                      className="absolute inset-0 w-full h-full object-cover rounded"
+                      className="absolute inset-0 w-full h-full object-cover rounded-lg"
                       draggable={false}
                       loading="lazy"
                     />
