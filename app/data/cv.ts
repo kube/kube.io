@@ -87,7 +87,7 @@ export const cv = {
     {
       date: { from: { month: 2, year: 2025 } },
       title: "Virtual",
-      subtitle: "Founder — Personal Project",
+      subtitle: "Creator — Personal Project",
       description: [
         "Started while in New York during a period I couldn't work there.",
         "Generalisation of the Virtual Mode project I led at TheFork, simplified to smartly mock any GraphQL project by just reading its GraphQL Schema.",
