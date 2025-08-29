@@ -10,9 +10,10 @@ function escapeXml(value: string) {
     .replace(/'/g, "&apos;");
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader(_: LoaderFunctionArgs) {
   const posts = getAllPosts();
-  const { origin } = new URL(request.url);
+  // Always use the canonical domain for RSS links
+  const origin = "https://kube.io";
 
   const channelTitle = "kube.io";
   const channelLink = origin;
