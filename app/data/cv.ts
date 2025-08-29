@@ -85,6 +85,24 @@ export const cv = {
 
   work: [
     {
+      date: { from: { month: 2, year: 2025 } },
+      title: "Virtual",
+      subtitle: "Founder — Personal Project",
+      description: [
+        "Started while in New York during a period I couldn't work there.",
+        "Generalisation of the Virtual Mode project I led at TheFork, simplified to smartly mock any GraphQL project by just reading its GraphQL Schema.",
+        "Work in progress, and will be re-thought for AI integration.",
+      ],
+      stack: [
+        "TypeScript",
+        "GraphQL",
+        "NodeJS",
+        "Monaco Editor",
+        "React",
+        "Tailwind",
+      ],
+    },
+    {
       date: { from: { month: 4, year: 2015 } },
       title: "kube.io",
       subtitle: "Freelance Software Engineer",

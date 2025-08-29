@@ -22,9 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     .map((post) => {
       const link = `${origin}/blog/${post.slug}`;
       const title = escapeXml(post.title);
-      const description = post.description
-        ? escapeXml(post.description)
-        : "";
+      const description = post.description ? escapeXml(post.description) : "";
       const pubDate = new Date(post.date).toUTCString();
       return `
   <item>
