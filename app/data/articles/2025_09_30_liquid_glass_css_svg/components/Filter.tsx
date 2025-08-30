@@ -32,6 +32,7 @@ type FilterProps = {
   bezelWidth: number | MotionValue<number>;
   refractiveIndex: number | MotionValue<number>;
   specularOpacity: number | MotionValue<number>;
+  specularSaturation?: number | MotionValue<number>;
   bezelHeightFn?: (x: number) => number;
 };
 
@@ -49,6 +50,7 @@ export const Filter: React.FC<FilterProps> = ({
   refractiveIndex,
   scaleRatio,
   specularOpacity,
+  specularSaturation = 6,
   bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
 }) => {
   const map = useTransform(() =>
@@ -124,10 +126,12 @@ export const Filter: React.FC<FilterProps> = ({
         result="displaced"
       />
 
-      <feColorMatrix
+      <motion.feColorMatrix
         in="displaced"
         type="saturate"
-        values="7"
+        values={useTransform(() =>
+          getValueOrMotion(specularSaturation).toString()
+        )}
         result="displaced_saturated"
       />
 
