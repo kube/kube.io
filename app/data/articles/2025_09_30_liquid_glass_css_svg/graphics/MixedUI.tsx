@@ -210,7 +210,7 @@ export const MixedUI: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => focused.set(1)}
             onBlur={() => focused.set(0)}
-            className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[18px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text"
+            className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[18px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text text-shadow-xs text-shadow-white/70 dark:text-shadow-black/70"
             style={{ padding: 0 }}
           />
         </div>
@@ -232,7 +232,7 @@ export const MixedUI: React.FC = () => {
           width={920}
           height={68}
           radius={34}
-          bezelWidth={20}
+          bezelWidth={13}
           glassThickness={130}
           refractiveIndex={1.8}
           blur={1.5}
@@ -261,7 +261,7 @@ export const MixedUI: React.FC = () => {
             <IoPlayBack size={20} />
             {isPlaying ? (
               <IoPause
-                size={31}
+                size={29}
                 className="cursor-pointer"
                 onClick={() => setIsPlaying((v) => !v)}
                 aria-label="Pause"
@@ -294,10 +294,10 @@ export const MixedUI: React.FC = () => {
               )}
             </div>
             <div className="min-w-0">
-              <div className="font-semibold text-black/90 dark:text-white/90 truncate">
+              <div className="font-semibold text-[14px] text-black/90 dark:text-white/90 truncate [line-height:1.1] text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
                 {current?.collectionName ?? "\u00A0"}
               </div>
-              <div className="text-[13px] text-black/60 dark:text-white/60 truncate">
+              <div className="text-[11px] text-black/60 dark:text-white/60 truncate text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
                 {current?.artistName
                   ? `${current.artistName} — ${current.collectionName}`
                   : "\u00A0"}
