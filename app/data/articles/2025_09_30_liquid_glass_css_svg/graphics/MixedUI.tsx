@@ -85,15 +85,16 @@ export const MixedUI: React.FC = () => {
   const listBottomPadding =
     playerHeight + playerBottomOffset + extraBreathingRoom; // 68 + 24 + 24 = 116
 
-  const bgFromPointer = useTransform(pointerDown, [0, 1], [0.2, 0.5]);
-  const bgFromFocus = useTransform(focused, [0, 1], [0.2, 0.6]);
-  const bgTarget = useTransform([bgFromPointer, bgFromFocus], (vals) =>
-    Math.max(vals[0] as number, vals[1] as number)
+  const backgroundOpacity = useSpring(
+    useTransform(() => {
+      const f = focused.get();
+      return f ? 0.6 : (0.2 as number);
+    }),
+    {
+      damping: 80,
+      stiffness: 2000,
+    }
   );
-  const backgroundOpacity = useSpring(bgTarget, {
-    damping: 80,
-    stiffness: 2000,
-  });
   const scaleRatio = useSpring(
     useTransform(
       [pointerDown, focused],
@@ -109,7 +110,7 @@ export const MixedUI: React.FC = () => {
   });
 
   return (
-    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none">
+    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#00000077]">
       {/* Albums grid layer (behind) */}
       <div
         className="absolute inset-0 overflow-y-auto px-6 z-0"
@@ -196,10 +197,7 @@ export const MixedUI: React.FC = () => {
           style={{
             borderRadius: sbRadius,
             backdropFilter: `url(#mixed-ui-search-filter)`,
-            backgroundColor: useTransform(
-              backgroundOpacity,
-              (op) => `rgba(0,0,0,${op})`
-            ),
+            backgroundColor: "var(--glass-rgb)",
             boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           }}
         />
@@ -228,10 +226,10 @@ export const MixedUI: React.FC = () => {
         </div>
       </motion.div>
 
-      <div className="absolute top-0 left-0 right-0 w-full h-[175px] backdrop-blur-[1px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
-      <div className="absolute top-0 left-0 right-0 w-full h-[125px] backdrop-blur-[3px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
-      <div className="absolute top-0 left-0 right-0 w-full h-[75px] backdrop-blur-[6px] from-black to-transparent [mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))] [-webkit-mask-image:linear-gradient(to_bottom,var(--tw-gradient-from),var(--tw-gradient-to))]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-black/70 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[0.8px] mask-b-from-70% mask-b-to-100%" />
+      <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[2px] mask-b-from-50% mask-b-to-75%" />
+      <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[4px] mask-b-from-20% mask-b-to-55%" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-[var(--glass-rgb)]/40 to-transparent" />
 
       {/* Bottom player overlay (Apple Music–like) */}
       <div
@@ -257,8 +255,8 @@ export const MixedUI: React.FC = () => {
           style={{
             borderRadius: 34,
             backdropFilter: `url(#mixed-ui-player-filter)`,
-            backgroundColor: "rgba(0,0,0,0.7)",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.13)",
+            backgroundColor: "var(--glass-rgb)",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
           }}
         />
 
