@@ -142,6 +142,7 @@ export const Switch: React.FC = () => {
             backdropFilter: `url(#thumb-filter)`,
             scale: thumbScale,
             backgroundColor: thumbBgColor,
+            boxShadow: "0 4px 22px rgba(0,0,0,0.1)",
           }}
         />
       </motion.div>

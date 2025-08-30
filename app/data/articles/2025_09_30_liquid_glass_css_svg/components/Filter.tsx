@@ -133,11 +133,24 @@ export const Filter: React.FC<FilterProps> = ({
         result="light"
       />
 
-      <feComponentTransfer in="light" result="fadedLight">
+      <feComponentTransfer in="light" result="fadedLight1">
         <motion.feFuncA type="linear" slope={specularOpacity} />
       </feComponentTransfer>
 
-      <motion.feBlend in="fadedLight" in2="displaced" mode="overlay" />
+      <feComponentTransfer in="light" result="fadedLight2">
+        <motion.feFuncA
+          type="linear"
+          slope={useTransform(() => getValueOrMotion(specularOpacity) / 3)}
+        />
+      </feComponentTransfer>
+
+      <motion.feBlend
+        in="fadedLight1"
+        in2="displaced"
+        mode="overlay"
+        result="withOverlay"
+      />
+      <motion.feBlend in="fadedLight2" in2="withOverlay" mode="screen" />
     </filter>
   );
 

@@ -34,7 +34,7 @@ export const Searchbox: React.FC = () => {
     useTransform(() => {
       const pd = pointerDown.get();
       const f = focused.get();
-      return (f ? 1 : 0.6) * (pd ? 0.99 : 1);
+      return (f ? 1 : 0.8) * (pd ? 0.99 : 1);
     }),
     {
       damping: 40,
@@ -52,7 +52,7 @@ export const Searchbox: React.FC = () => {
       stiffness: 2000,
     }
   );
-  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.3, 0.8]), {
+  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.5, 0.7]), {
     damping: 80,
     stiffness: 2000,
   });
@@ -126,7 +126,7 @@ export const Searchbox: React.FC = () => {
             backgroundColor: useTransform(
               () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`
             ),
-            boxShadow: "0 7px 16px rgba(0, 0, 0, 0.2)",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
             transform: "translateZ(0)", // Create a new layer to improve performance
           }}
         />

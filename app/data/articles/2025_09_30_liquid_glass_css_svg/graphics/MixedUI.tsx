@@ -66,13 +66,13 @@ export const MixedUI: React.FC = () => {
   const current = items[currentIndex];
 
   // Searchbox glass params
-  const sbHeight = 56;
-  const sbWidth = 560;
+  const sbHeight = 52;
+  const sbWidth = 470;
   const sbRadius = sbHeight / 2;
-  const bezelWidth = 13;
+  const bezelWidth = 11;
   const glassThickness = 130;
   const refractiveIndex = 1.8;
-  const blur = 4;
+  const blur = 1;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pointerDown = useMotionValue(0);
@@ -92,15 +92,15 @@ export const MixedUI: React.FC = () => {
     ),
     { damping: 80, stiffness: 2000 }
   );
-  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.3, 0.8]));
+  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.7, 0.8]));
   // UI scale: 0.7 idle → 1 when focused
-  const uiScale = useSpring(useTransform(focused, [0, 1], [0.7, 1]), {
-    damping: 60,
-    stiffness: 600,
+  const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
+    damping: 40,
+    stiffness: 800,
   });
 
   return (
-    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#00000077]">
+    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#16161685]">
       {/* Albums grid layer (behind) */}
       <div
         className="absolute inset-0 overflow-y-auto px-6 z-0"
@@ -197,7 +197,7 @@ export const MixedUI: React.FC = () => {
           style={{ borderRadius: sbRadius, zIndex: 1 }}
         >
           <IoSearch
-            className="text-black/40 dark:text-white/40 shrink-0"
+            className="text-black/60 dark:text-white/60 shrink-0"
             size={25}
             aria-hidden="true"
           />
@@ -210,7 +210,7 @@ export const MixedUI: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => focused.set(1)}
             onBlur={() => focused.set(0)}
-            className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[18px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text text-shadow-xs text-shadow-white/70 dark:text-shadow-black/70"
+            className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[16px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text text-shadow-xs text-shadow-white/70 dark:text-shadow-black/70"
             style={{ padding: 0 }}
           />
         </div>
@@ -224,12 +224,12 @@ export const MixedUI: React.FC = () => {
       {/* Bottom player overlay (Apple Music–like) */}
       <div
         className="pointer-events-none absolute left-1/2 bottom-6 -translate-x-1/2 z-10"
-        style={{ width: "min(920px, calc(100% - 58px))", height: 68 }}
+        style={{ width: 640, height: 68 }}
       >
         {/* Glass backdrop */}
         <Filter
           id="mixed-ui-player-filter"
-          width={920}
+          width={640}
           height={68}
           radius={34}
           bezelWidth={13}
@@ -237,7 +237,7 @@ export const MixedUI: React.FC = () => {
           refractiveIndex={1.8}
           blur={1.5}
           scaleRatio={useSpring(0.55)}
-          specularOpacity={1}
+          specularOpacity={0.7}
           bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
         />
         <div

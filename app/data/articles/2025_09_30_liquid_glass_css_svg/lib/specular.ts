@@ -54,8 +54,8 @@ export function calculateRefractionSpecular(
       const distanceToCenterSquared = x * x + y * y;
 
       const isInBezel =
-        distanceToCenterSquared < radiusSquared &&
-        distanceToCenterSquared > radiusMinusBezelSquared;
+        distanceToCenterSquared <= radiusSquared &&
+        distanceToCenterSquared >= radiusMinusBezelSquared;
 
       // Only write non-neutral displacements (when isInBezel)
       if (isInBezel) {
@@ -71,7 +71,7 @@ export function calculateRefractionSpecular(
         const dotProduct = cos * specular_vector[0] + sin * specular_vector[1];
         const dotProductSquared = dotProduct * dotProduct; // Square the dot to reduce highlight width
         const coefficient =
-          (dotProductSquared / (distanceFromSide / (6 * devicePixelRatio))) *
+          (dotProductSquared / (distanceFromSide / (3 * devicePixelRatio))) *
           ratioInBezel;
 
         const color = 255 * coefficient * specularOpacity;

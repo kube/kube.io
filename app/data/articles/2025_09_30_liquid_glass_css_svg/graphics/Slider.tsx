@@ -165,7 +165,6 @@ export const Slider: React.FC = () => {
           }}
           dragMomentum={false}
           className="absolute"
-          // initial={{ x: `calc(${value.get()}% - ${width / 2}px)`, y: 0 }}
           style={{
             height,
             width,
@@ -179,6 +178,7 @@ export const Slider: React.FC = () => {
               backgroundOpacity,
               (op) => `rgba(255, 255, 255, ${op})`
             ),
+            boxShadow: "0 4px 22px rgba(0,0,0,0.1)",
           }}
         />
       </motion.div>
