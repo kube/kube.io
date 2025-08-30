@@ -70,7 +70,7 @@ export const MixedUI: React.FC = () => {
   const sbWidth = 470;
   const sbRadius = sbHeight / 2;
   const bezelWidth = 11;
-  const glassThickness = 130;
+  const glassThickness = 200;
   const refractiveIndex = 1.8;
   const blur = 1;
 
@@ -92,7 +92,7 @@ export const MixedUI: React.FC = () => {
     ),
     { damping: 80, stiffness: 2000 }
   );
-  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.7, 0.8]));
+  const specularOpacity = useSpring(useTransform(focused, [0, 1], [0.8, 0.9]));
   // UI scale: 0.7 idle → 1 when focused
   const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
     damping: 40,
@@ -100,7 +100,7 @@ export const MixedUI: React.FC = () => {
   });
 
   return (
-    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#16161685]">
+    <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#16161694]">
       {/* Albums grid layer (behind) */}
       <div
         className="absolute inset-0 overflow-y-auto px-6 z-0"
@@ -219,7 +219,7 @@ export const MixedUI: React.FC = () => {
       <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[0.8px] mask-b-from-70% mask-b-to-100%" />
       <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[2px] mask-b-from-50% mask-b-to-75%" />
       <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[4px] mask-b-from-20% mask-b-to-55%" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-[var(--glass-rgb)]/40 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-black/30 to-transparent" />
 
       {/* Bottom player overlay (Apple Music–like) */}
       <div
@@ -233,7 +233,7 @@ export const MixedUI: React.FC = () => {
           height={68}
           radius={34}
           bezelWidth={13}
-          glassThickness={130}
+          glassThickness={200}
           refractiveIndex={1.8}
           blur={1.5}
           scaleRatio={useSpring(0.55)}

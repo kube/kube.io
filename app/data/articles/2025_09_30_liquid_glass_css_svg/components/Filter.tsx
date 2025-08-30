@@ -124,33 +124,58 @@ export const Filter: React.FC<FilterProps> = ({
         result="displaced"
       />
 
+      <feColorMatrix
+        in="displaced"
+        type="saturate"
+        values="7"
+        result="displaced_saturated"
+      />
+
       <motion.feImage
         href={specularLayerDataUrl}
         x={0}
         y={0}
         width={canvasWidth ?? width}
         height={canvasHeight ?? height}
-        result="light"
+        result="specular_layer"
       />
 
-      <feComponentTransfer in="light" result="fadedLight1">
+      <feComposite
+        in="displaced_saturated"
+        in2="specular_layer"
+        operator="in"
+        result="specular_saturated"
+      />
+
+      <feComponentTransfer in="specular_layer" result="fadedLight1">
         <motion.feFuncA type="linear" slope={specularOpacity} />
       </feComponentTransfer>
 
-      <feComponentTransfer in="light" result="fadedLight2">
+      <feComponentTransfer in="specular_layer" result="fadedLight2">
         <motion.feFuncA
           type="linear"
-          slope={useTransform(() => getValueOrMotion(specularOpacity) / 3)}
+          slope={useTransform(() => getValueOrMotion(specularOpacity) / 2)}
         />
       </feComponentTransfer>
 
       <motion.feBlend
-        in="fadedLight1"
+        in="specular_saturated"
         in2="displaced"
+        mode="screen"
+        result="withSaturation"
+      />
+      <motion.feBlend
+        in="fadedLight1"
+        in2="withSaturation"
         mode="overlay"
         result="withOverlay"
       />
-      <motion.feBlend in="fadedLight2" in2="withOverlay" mode="screen" />
+      <motion.feBlend
+        in="fadedLight2"
+        in2="withOverlay"
+        mode="screen"
+        result="withSpecular"
+      />
     </filter>
   );
 
