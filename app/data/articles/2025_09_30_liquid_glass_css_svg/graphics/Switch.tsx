@@ -12,7 +12,7 @@ export const Switch: React.FC = () => {
   const radius = 115;
   const bezelWidth = 50;
   const glassThickness = 130;
-  const refractiveIndex = 1.9;
+  const refractiveIndex = 1.6;
   const blur = 0;
   const specularOpacity = 0.9;
 

@@ -11,24 +11,32 @@ export const Slider: React.FC = () => {
   const sliderWidth = 450;
 
   // Use numeric MotionValue (0/1) instead of boolean for compatibility with transforms
-  const pointerDown = useMotionValue(0);
+  const pointerDown = useMotionValue(1);
 
-  const width = 160;
-  const height = 100;
-  const radius = 50;
+  const thumbWidth = 160;
+  const thumbHeight = 94;
+  const thumbRadius = 47;
   const bezelWidth = 40;
   const glassThickness = 90;
-  const refractiveIndex = 1.9;
+  const refractiveIndex = 1.45;
   const blur = 0;
-  const scaleRatioTarget = useTransform(pointerDown, [0, 1], [0.4, 0.9]);
-  const scaleRatio = useSpring(scaleRatioTarget);
+  const scaleRatio = useSpring(useTransform(pointerDown, [0, 1], [0.4, 0.9]));
   const specularOpacity = 0.9;
 
-  const constraintsRef = useRef<HTMLDivElement>(null);
-  const scaleSpring = useSpring(useTransform(pointerDown, [0, 1], [0.6, 1]), {
-    damping: 80,
-    stiffness: 2000,
-  });
+  const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+
+  const SCALE_REST = 0.6;
+  const SCALE_DRAG = 1;
+  const thumbWidthRest = thumbWidth * SCALE_REST;
+
+  const scaleSpring = useSpring(
+    useTransform(pointerDown, [0, 1], [SCALE_REST, SCALE_DRAG]),
+    {
+      damping: 80,
+      stiffness: 2000,
+    }
+  );
 
   const backgroundOpacity = useSpring(
     useTransform(pointerDown, [0, 1], [1, 0.1]),
@@ -82,17 +90,17 @@ export const Slider: React.FC = () => {
         style={{
           position: "relative",
           width: sliderWidth,
-          height: height,
+          height: thumbHeight,
         }}
       >
         <motion.div
-          ref={constraintsRef}
+          ref={trackRef}
           style={{
             display: "inline-block",
             width: sliderWidth,
             height: sliderHeight,
             left: 0,
-            top: (height - sliderHeight) / 2,
+            top: (thumbHeight - sliderHeight) / 2,
             backgroundColor: "#77777799",
             borderRadius: sliderHeight / 2,
             position: "absolute",
@@ -123,9 +131,9 @@ export const Slider: React.FC = () => {
 
         <Filter
           id="thumb-filter-slider"
-          width={width}
-          height={height}
-          radius={radius}
+          width={thumbWidth}
+          height={thumbHeight}
+          radius={thumbRadius}
           bezelWidth={bezelWidth}
           glassThickness={glassThickness}
           refractiveIndex={refractiveIndex}
@@ -142,8 +150,12 @@ export const Slider: React.FC = () => {
         />
 
         <motion.div
+          ref={thumbRef}
           drag="x"
-          dragConstraints={{ left: -40, right: sliderWidth - width + 40 }}
+          dragConstraints={{
+            left: -thumbWidthRest / 3,
+            right: sliderWidth - thumbWidth + thumbWidthRest / 3,
+          }}
           dragElastic={0.02}
           onMouseDown={() => {
             pointerDown.set(1);
@@ -154,10 +166,20 @@ export const Slider: React.FC = () => {
           onDragStart={() => {
             pointerDown.set(1);
           }}
-          onDrag={(_, info) => {
-            const { x, width } =
-              constraintsRef.current!.getBoundingClientRect();
-            const ratio = (info.point.x - x) / width;
+          onDrag={(_) => {
+            const track = trackRef.current!.getBoundingClientRect();
+            const thumb = thumbRef.current!.getBoundingClientRect();
+
+            const x0 = track.left + thumbWidthRest / 2;
+            const x100 = track.right - thumbWidthRest / 2;
+
+            const trackInsideWidth = x100 - x0;
+
+            const thumbCenterX = thumb.left + thumb.width / 2;
+
+            const x = Math.max(x0, Math.min(x100, thumbCenterX));
+            const ratio = (x - x0) / trackInsideWidth;
+
             value.set(Math.max(min, Math.min(max, ratio * (max - min) + min)));
           }}
           onDragEnd={() => {
@@ -166,10 +188,10 @@ export const Slider: React.FC = () => {
           dragMomentum={false}
           className="absolute"
           style={{
-            height,
-            width,
+            height: thumbHeight,
+            width: thumbWidth,
             top: 0,
-            borderRadius: radius,
+            borderRadius: thumbRadius,
             backdropFilter: `url(#thumb-filter-slider)`,
             scale: scaleSpring,
             cursor: "pointer",
