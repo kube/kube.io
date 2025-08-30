@@ -50,7 +50,7 @@ export const Filter: React.FC<FilterProps> = ({
   refractiveIndex,
   scaleRatio,
   specularOpacity,
-  specularSaturation = 6,
+  specularSaturation = 4,
   bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
 }) => {
   const map = useTransform(() =>
