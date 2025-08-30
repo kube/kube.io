@@ -35,11 +35,23 @@ export const MixedUI: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
 
-  // Interactive controls
-  const specularSaturation = useMotionValue(9);
-  const specularOpacity = useMotionValue(0.85);
-  const refractionLevel = useMotionValue(0.55); // ratio 0..1, used as scaleRatio
-  const blur = useMotionValue(1);
+  // Interactive controls (MotionValues only)
+  const specularSaturation = useMotionValue(9); // 0..50
+  const specularOpacity = useMotionValue(0.85); // 0..1
+  const refractionLevel = useMotionValue(0.55); // 0..1
+  const blur = useMotionValue(1); // 0..40
+
+  // Readouts as text (MotionValue -> string)
+  const specularOpacityText = useTransform(specularOpacity, (v) =>
+    v.toFixed(2)
+  );
+  const specularSaturationText = useTransform(specularSaturation, (v) =>
+    Math.round(v).toString()
+  );
+  const refractionLevelText = useTransform(refractionLevel, (v) =>
+    v.toFixed(2)
+  );
+  const blurText = useTransform(blur, (v) => v.toFixed(1));
 
   // Fetch 20 albums via iTunes Search API (no auth, supports CORS)
   useEffect(() => {
@@ -90,8 +102,7 @@ export const MixedUI: React.FC = () => {
   const listBottomPadding =
     playerHeight + playerBottomOffset + extraBreathingRoom; // 68 + 24 + 24 = 116
 
-  // Note: refractionLevel and specularOpacityMv are driven by sliders below
-  // UI scale: 0.7 idle → 1 when focused
+  // UI scale: 0.9 idle → 1 when focused
   const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
     damping: 40,
     stiffness: 800,
@@ -178,11 +189,11 @@ export const MixedUI: React.FC = () => {
             bezelWidth={bezelWidth}
             glassThickness={glassThickness}
             refractiveIndex={refractiveIndex}
-            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
+            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
           />
 
           <motion.div
@@ -324,10 +335,23 @@ export const MixedUI: React.FC = () => {
         </div>
       </div>
 
-      {/* Controls (MotionValue-driven; no React state to avoid re-renders) */}
-      <div className="mt-6 space-y-4 text-black/70 dark:text-white/70">
+      {/* Controls (MotionValue-driven; Swiss Design style; no React state) */}
+      <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
         <div className="flex items-center gap-4">
-          <label className="w-48">Specular Opacity</label>
+          <div className="uppercase tracking-[0.14em] text-[10px] opacity-70 select-none">
+            Parameters
+          </div>
+          <div className="h-[1px] flex-1 bg-black/10 dark:bg-white/10" />
+        </div>
+
+        {/* Specular Opacity */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Opacity
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularOpacityText}
+          </motion.span>
           <input
             type="range"
             min={0}
@@ -337,12 +361,19 @@ export const MixedUI: React.FC = () => {
             onInput={(e) =>
               specularOpacity.set(parseFloat(e.currentTarget.value))
             }
-            className="flex-1"
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Specular Opacity"
           />
         </div>
+
+        {/* Specular Saturation */}
         <div className="flex items-center gap-4">
-          <label className="w-48">Specular Saturation</label>
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Saturation
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularSaturationText}
+          </motion.span>
           <input
             type="range"
             min={0}
@@ -352,12 +383,19 @@ export const MixedUI: React.FC = () => {
             onInput={(e) =>
               specularSaturation.set(parseFloat(e.currentTarget.value))
             }
-            className="flex-1"
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Specular Saturation"
           />
         </div>
+
+        {/* Refraction Level */}
         <div className="flex items-center gap-4">
-          <label className="w-48">Refraction Level</label>
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Refraction Level
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {refractionLevelText}
+          </motion.span>
           <input
             type="range"
             min={0}
@@ -367,12 +405,19 @@ export const MixedUI: React.FC = () => {
             onInput={(e) =>
               refractionLevel.set(parseFloat(e.currentTarget.value))
             }
-            className="flex-1"
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Refraction Level"
           />
         </div>
+
+        {/* Blur Level */}
         <div className="flex items-center gap-4">
-          <label className="w-48">Blur Level</label>
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Blur Level
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {blurText}
+          </motion.span>
           <input
             type="range"
             min={0}
@@ -380,7 +425,7 @@ export const MixedUI: React.FC = () => {
             step={0.1}
             defaultValue={blur.get()}
             onInput={(e) => blur.set(parseFloat(e.currentTarget.value))}
-            className="flex-1"
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Blur Level"
           />
         </div>
