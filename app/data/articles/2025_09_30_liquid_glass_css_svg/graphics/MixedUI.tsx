@@ -85,16 +85,6 @@ export const MixedUI: React.FC = () => {
   const listBottomPadding =
     playerHeight + playerBottomOffset + extraBreathingRoom; // 68 + 24 + 24 = 116
 
-  const backgroundOpacity = useSpring(
-    useTransform(() => {
-      const f = focused.get();
-      return f ? 0.6 : (0.2 as number);
-    }),
-    {
-      damping: 80,
-      stiffness: 2000,
-    }
-  );
   const scaleRatio = useSpring(
     useTransform(
       [pointerDown, focused],
