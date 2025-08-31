@@ -36,10 +36,11 @@ export const MixedUI: React.FC = ({}) => {
 
   // Interactive controls (MotionValues only)
   const specularSaturation = useMotionValue(22); // 0..50
-  const specularOpacity = useMotionValue(0.5); // 0..1
+  const specularOpacity = useMotionValue(0.2); // 0..1
   const refractionLevel = useMotionValue(1); // 0..1
   const blur = useMotionValue(1.5); // 0..40
   const progressiveBlurStrength = useMotionValue(7); // how much to ease the blur in the top overlay
+  const glassBackgroundOpacity = useMotionValue(0.2); // 0..1
 
   // Hold last loaded albums so bottom player can render outside Suspense
   const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
@@ -78,7 +79,17 @@ export const MixedUI: React.FC = ({}) => {
 
   return (
     <div>
-      <div className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF99] dark:[--glass-rgb:#16161694]">
+      <motion.div
+        className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#161616]"
+        style={
+          {
+            "--glass-bg-alpha": useTransform(
+              glassBackgroundOpacity,
+              (x) => `${Math.round(x * 100)}%`
+            ),
+          } as React.CSSProperties
+        }
+      >
         {/* Albums grid layer (behind) */}
         <div
           className="absolute inset-0 overflow-y-auto px-6 z-0"
@@ -133,11 +144,10 @@ export const MixedUI: React.FC = ({}) => {
           />
 
           <motion.div
-            className="absolute inset-0"
+            className="absolute inset-0 bg-[var(--glass-rgb)]/[--glass-bg-alpha]"
             style={{
               borderRadius: sbRadius,
               backdropFilter: `url(#mixed-ui-search-filter)`,
-              backgroundColor: "var(--glass-rgb)",
               boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
             }}
           />
@@ -218,11 +228,10 @@ export const MixedUI: React.FC = ({}) => {
             bezelHeightFn={bezelHeightFn}
           />
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 bg-[var(--glass-rgb)]/[var(--glass-bg-alpha)]"
             style={{
               borderRadius: 34,
               backdropFilter: `url(#mixed-ui-player-filter)`,
-              backgroundColor: "var(--glass-rgb)",
               boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
             }}
           />
@@ -300,7 +309,7 @@ export const MixedUI: React.FC = ({}) => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Controls (MotionValue-driven; Swiss Design style; no React state) */}
       <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
@@ -417,6 +426,28 @@ export const MixedUI: React.FC = ({}) => {
             }
             className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Progressive Blur Strength"
+          />
+        </div>
+
+        {/* Glass Background Opacity */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Glass Background Opacity
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {useTransform(glassBackgroundOpacity, (v) => v.toFixed(2))}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={glassBackgroundOpacity.get()}
+            onInput={(e) =>
+              glassBackgroundOpacity.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Glass Background Opacity"
           />
         </div>
       </div>
