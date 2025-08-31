@@ -7,17 +7,17 @@ export const Slider: React.FC = () => {
   const max = 100;
   const value = useMotionValue(10);
 
-  const sliderHeight = 22;
-  const sliderWidth = 450;
+  const sliderHeight = 14;
+  const sliderWidth = 360;
 
   // Use numeric MotionValue (0/1) instead of boolean for compatibility with transforms
   const pointerDown = useMotionValue(1);
 
-  const thumbWidth = 160;
-  const thumbHeight = 94;
-  const thumbRadius = 47;
-  const bezelWidth = 40;
-  const glassThickness = 90;
+  const thumbWidth = 120;
+  const thumbHeight = 66;
+  const thumbRadius = 35;
+  const bezelWidth = 30;
+  const glassThickness = 76;
   const refractiveIndex = 1.45;
   const blur = 0;
   const scaleRatio = useSpring(useTransform(pointerDown, [0, 1], [0.4, 0.9]));
@@ -120,7 +120,7 @@ export const Slider: React.FC = () => {
                 left: 0,
                 height: sliderHeight,
                 width: useTransform(value, (v) => `${v}%`),
-                borderRadius: `${sliderHeight / 2}px 2px 2px ${
+                borderRadius: `${sliderHeight / 2}px 1px 1px ${
                   sliderHeight / 2
                 }px`,
                 backgroundColor: "#0377F7",
@@ -200,7 +200,7 @@ export const Slider: React.FC = () => {
               backgroundOpacity,
               (op) => `rgba(255, 255, 255, ${op})`
             ),
-            boxShadow: "0 4px 22px rgba(0,0,0,0.1)",
+            boxShadow: "0 3px 14px rgba(0,0,0,0.1)",
           }}
         />
       </motion.div>
