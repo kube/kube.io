@@ -108,32 +108,41 @@ export const MagnifyingGlass: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="relative h-[420px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black"
+      className="relative h-[440px] sm:h-[460px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black"
     >
       {/* Background content: left text, right image */}
-      <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-[1fr_42%] gap-4 p-6 sm:p-8">
-        <div className="text-black/80 dark:text-white/80 leading-relaxed">
-          <h3 className="text-2xl font-semibold mb-3">Liquid Glass Lens</h3>
-          <p>
-            Drag the circular glass to explore how the text refracts beneath it.
-            This is a minimal proof-of-concept lens, using the same displacement
-            filter used by the other components in this article.
-          </p>
-          <p className="mt-3">
-            Refraction bends light as it passes between media with different
-            indices. Our lens approximates this by displacing pixels based on a
-            vector field derived from a rounded bezel profile, and it adds a
-            subtle specular highlight for depth.
-          </p>
-          <p className="mt-3">
-            Try moving the lens across different lines—changes in contrast and
-            angle make the distortion more apparent.
-          </p>
+      <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-[1fr_46%] gap-6 sm:gap-10 p-6 sm:p-10">
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-3 text-red-600 dark:text-red-500">
+            <span className="h-[2px] w-10 bg-current" />
+            <span className="uppercase tracking-[0.25em] text-[11px] font-medium">
+              Optics Study
+            </span>
+          </div>
+          <h3 className="mt-4 text-[36px] sm:text-[54px] leading-[0.95] font-extrabold tracking-tight text-black dark:text-white">
+            Liquid&nbsp;Glass
+            <span className="text-black/40 dark:text-white/40">—</span>
+            Precision&nbsp;Lens
+          </h3>
+          <div className="mt-4 max-w-[60ch] text-[15px] sm:text-[16px] leading-[1.55] text-black/70 dark:text-white/70 space-y-3">
+            <p>
+              Drag the capsule to bend the page. This lens is a compact SVG
+              displacement rig that refracts whatever sits beneath it.
+            </p>
+            <p>
+              The field comes from a rounded bezel profile; pixels are pushed
+              along its gradient, then topped with a subtle specular bloom for
+              depth.
+            </p>
+            <p className="text-black/60 dark:text-white/60">
+              Sweep across strong edges—high contrast makes the bend snap.
+            </p>
+          </div>
         </div>
-        <div className="relative hidden sm:block rounded-lg overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+        <div className="relative hidden sm:block rounded-lg overflow-hidden ring-1 ring-black/10 dark:ring-white/10">
           <img
-            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
-            alt="Unsplash illustrative photograph"
+            src="https://images.unsplash.com/photo-1579380656108-f98e4df8ea62?q=80&w=800&auto=format&fit=crop"
+            alt="Abstract architectural lines"
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover"
             draggable={false}
