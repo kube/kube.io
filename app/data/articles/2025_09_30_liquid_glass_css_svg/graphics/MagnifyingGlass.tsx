@@ -18,14 +18,23 @@ export const MagnifyingGlass: React.FC = () => {
   const bezelWidth = 16;
   const glassThickness = 160;
   const refractiveIndex = 1.5;
-  const specularOpacity = 0.75;
-  const specularSaturation = 9;
+  // Controls (MotionValues) — same pattern as Searchbox/MixedUI
+  const specularOpacity = useMotionValue(0.75); // 0..1
+  const specularSaturation = useMotionValue(9); // 0..50
+  const refractionBase = useMotionValue(1); // 0..1
+  // Readouts
+  const specularOpacityText = useTransform(specularOpacity, (v) =>
+    v.toFixed(2)
+  );
+  const specularSaturationText = useTransform(specularSaturation, (v) =>
+    Math.round(v).toString()
+  );
+  const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
+  // Animate effective refraction level on drag (snaps stronger while dragging)
+  const dragMultiplier = useTransform(isDragging, (d): number => (d ? 1 : 0.8));
   const refractionLevel = useSpring(
-    useTransform(isDragging, (d): number => (d ? 1 : 0.8)),
-    {
-      stiffness: 250,
-      damping: 14,
-    }
+    useTransform(() => refractionBase.get() * dragMultiplier.get()),
+    { stiffness: 250, damping: 14 }
   );
   const magnifyingScale = useSpring(
     useTransform(isDragging, (d): number => (d ? 48 : 24)),
@@ -106,96 +115,174 @@ export const MagnifyingGlass: React.FC = () => {
   }, [isDragging]);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative h-[440px] sm:h-[460px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black"
-    >
-      {/* Background content: left text, right image */}
-      <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-[1fr_46%] gap-6 sm:gap-10 p-6 sm:p-10">
-        <div className="flex flex-col justify-center">
-          <div className="flex items-center gap-3 text-red-600 dark:text-red-500">
-            <span className="h-[2px] w-10 bg-current" />
-            <span className="uppercase tracking-[0.25em] text-[11px] font-medium">
-              Optics Study
-            </span>
+    <>
+      <div
+        ref={containerRef}
+        className="relative h-[440px] sm:h-[460px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black"
+      >
+        {/* Background content: left text, right image */}
+        <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-[1fr_46%] gap-6 sm:gap-10 p-6 sm:p-10">
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-500">
+              <span className="h-[2px] w-10 bg-current" />
+              <span className="uppercase tracking-[0.25em] text-[11px] font-medium">
+                Optics Study
+              </span>
+            </div>
+            <h3 className="mt-4 text-[36px] sm:text-[54px] leading-[0.95] font-extrabold tracking-tight text-black dark:text-white">
+              Liquid&nbsp;Glass
+              <span className="text-black/40 dark:text-white/40">—</span>
+              Precision&nbsp;Lens
+            </h3>
+            <div className="mt-4 max-w-[60ch] text-[15px] sm:text-[16px] leading-[1.55] text-black/70 dark:text-white/70 space-y-3">
+              <p>
+                Drag the capsule to bend the page. This lens is a compact SVG
+                displacement rig that refracts whatever sits beneath it.
+              </p>
+              <p>
+                The field comes from a rounded bezel profile; pixels are pushed
+                along its gradient, then topped with a subtle specular bloom for
+                depth.
+              </p>
+              <p className="text-black/60 dark:text-white/60">
+                Sweep across strong edges—high contrast makes the bend snap.
+              </p>
+            </div>
           </div>
-          <h3 className="mt-4 text-[36px] sm:text-[54px] leading-[0.95] font-extrabold tracking-tight text-black dark:text-white">
-            Liquid&nbsp;Glass
-            <span className="text-black/40 dark:text-white/40">—</span>
-            Precision&nbsp;Lens
-          </h3>
-          <div className="mt-4 max-w-[60ch] text-[15px] sm:text-[16px] leading-[1.55] text-black/70 dark:text-white/70 space-y-3">
-            <p>
-              Drag the capsule to bend the page. This lens is a compact SVG
-              displacement rig that refracts whatever sits beneath it.
-            </p>
-            <p>
-              The field comes from a rounded bezel profile; pixels are pushed
-              along its gradient, then topped with a subtle specular bloom for
-              depth.
-            </p>
-            <p className="text-black/60 dark:text-white/60">
-              Sweep across strong edges—high contrast makes the bend snap.
-            </p>
+          <div className="relative hidden sm:block rounded-lg overflow-hidden ring-1 ring-black/10 dark:ring-white/10">
+            <img
+              src="https://images.unsplash.com/photo-1579380656108-f98e4df8ea62?q=80&w=800&auto=format&fit=crop"
+              alt="Abstract architectural lines"
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+              draggable={false}
+            />
           </div>
         </div>
-        <div className="relative hidden sm:block rounded-lg overflow-hidden ring-1 ring-black/10 dark:ring-white/10">
-          <img
-            src="https://images.unsplash.com/photo-1579380656108-f98e4df8ea62?q=80&w=800&auto=format&fit=crop"
-            alt="Abstract architectural lines"
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
-            draggable={false}
+
+        {/* Draggable circular lens */}
+        <motion.div
+          className="absolute top-6 left-6 z-10 cursor-grab active:cursor-grabbing"
+          style={{
+            width,
+            height,
+            borderRadius: radius,
+            scaleX: objectScaleX,
+            scaleY: objectScaleY,
+          }}
+          drag
+          dragConstraints={containerRef}
+          dragElastic={0.13}
+          dragMomentum={false}
+          onDrag={(_, info) => velocityX.set(info.velocity.x)}
+          onDragEnd={() => velocityX.set(0)}
+          onMouseDown={() => isDragging.set(true)}
+          onTouchStart={() => isDragging.set(true)}
+        >
+          {/* SVG filter definition for the lens */}
+          <Filter
+            id="magnifying-glass-filter"
+            width={width}
+            height={height}
+            radius={radius}
+            bezelWidth={bezelWidth}
+            glassThickness={glassThickness}
+            refractiveIndex={refractiveIndex}
+            blur={blur}
+            scaleRatio={refractionLevel}
+            specularOpacity={specularOpacity}
+            specularSaturation={specularSaturation}
+            magnifyingScale={magnifyingScale}
+            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
+          />
+
+          {/* The glass layer using the filter as a backdrop */}
+          <motion.div
+            className="absolute inset-0 ring-1 ring-black/10 dark:ring-white/10"
+            style={{
+              borderRadius: radius,
+              backdropFilter: `url(#magnifying-glass-filter)`,
+              boxShadow,
+            }}
+          />
+        </motion.div>
+      </div>
+
+      {/* Parameters controls (MotionValue-driven; no React state) */}
+      <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
+        <div className="flex items-center gap-4">
+          <div className="uppercase tracking-[0.14em] text-[10px] opacity-70 select-none">
+            Parameters
+          </div>
+          <div className="h-[1px] flex-1 bg-black/10 dark:bg-white/10" />
+        </div>
+
+        {/* Specular Opacity */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Opacity
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularOpacityText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={specularOpacity.get()}
+            onInput={(e) =>
+              specularOpacity.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Specular Opacity"
+          />
+        </div>
+
+        {/* Specular Saturation */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Saturation
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularSaturationText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={50}
+            step={1}
+            defaultValue={specularSaturation.get()}
+            onInput={(e) =>
+              specularSaturation.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Specular Saturation"
+          />
+        </div>
+
+        {/* Refraction Level */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Refraction Level
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {refractionLevelText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={refractionBase.get()}
+            onInput={(e) =>
+              refractionBase.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Refraction Level"
           />
         </div>
       </div>
-
-      {/* Draggable circular lens */}
-      <motion.div
-        className="absolute top-6 left-6 z-10 cursor-grab active:cursor-grabbing"
-        style={{
-          width,
-          height,
-          borderRadius: radius,
-          scaleX: objectScaleX,
-          scaleY: objectScaleY,
-        }}
-        drag
-        dragConstraints={containerRef}
-        dragElastic={0.13}
-        dragMomentum={false}
-        onDrag={(_, info) => velocityX.set(info.velocity.x)}
-        onDragEnd={() => velocityX.set(0)}
-        onMouseDown={() => isDragging.set(true)}
-        onTouchStart={() => isDragging.set(true)}
-      >
-        {/* SVG filter definition for the lens */}
-        <Filter
-          id="magnifying-glass-filter"
-          width={width}
-          height={height}
-          radius={radius}
-          bezelWidth={bezelWidth}
-          glassThickness={glassThickness}
-          refractiveIndex={refractiveIndex}
-          blur={0}
-          scaleRatio={refractionLevel}
-          specularOpacity={specularOpacity}
-          specularSaturation={specularSaturation}
-          magnifyingScale={magnifyingScale}
-          bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
-        />
-
-        {/* The glass layer using the filter as a backdrop */}
-        <motion.div
-          className="absolute inset-0 ring-1 ring-black/10 dark:ring-white/10"
-          style={{
-            borderRadius: radius,
-            backdropFilter: `url(#magnifying-glass-filter)`,
-            boxShadow,
-          }}
-        />
-      </motion.div>
-    </div>
+    </>
   );
 };
