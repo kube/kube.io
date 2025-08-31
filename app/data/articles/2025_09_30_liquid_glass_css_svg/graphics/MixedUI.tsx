@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import {
   IoEllipsisHorizontal,
   IoListOutline,
@@ -23,55 +23,29 @@ type Album = {
   artistName: string;
 };
 
+const bezelHeightFn = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
+
 function upscaleArtwork(url: string, size = 600) {
   // iTunes artwork URLs include the size; replace to request a larger image
   return url.replace(/\/[0-9]+x[0-9]+bb\.(jpg|png)$/i, `/${size}x${size}bb.$1`);
 }
 
-export const MixedUI: React.FC = () => {
-  const [albums, setAlbums] = useState<Album[]>([]);
+export const MixedUI: React.FC = ({}) => {
   const [query, setQuery] = useState("Jimi Hendrix");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Interactive controls (MotionValues only)
-  const specularSaturation = useMotionValue(31); // 0..50
+  const specularSaturation = useMotionValue(22); // 0..50
   const specularOpacity = useMotionValue(0.5); // 0..1
   const refractionLevel = useMotionValue(1); // 0..1
   const blur = useMotionValue(1.5); // 0..40
   const progressiveBlurStrength = useMotionValue(7); // how much to ease the blur in the top overlay
 
-  // Fetch 20 albums via iTunes Search API (no auth, supports CORS)
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      setLoading(true);
-      setError(null);
-      try {
-        const url = new URL("https://itunes.apple.com/search");
-        url.searchParams.set("term", query);
-        url.searchParams.set("entity", "album");
-        url.searchParams.set("limit", "100");
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled) setAlbums(data.results ?? []);
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? "Failed to fetch albums");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [query]);
-
-  const items = useMemo(() => albums, [albums]);
-  const current = currentIndex != null ? items[currentIndex] : undefined;
+  // Hold last loaded albums so bottom player can render outside Suspense
+  const [albums, setAlbums] = useState<Album[] | null>(null);
+  const current =
+    currentIndex != null && albums ? albums[currentIndex] : undefined;
 
   // Searchbox glass params
   const sbHeight = 52;
@@ -115,56 +89,18 @@ export const MixedUI: React.FC = () => {
             paddingBottom: listBottomPadding,
           }}
         >
-          {error && <div className="text-center text-red-500/80">{error}</div>}
           <h3 className="text-xl text-black dark:text-white mb-5 select-none">
             Top Results
           </h3>
-          <div className="grid grid-cols-4 gap-6">
-            {(loading ? Array.from({ length: 20 }) : items).map((item, i) => {
-              const key = (item as any)?.collectionId ?? i;
-              const title = loading ? "\u00A0" : (item as Album).collectionName;
-              return (
-                <div
-                  key={key}
-                  className="flex flex-col"
-                  role={!loading ? "button" : undefined}
-                  tabIndex={!loading ? 0 : -1}
-                  onClick={!loading ? () => setCurrentIndex(i) : undefined}
-                  onKeyDown={
-                    !loading
-                      ? (e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setCurrentIndex(i);
-                          }
-                        }
-                      : undefined
-                  }
-                  aria-label={!loading ? `Play ${title}` : undefined}
-                  style={{ cursor: loading ? "default" : "pointer" }}
-                >
-                  {/* Square cover */}
-                  <div className="relative aspect-square bg-black/5 dark:bg-white/5">
-                    {loading ? (
-                      <div className="absolute inset-0 animate-pulse bg-black/10 dark:bg-white/10" />
-                    ) : (
-                      <img
-                        src={upscaleArtwork((item as Album).artworkUrl100)}
-                        alt={title}
-                        className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                        draggable={false}
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
-                  {/* Caption outside, Swiss style */}
-                  <div className="mt-2 text-[11px] tracking-[0.06em] uppercase text-black/70 dark:text-white/70 leading-snug line-clamp-2">
-                    {title}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ErrorBoundary>
+            <React.Suspense fallback={<AlbumGridSkeleton />}>
+              <AlbumGrid
+                query={query}
+                onLoaded={setAlbums}
+                onSelect={(i) => setCurrentIndex(i)}
+              />
+            </React.Suspense>
+          </ErrorBoundary>
         </div>
 
         {/* Top searchbox overlay */}
@@ -189,7 +125,7 @@ export const MixedUI: React.FC = () => {
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
+            bezelHeightFn={bezelHeightFn}
           />
 
           <motion.div
@@ -271,11 +207,11 @@ export const MixedUI: React.FC = () => {
             bezelWidth={playerBezelWidth}
             glassThickness={playerGlassThickness}
             refractiveIndex={playerRefractiveIndex}
-            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
+            bezelHeightFn={bezelHeightFn}
           />
           <div
             className="absolute inset-0"
@@ -315,7 +251,7 @@ export const MixedUI: React.FC = () => {
               <IoRepeatOutline size={18} className="opacity-70" />
             </div>
 
-            {/* Now playing (show cube when playing OR when no selection; else artwork + text) */}
+            {/* Now playing (show cube when nothing selected or not yet loaded; else artwork + text) */}
             {!current ? (
               <div className="flex items-center justify-center flex-1 min-w-0">
                 <LogoStatic
@@ -483,3 +419,124 @@ export const MixedUI: React.FC = () => {
     </div>
   );
 };
+
+// Suspense helpers ---------------------------------------------------------
+const albumPromiseCache = new Map<string, Promise<Album[]>>();
+
+function fetchAlbums(term: string): Promise<Album[]> {
+  if (!term) return Promise.resolve([]);
+  const url = new URL("https://itunes.apple.com/search");
+  url.searchParams.set("term", term);
+  url.searchParams.set("entity", "album");
+  url.searchParams.set("limit", "100");
+  return fetch(url.toString())
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => (data?.results ?? []) as Album[]);
+}
+
+function getAlbums(term: string): Promise<Album[]> {
+  const key = term.trim().toLowerCase();
+  let promise = albumPromiseCache.get(key);
+  if (!promise) {
+    promise = fetchAlbums(key);
+    albumPromiseCache.set(key, promise);
+  }
+  return promise;
+}
+
+type AlbumGridProps = {
+  query: string;
+  onLoaded: (albums: Album[]) => void;
+  onSelect: (index: number) => void;
+};
+
+const AlbumGrid: React.FC<AlbumGridProps> = ({
+  query,
+  onLoaded,
+  onSelect,
+}: AlbumGridProps) => {
+  const albums = use(getAlbums(query));
+  useEffect(() => {
+    onLoaded(albums);
+  }, [albums, onLoaded]);
+
+  return (
+    <div className="grid grid-cols-4 gap-6">
+      {albums.map((item, i) => {
+        const title = item.collectionName;
+        return (
+          <div
+            key={item.collectionId}
+            className="flex flex-col"
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelect(i)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(i);
+              }
+            }}
+            aria-label={`Play ${title}`}
+            style={{ cursor: "pointer" }}
+          >
+            <div className="relative aspect-square bg-black/5 dark:bg-white/5">
+              <img
+                src={upscaleArtwork(item.artworkUrl100)}
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                draggable={false}
+                loading="lazy"
+              />
+            </div>
+            <div className="mt-2 text-[11px] tracking-[0.06em] uppercase text-black/70 dark:text-white/70 leading-snug line-clamp-2">
+              {title}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+type AlbumGridSkeletonProps = {};
+
+const AlbumGridSkeleton: React.FC<
+  AlbumGridSkeletonProps
+> = ({}: AlbumGridSkeletonProps) => {
+  return (
+    <div className="grid grid-cols-4 gap-6">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div key={i} className="flex flex-col">
+          <div className="relative aspect-square bg-black/5 dark:bg-white/5 rounded-lg overflow-hidden">
+            <div className="absolute inset-0 animate-pulse bg-black/10 dark:bg-white/10" />
+          </div>
+          <div className="mt-2 h-[22px] bg-black/10 dark:bg-white/10 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="text-center text-red-500/80">
+          {this.state.error.message || "Something went wrong"}
+        </div>
+      );
+    }
+    return this.props.children as React.ReactElement;
+  }
+}

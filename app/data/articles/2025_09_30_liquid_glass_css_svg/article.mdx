@@ -172,7 +172,7 @@ Because each channel is 8 bits, the displacement is limited to a range of -128 t
 SVG filters can only use images as displacement maps, so we need to convert our displacement vector field into an image format.
 
 ```tsx
-<svg color-interpolation-filters="sRGB">
+<svg colorInterpolationFilters="sRGB">
   <filter id={id}>
     <feImage
       href={displacementMapDataUrl}

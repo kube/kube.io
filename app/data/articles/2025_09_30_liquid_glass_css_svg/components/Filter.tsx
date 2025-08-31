@@ -56,21 +56,21 @@ export const Filter: React.FC<FilterProps> = ({
   magnifyingScale,
   bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
 }) => {
-  const map = useTransform(() =>
-    calculateDisplacementMap(
+  const map = useTransform(() => {
+    return calculateDisplacementMap(
       getValueOrMotion(glassThickness),
       getValueOrMotion(bezelWidth),
       bezelHeightFn,
       getValueOrMotion(refractiveIndex)
-    )
-  );
+    );
+  });
 
   const maximumDisplacement = useTransform(() =>
     Math.max(...map.get().map((v) => Math.abs(v)))
   );
 
-  const displacementMap = useTransform(() =>
-    calculateDisplacementMap2(
+  const displacementMap = useTransform(() => {
+    return calculateDisplacementMap2(
       getValueOrMotion(canvasWidth ?? width),
       getValueOrMotion(canvasHeight ?? height),
       getValueOrMotion(width),
@@ -79,40 +79,40 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(bezelWidth),
       getValueOrMotion(maximumDisplacement),
       getValueOrMotion(map)
-    )
-  );
+    );
+  });
 
-  const specularLayer = useTransform(() =>
-    calculateRefractionSpecular(
+  const specularLayer = useTransform(() => {
+    return calculateRefractionSpecular(
       getValueOrMotion(width),
       getValueOrMotion(height),
       getValueOrMotion(radius),
       50,
       Math.PI / 4,
       0.5
-    )
-  );
+    );
+  });
 
-  const magnifyingDisplacementMap = useTransform(() =>
-    magnifyingScale !== undefined
+  const magnifyingDisplacementMap = useTransform(() => {
+    return magnifyingScale !== undefined
       ? calculateMagnifyingDisplacementMap(
           getValueOrMotion(canvasWidth ?? width),
           getValueOrMotion(canvasHeight ?? height)
         )
-      : undefined
-  );
+      : undefined;
+  });
 
   const magnifyingDisplacementMapDataUrl = useTransform(() => {
     if (magnifyingScale) {
       return imageDataToUrl(magnifyingDisplacementMap.get());
     }
   });
-  const displacementMapDataUrl = useTransform(() =>
-    imageDataToUrl(displacementMap.get())
-  );
-  const specularLayerDataUrl = useTransform(() =>
-    imageDataToUrl(specularLayer.get())
-  );
+  const displacementMapDataUrl = useTransform(() => {
+    return imageDataToUrl(displacementMap.get());
+  });
+  const specularLayerDataUrl = useTransform(() => {
+    return imageDataToUrl(specularLayer.get());
+  });
   const scale = useTransform(
     () => maximumDisplacement.get() * (scaleRatio?.get() ?? 1)
   );
@@ -227,7 +227,7 @@ export const Filter: React.FC<FilterProps> = ({
   );
 
   return withSvgWrapper ? (
-    <svg color-interpolation-filters="sRGB" style={{ display: "none" }}>
+    <svg colorInterpolationFilters="sRGB" style={{ display: "none" }}>
       <defs>{content}</defs>
     </svg>
   ) : (

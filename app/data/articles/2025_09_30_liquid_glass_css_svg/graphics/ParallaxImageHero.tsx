@@ -43,7 +43,7 @@ export const ParallaxImageHero: React.FC = () => {
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] overflow-hidden"
           viewBox="0 0 150 150"
           preserveAspectRatio="xMidYMid slice"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
           style={{
             pointerEvents: "none",
             borderRadius: "100px",

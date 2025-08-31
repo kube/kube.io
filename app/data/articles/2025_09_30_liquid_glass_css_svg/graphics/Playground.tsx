@@ -345,7 +345,7 @@ export const Playground: React.FC = () => {
           className="object-cover"
           viewBox="0 0 400 300"
           height="100%"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
           <defs>
             <filter id={filterId} colorInterpolationFilters="sRGB">
