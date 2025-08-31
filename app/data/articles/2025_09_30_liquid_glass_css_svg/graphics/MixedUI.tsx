@@ -37,26 +37,11 @@ export const MixedUI: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Interactive controls (MotionValues only)
-  const specularSaturation = useMotionValue(9); // 0..50
-  const specularOpacity = useMotionValue(0.85); // 0..1
-  const refractionLevel = useMotionValue(0.55); // 0..1
-  const blur = useMotionValue(1); // 0..40
-  const progressiveBlurStrength = useMotionValue(0.8); // how much to ease the blur in the top overlay
-
-  // Readouts as text (MotionValue -> string)
-  const specularOpacityText = useTransform(specularOpacity, (v) =>
-    v.toFixed(2)
-  );
-  const specularSaturationText = useTransform(specularSaturation, (v) =>
-    Math.round(v).toString()
-  );
-  const refractionLevelText = useTransform(refractionLevel, (v) =>
-    v.toFixed(2)
-  );
-  const blurText = useTransform(blur, (v) => v.toFixed(1));
-  const progressiveBlurText = useTransform(progressiveBlurStrength, (v) =>
-    v.toFixed(2)
-  );
+  const specularSaturation = useMotionValue(31); // 0..50
+  const specularOpacity = useMotionValue(0.5); // 0..1
+  const refractionLevel = useMotionValue(1); // 0..1
+  const blur = useMotionValue(1.5); // 0..40
+  const progressiveBlurStrength = useMotionValue(7); // how much to ease the blur in the top overlay
 
   // Fetch 20 albums via iTunes Search API (no auth, supports CORS)
   useEffect(() => {
@@ -92,9 +77,9 @@ export const MixedUI: React.FC = () => {
   const sbHeight = 52;
   const sbWidth = 470;
   const sbRadius = sbHeight / 2;
-  const bezelWidth = 11;
-  const glassThickness = 200;
-  const refractiveIndex = 1.8;
+  const sbBezelWidth = 11;
+  const sbGlassThickness = 200;
+  const sbRefractiveIndex = 1.5;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pointerDown = useMotionValue(0);
@@ -102,10 +87,16 @@ export const MixedUI: React.FC = () => {
 
   // Floating player dimensions (used to pad the scroll area bottom)
   const playerHeight = 68; // must match the player container height
+  const playerWidth = 640;
+  const playerRadius = playerHeight / 2;
   const playerBottomOffset = 24; // Tailwind bottom-6 = 1.5rem = 24px
-  const extraBreathingRoom = 24; // small gap so the last row isn't glued to the player
+  const playerExtraBreathingRoom = 24; // small gap so the last row isn't glued to the player
+  const playerBezelWidth = 13;
+  const playerGlassThickness = 200;
+  const playerRefractiveIndex = 1.5;
+
   const listBottomPadding =
-    playerHeight + playerBottomOffset + extraBreathingRoom; // 68 + 24 + 24 = 116
+    playerHeight + playerBottomOffset + playerExtraBreathingRoom; // 68 + 24 + 24 = 116
 
   // UI scale: 0.9 idle → 1 when focused
   const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
@@ -191,9 +182,9 @@ export const MixedUI: React.FC = () => {
             width={sbWidth}
             height={sbHeight}
             radius={sbRadius}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractiveIndex={refractiveIndex}
+            bezelWidth={sbBezelWidth}
+            glassThickness={sbGlassThickness}
+            refractiveIndex={sbRefractiveIndex}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
@@ -269,17 +260,17 @@ export const MixedUI: React.FC = () => {
         {/* Bottom player overlay (Apple Music–like) */}
         <div
           className="pointer-events-none absolute left-1/2 bottom-6 -translate-x-1/2 z-10"
-          style={{ width: 640, height: 68 }}
+          style={{ width: playerWidth, height: playerHeight }}
         >
           {/* Glass backdrop */}
           <Filter
             id="mixed-ui-player-filter"
-            width={640}
-            height={68}
-            radius={34}
-            bezelWidth={13}
-            glassThickness={200}
-            refractiveIndex={1.8}
+            width={playerWidth}
+            height={playerHeight}
+            radius={playerRadius}
+            bezelWidth={playerBezelWidth}
+            glassThickness={playerGlassThickness}
+            refractiveIndex={playerRefractiveIndex}
             bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
             blur={blur}
             scaleRatio={refractionLevel}
@@ -386,7 +377,7 @@ export const MixedUI: React.FC = () => {
             Specular Opacity
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {specularOpacityText}
+            {useTransform(specularOpacity, (v) => v.toFixed(2))}
           </motion.span>
           <input
             type="range"
@@ -407,8 +398,9 @@ export const MixedUI: React.FC = () => {
           <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
             Specular Saturation
           </label>
+
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {specularSaturationText}
+            {useTransform(specularSaturation, (v) => Math.round(v).toString())}
           </motion.span>
           <input
             type="range"
@@ -430,7 +422,7 @@ export const MixedUI: React.FC = () => {
             Refraction Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {refractionLevelText}
+            {useTransform(refractionLevel, (v) => v.toFixed(2))}
           </motion.span>
           <input
             type="range"
@@ -452,7 +444,7 @@ export const MixedUI: React.FC = () => {
             Blur Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {blurText}
+            {useTransform(blur, (v) => v.toFixed(1))}
           </motion.span>
           <input
             type="range"
@@ -472,7 +464,7 @@ export const MixedUI: React.FC = () => {
             Progressive Blur Strength
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {progressiveBlurText}
+            {useTransform(progressiveBlurStrength, (v) => v.toFixed(2))}
           </motion.span>
           <input
             type="range"
