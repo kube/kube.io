@@ -13,6 +13,7 @@ import {
   IoShuffleOutline,
   IoVolumeHighOutline,
 } from "react-icons/io5";
+import { LogoStatic } from "../../../../components/Logo";
 import { Filter } from "../components/Filter";
 
 type Album = {
@@ -32,7 +33,7 @@ export const MixedUI: React.FC = () => {
   const [query, setQuery] = useState("Jimi Hendrix");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Interactive controls (MotionValues only)
@@ -85,7 +86,7 @@ export const MixedUI: React.FC = () => {
   }, [query]);
 
   const items = useMemo(() => albums, [albums]);
-  const current = items[currentIndex];
+  const current = currentIndex != null ? items[currentIndex] : undefined;
 
   // Searchbox glass params
   const sbHeight = 52;
@@ -323,10 +324,17 @@ export const MixedUI: React.FC = () => {
               <IoRepeatOutline size={18} className="opacity-70" />
             </div>
 
-            {/* Now playing */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="h-14 w-14 rounded overflow-hidden bg-black/10 dark:bg-white/10 shrink-0">
-                {current ? (
+            {/* Now playing (show cube when playing OR when no selection; else artwork + text) */}
+            {!current ? (
+              <div className="flex items-center justify-center flex-1 min-w-0">
+                <LogoStatic
+                  className="w-11 text-slate-800/60 dark:text-slate-200/60"
+                  gradientFrom="currentColor"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="h-14 w-14 rounded overflow-hidden bg-black/10 dark:bg-white/10 shrink-0">
                   <img
                     src={upscaleArtwork(current.artworkUrl100, 200)}
                     alt={current.collectionName}
@@ -334,25 +342,23 @@ export const MixedUI: React.FC = () => {
                     draggable={false}
                     loading="lazy"
                   />
-                ) : (
-                  <div className="w-full h-full animate-pulse" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="font-semibold text-[14px] text-black/90 dark:text-white/90 truncate [line-height:1.1] text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
-                  {current?.collectionName ?? "\u00A0"}
                 </div>
-                <div className="text-[11px] text-black/60 dark:text-white/60 truncate text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
-                  {current?.artistName
-                    ? `${current.artistName} — ${current.collectionName}`
-                    : "\u00A0"}
-                </div>
-                {/* Progress bar */}
-                <div className="mt-1 h-[3px] w-[460px] max-w-full bg-black/10 dark:bg-white/10 rounded">
-                  <div className="h-full w-1/3 bg-black/40 dark:bg-white/40 rounded" />
+                <div className="min-w-0">
+                  <div className="font-semibold text-[14px] text-black/90 dark:text-white/90 truncate [line-height:1.1] text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
+                    {current?.collectionName ?? "\u00A0"}
+                  </div>
+                  <div className="text-[11px] text-black/60 dark:text-white/60 truncate text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
+                    {current?.artistName
+                      ? `${current.artistName} — ${current.collectionName}`
+                      : "\u00A0"}
+                  </div>
+                  {/* Progress bar */}
+                  <div className="mt-1 h-[3px] w-[460px] max-w-full bg-black/10 dark:bg-white/10 rounded">
+                    <div className="h-full w-1/3 bg-black/40 dark:bg-white/40 rounded" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Right actions */}
             <div className="flex items-center gap-4 text-black/80 dark:text-white/80">
