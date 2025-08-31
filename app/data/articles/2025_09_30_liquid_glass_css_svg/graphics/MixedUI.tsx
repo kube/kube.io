@@ -40,6 +40,7 @@ export const MixedUI: React.FC = () => {
   const specularOpacity = useMotionValue(0.85); // 0..1
   const refractionLevel = useMotionValue(0.55); // 0..1
   const blur = useMotionValue(1); // 0..40
+  const progressiveBlurStrength = useMotionValue(0.8); // how much to ease the blur in the top overlay
 
   // Readouts as text (MotionValue -> string)
   const specularOpacityText = useTransform(specularOpacity, (v) =>
@@ -52,6 +53,9 @@ export const MixedUI: React.FC = () => {
     v.toFixed(2)
   );
   const blurText = useTransform(blur, (v) => v.toFixed(1));
+  const progressiveBlurText = useTransform(progressiveBlurStrength, (v) =>
+    v.toFixed(2)
+  );
 
   // Fetch 20 albums via iTunes Search API (no auth, supports CORS)
   useEffect(() => {
@@ -230,10 +234,36 @@ export const MixedUI: React.FC = () => {
           </div>
         </motion.div>
 
-        <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[0.8px] mask-b-from-70% mask-b-to-100%" />
-        <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[2px] mask-b-from-50% mask-b-to-75%" />
-        <div className="absolute top-0 left-0 w-full h-[130px] backdrop-blur-[4px] mask-b-from-20% mask-b-to-55%" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-black/30 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-[130px] pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full backdrop-blur-[0.8px] mask-b-from-70% mask-b-to-100%"
+            style={{
+              backdropFilter: useTransform(
+                progressiveBlurStrength,
+                (v) => `blur(${Math.sqrt(Math.sqrt(v)) / 2}px)`
+              ),
+            }}
+          />
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full backdrop-blur-[2px] mask-b-from-50% mask-b-to-75%"
+            style={{
+              backdropFilter: useTransform(
+                progressiveBlurStrength,
+                (v) => `blur(${Math.sqrt(v)}px)`
+              ),
+            }}
+          />
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full backdrop-blur-[4px] mask-b-from-20% mask-b-to-55%"
+            style={{
+              backdropFilter: useTransform(
+                progressiveBlurStrength,
+                (v) => `blur(${v}px)`
+              ),
+            }}
+          />
+          <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-b from-[var(--glass-rgb)] to-transparent" />
+        </div>
 
         {/* Bottom player overlay (Apple Music–like) */}
         <div
@@ -427,6 +457,28 @@ export const MixedUI: React.FC = () => {
             onInput={(e) => blur.set(parseFloat(e.currentTarget.value))}
             className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
             aria-label="Blur Level"
+          />
+        </div>
+
+        {/* Progressive Blur Strength */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Progressive Blur Strength
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {progressiveBlurText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={20}
+            step={0.01}
+            defaultValue={progressiveBlurStrength.get()}
+            onInput={(e) =>
+              progressiveBlurStrength.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Progressive Blur Strength"
           />
         </div>
       </div>
