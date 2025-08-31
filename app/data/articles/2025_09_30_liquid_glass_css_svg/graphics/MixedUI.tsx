@@ -32,7 +32,6 @@ function upscaleArtwork(url: string, size = 600) {
 
 export const MixedUI: React.FC = ({}) => {
   const [query, setQuery] = useState("Jimi Hendrix");
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Interactive controls (MotionValues only)
@@ -43,9 +42,8 @@ export const MixedUI: React.FC = ({}) => {
   const progressiveBlurStrength = useMotionValue(7); // how much to ease the blur in the top overlay
 
   // Hold last loaded albums so bottom player can render outside Suspense
+  const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
   const [albums, setAlbums] = useState<Album[] | null>(null);
-  const current =
-    currentIndex != null && albums ? albums[currentIndex] : undefined;
 
   // Searchbox glass params
   const sbHeight = 52;
@@ -89,15 +87,21 @@ export const MixedUI: React.FC = ({}) => {
             paddingBottom: listBottomPadding,
           }}
         >
-          <h3 className="text-xl text-black dark:text-white mb-5 select-none">
-            Top Results
-          </h3>
+          {albums?.length ? (
+            <h3 className="text-xl text-black dark:text-white mb-5 select-none">
+              Top Results
+            </h3>
+          ) : (
+            <div className="h-[90%] mb-5 flex justify-center items-center text-black/40 dark:text-white/40">
+              No results
+            </div>
+          )}
           <ErrorBoundary>
             <React.Suspense fallback={<AlbumGridSkeleton />}>
               <AlbumGrid
                 query={query}
                 onLoaded={setAlbums}
-                onSelect={(i) => setCurrentIndex(i)}
+                onSelect={setCurrentAlbum}
               />
             </React.Suspense>
           </ErrorBoundary>
@@ -252,7 +256,7 @@ export const MixedUI: React.FC = ({}) => {
             </div>
 
             {/* Now playing (show cube when nothing selected or not yet loaded; else artwork + text) */}
-            {!current ? (
+            {!currentAlbum ? (
               <div className="flex items-center justify-center flex-1 min-w-0">
                 <LogoStatic
                   className="w-11 text-slate-800/60 dark:text-slate-200/60"
@@ -263,8 +267,8 @@ export const MixedUI: React.FC = ({}) => {
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className="h-14 w-14 rounded overflow-hidden bg-black/10 dark:bg-white/10 shrink-0">
                   <img
-                    src={upscaleArtwork(current.artworkUrl100, 200)}
-                    alt={current.collectionName}
+                    src={upscaleArtwork(currentAlbum.artworkUrl100, 200)}
+                    alt={currentAlbum.collectionName}
                     className="w-full h-full object-cover"
                     draggable={false}
                     loading="lazy"
@@ -272,11 +276,11 @@ export const MixedUI: React.FC = ({}) => {
                 </div>
                 <div className="min-w-0">
                   <div className="font-semibold text-[14px] text-black/90 dark:text-white/90 truncate [line-height:1.1] text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
-                    {current?.collectionName ?? "\u00A0"}
+                    {currentAlbum?.collectionName ?? "\u00A0"}
                   </div>
                   <div className="text-[11px] text-black/60 dark:text-white/60 truncate text-shadow-xs text-shadow-white/50 dark:text-shadow-black/70">
-                    {current?.artistName
-                      ? `${current.artistName} — ${current.collectionName}`
+                    {currentAlbum?.artistName
+                      ? `${currentAlbum.artistName} — ${currentAlbum.collectionName}`
                       : "\u00A0"}
                   </div>
                   {/* Progress bar */}
@@ -450,7 +454,7 @@ function getAlbums(term: string): Promise<Album[]> {
 type AlbumGridProps = {
   query: string;
   onLoaded: (albums: Album[]) => void;
-  onSelect: (index: number) => void;
+  onSelect: (album: Album) => void;
 };
 
 const AlbumGrid: React.FC<AlbumGridProps> = ({
@@ -465,7 +469,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
 
   return (
     <div className="grid grid-cols-4 gap-6">
-      {albums.map((item, i) => {
+      {albums.map((item) => {
         const title = item.collectionName;
         return (
           <div
@@ -473,11 +477,11 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
             className="flex flex-col"
             role="button"
             tabIndex={0}
-            onClick={() => onSelect(i)}
+            onClick={() => onSelect(item)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                onSelect(i);
+                onSelect(item);
               }
             }}
             aria-label={`Play ${title}`}
