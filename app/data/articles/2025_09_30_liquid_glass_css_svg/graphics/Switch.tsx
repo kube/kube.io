@@ -48,7 +48,10 @@ export const Switch: React.FC = () => {
   const backgroundOpacityTarget = useTransform(pointerDownMV, [0, 1], [1, 0.1]);
   const thumbScaleTarget = useTransform(pointerDownMV, [0, 1], [0.6, 1]);
   const pressMultiplier = useTransform(pointerDownMV, [0, 1], [0.4, 0.9]);
-  const scaleRatioTarget = useTransform([pressMultiplier, refractionBase], ([m, base]) => (Number(m) || 0) * (Number(base) || 0));
+  const scaleRatioTarget = useTransform(
+    [pressMultiplier, refractionBase],
+    ([m, base]) => (Number(m) || 0) * (Number(base) || 0)
+  );
 
   // —————————————————————————————————————————————
   // SPRINGS (animated derivatives)
@@ -75,8 +78,12 @@ export const Switch: React.FC = () => {
   );
 
   // Readouts for the controls UI
-  const specularOpacityText = useTransform(specularOpacity, (v) => v.toFixed(2));
-  const specularSaturationText = useTransform(specularSaturation, (v) => Math.round(v).toString());
+  const specularOpacityText = useTransform(specularOpacity, (v) =>
+    v.toFixed(2)
+  );
+  const specularSaturationText = useTransform(specularSaturation, (v) =>
+    Math.round(v).toString()
+  );
   const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
   const blurText = useTransform(blur, (v) => v.toFixed(1));
 
@@ -102,154 +109,178 @@ export const Switch: React.FC = () => {
 
   return (
     <>
-    <div
-      className="relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef] dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
-      style={containerStyle}
-    >
-      <motion.div
-        style={{
-          display: "inline-block",
-          width: sliderWidth,
-          height: sliderHeight,
-          backgroundColor: trackBg,
-          borderRadius: sliderHeight / 2,
-          position: "relative",
-          cursor: "pointer",
-        }}
-        onClick={toggleChecked}
-        onMouseDown={() => pointerDownMV.set(1)}
-        onMouseUp={() => pointerDownMV.set(0)}
+      <div
+        className="relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef] dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
+        style={containerStyle}
       >
-        <Filter
-          id="thumb-filter"
-          width={width}
-          height={height}
-          radius={radius}
-          bezelWidth={bezelWidth}
-          glassThickness={glassThickness}
-          refractiveIndex={refractiveIndex}
-          blur={blur}
-          scaleRatio={scaleRatio}
-          specularOpacity={specularOpacity}
-          specularSaturation={specularSaturation}
-          bezelHeightFn={(x) => {
-            const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-            const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-            const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-            const ratioCircle = 1 - smootherstep;
-            return circle * ratioCircle + sin * (1 - ratioCircle);
-          }}
-        />
-
         <motion.div
-          className="absolute"
           style={{
-            height,
-            width,
-            x: thumbXPercent,
-            y: "-50%",
-            borderRadius: radius,
-            top: sliderHeight / 2,
-            left: sliderWidth / 2,
-            backdropFilter: `url(#thumb-filter)`,
-            scale: thumbScale,
-            backgroundColor: thumbBgColor,
-            boxShadow: useTransform(() => {
-              const isPressed = pointerDownMV.get() > 0.5;
-              return (
-                "0 4px 22px rgba(0,0,0,0.1)" +
-                (isPressed
-                  ? ", inset 2px 7px 24px rgba(0,0,0,0.13), inset -2px -7px 24px rgba(255,255,255,0.13)"
-                  : "")
-              );
-            }),
+            display: "inline-block",
+            width: sliderWidth,
+            height: sliderHeight,
+            backgroundColor: trackBg,
+            borderRadius: sliderHeight / 2,
+            position: "relative",
+            cursor: "pointer",
           }}
-        />
-      </motion.div>
+          onClick={toggleChecked}
+          onMouseDown={() => pointerDownMV.set(1)}
+          onMouseUp={() => pointerDownMV.set(0)}
+        >
+          <Filter
+            id="thumb-filter"
+            width={width}
+            height={height}
+            radius={radius}
+            bezelWidth={bezelWidth}
+            glassThickness={glassThickness}
+            refractiveIndex={refractiveIndex}
+            blur={blur}
+            scaleRatio={scaleRatio}
+            specularOpacity={specularOpacity}
+            specularSaturation={specularSaturation}
+            bezelHeightFn={(x) => {
+              const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
+              const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
+              const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+              const ratioCircle = 1 - smootherstep;
+              return circle * ratioCircle + sin * (1 - ratioCircle);
+            }}
+          />
 
-      {/* Toggle control */}
-      <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
-        <input
-          type="checkbox"
-          checked={useImageBg}
-          onChange={(e) => setUseImageBg(e.target.checked)}
-          className="accent-blue-600"
-        />
-        Use image background
-      </label>
-    </div>
+          <motion.div
+            className="absolute"
+            style={{
+              height,
+              width,
+              x: thumbXPercent,
+              y: "-50%",
+              borderRadius: radius,
+              top: sliderHeight / 2,
+              left: sliderWidth / 2,
+              backdropFilter: `url(#thumb-filter)`,
+              scale: thumbScale,
+              backgroundColor: thumbBgColor,
+              boxShadow: useTransform(() => {
+                const isPressed = pointerDownMV.get() > 0.5;
+                return (
+                  "0 4px 22px rgba(0,0,0,0.1)" +
+                  (isPressed
+                    ? ", inset 2px 7px 24px rgba(0,0,0,0.13), inset -2px -7px 24px rgba(255,255,255,0.13)"
+                    : "")
+                );
+              }),
+            }}
+          />
+        </motion.div>
 
-    {/* Parameters controls (MotionValue-driven; no React state) */}
-    <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
-      <div className="flex items-center gap-4">
-        <div className="uppercase tracking-[0.14em] text-[10px] opacity-70 select-none">Parameters</div>
-        <div className="h-[1px] flex-1 bg-black/10 dark:bg-white/10" />
+        {/* Toggle control */}
+        <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
+          <input
+            type="checkbox"
+            checked={useImageBg}
+            onChange={(e) => setUseImageBg(e.target.checked)}
+            className="accent-blue-600"
+          />
+          Use image background
+        </label>
       </div>
 
-      {/* Specular Opacity */}
-      <div className="flex items-center gap-4">
-        <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">Specular Opacity</label>
-        <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">{specularOpacityText}</motion.span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          defaultValue={specularOpacity.get()}
-          onInput={(e) => specularOpacity.set(parseFloat(e.currentTarget.value))}
-          className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
-          aria-label="Specular Opacity"
-        />
-      </div>
+      {/* Parameters controls (MotionValue-driven; no React state) */}
+      <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
+        <div className="flex items-center gap-4">
+          <div className="uppercase tracking-[0.14em] text-[10px] opacity-70 select-none">
+            Parameters
+          </div>
+          <div className="h-[1px] flex-1 bg-black/10 dark:bg-white/10" />
+        </div>
 
-      {/* Specular Saturation */}
-      <div className="flex items-center gap-4">
-        <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">Specular Saturation</label>
-        <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">{specularSaturationText}</motion.span>
-        <input
-          type="range"
-          min={0}
-          max={50}
-          step={1}
-          defaultValue={specularSaturation.get()}
-          onInput={(e) => specularSaturation.set(parseFloat(e.currentTarget.value))}
-          className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
-          aria-label="Specular Saturation"
-        />
-      </div>
+        {/* Specular Opacity */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Opacity
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularOpacityText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={specularOpacity.get()}
+            onInput={(e) =>
+              specularOpacity.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Specular Opacity"
+          />
+        </div>
 
-      {/* Refraction Level */}
-      <div className="flex items-center gap-4">
-        <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">Refraction Level</label>
-        <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">{refractionLevelText}</motion.span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          defaultValue={refractionBase.get()}
-          onInput={(e) => refractionBase.set(parseFloat(e.currentTarget.value))}
-          className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
-          aria-label="Refraction Level"
-        />
-      </div>
+        {/* Specular Saturation */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Specular Saturation
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {specularSaturationText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={50}
+            step={1}
+            defaultValue={specularSaturation.get()}
+            onInput={(e) =>
+              specularSaturation.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Specular Saturation"
+          />
+        </div>
 
-      {/* Blur Level */}
-      <div className="flex items-center gap-4">
-        <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">Blur Level</label>
-        <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">{blurText}</motion.span>
-        <input
-          type="range"
-          min={0}
-          max={40}
-          step={0.1}
-          defaultValue={blur.get()}
-          onInput={(e) => blur.set(parseFloat(e.currentTarget.value))}
-          className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
-          aria-label="Blur Level"
-        />
+        {/* Refraction Level */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Refraction Level
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {refractionLevelText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={refractionBase.get()}
+            onInput={(e) =>
+              refractionBase.set(parseFloat(e.currentTarget.value))
+            }
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Refraction Level"
+          />
+        </div>
+
+        {/* Blur Level */}
+        <div className="flex items-center gap-4">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+            Blur Level
+          </label>
+          <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
+            {blurText}
+          </motion.span>
+          <input
+            type="range"
+            min={0}
+            max={40}
+            step={0.1}
+            defaultValue={blur.get()}
+            onInput={(e) => blur.set(parseFloat(e.currentTarget.value))}
+            className="flex-1 appearance-none h-[2px] bg-black/20 dark:bg-white/20 rounded outline-none"
+            aria-label="Blur Level"
+          />
+        </div>
       </div>
-    </div>
     </>
   );
 };
