@@ -10,8 +10,8 @@ export const MagnifyingGlass: React.FC = () => {
   const velocityX = useMotionValue(0);
 
   // Lens geometry
-  const width = 200;
-  const height = 130;
+  const width = 210;
+  const height = 150;
   const radius = height / 2;
 
   // Optical parameters (kept simple; no live controls here)
