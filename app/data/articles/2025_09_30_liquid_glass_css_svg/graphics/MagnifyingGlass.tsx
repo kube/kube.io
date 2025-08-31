@@ -188,7 +188,7 @@ export const MagnifyingGlass: React.FC = () => {
             bezelWidth={bezelWidth}
             glassThickness={glassThickness}
             refractiveIndex={refractiveIndex}
-            blur={blur}
+            blur={0}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
