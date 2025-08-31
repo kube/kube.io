@@ -27,12 +27,18 @@ export const MagnifyingGlass: React.FC = () => {
       damping: 14,
     }
   );
+  const magnifyingScale = useSpring(
+    useTransform(isDragging, (d): number => (d ? 48 : 24)),
+    {
+      stiffness: 250,
+      damping: 14,
+    }
+  );
 
   const objectScale = useSpring(
     useTransform(isDragging, (d): number => (d ? 1 : 0.8)),
     { stiffness: 340, damping: 20 }
   );
-
   const objectScaleY = useSpring(
     useTransform(
       (): number =>
@@ -40,12 +46,12 @@ export const MagnifyingGlass: React.FC = () => {
     ),
     { stiffness: 340, damping: 30 }
   );
-
   const objectScaleX = useSpring(
     useTransform((): number => objectScale.get() + (1 - objectScaleY.get())),
     { stiffness: 340, damping: 30 }
   );
 
+  // This could be done with only one spring (derived from ) and multiple transforms
   const shadowSx = useSpring(
     useTransform(isDragging, (d): number => (d ? 4 : 0)),
     { stiffness: 340, damping: 30 }
@@ -55,21 +61,35 @@ export const MagnifyingGlass: React.FC = () => {
     { stiffness: 340, damping: 30 }
   );
   const shadowAlpha = useSpring(
-    useTransform(isDragging, (d): number => (d ? 0.27 : 0.12)),
+    useTransform(isDragging, (d): number => (d ? 0.22 : 0.16)),
     {
       stiffness: 220,
       damping: 24,
     }
   );
+  const insetShadowAlpha = useSpring(
+    useTransform(isDragging, (d): number => (d ? 0.27 : 0.2)),
+    {
+      stiffness: 220,
+      damping: 24,
+    }
+  );
+  const shadowBlur = useSpring(
+    useTransform(isDragging, (d): number => (d ? 24 : 9)),
+    {
+      stiffness: 340,
+      damping: 30,
+    }
+  );
   const boxShadow = useTransform(
     () =>
-      `${shadowSx.get()}px ${shadowSy.get()}px 24px rgba(0,0,0,${shadowAlpha.get()}),
-      inset ${shadowSx.get() / 2}px ${shadowSy.get() / 2}px 24px rgba(0,0,0,${
-        shadowAlpha.get() * 0.8
-      }),
+      `${shadowSx.get()}px ${shadowSy.get()}px ${shadowBlur.get()}px rgba(0,0,0,${shadowAlpha.get()}),
+      inset ${shadowSx.get() / 2}px ${
+        shadowSy.get() / 2
+      }px 24px rgba(0,0,0,${insetShadowAlpha.get()}),
       inset ${-shadowSx.get() / 2}px ${
         -shadowSy.get() / 2
-      }px 24px rgba(255,255,255,${shadowAlpha.get() * 0.8})`
+      }px 24px rgba(255,255,255,${insetShadowAlpha.get()})`
   );
 
   // Reset dragging on any global pointer/mouse/touch end
@@ -153,6 +173,7 @@ export const MagnifyingGlass: React.FC = () => {
           scaleRatio={refractionLevel}
           specularOpacity={specularOpacity}
           specularSaturation={specularSaturation}
+          magnifyingScale={magnifyingScale}
           bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
         />
 

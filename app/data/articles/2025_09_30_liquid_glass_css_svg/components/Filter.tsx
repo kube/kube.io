@@ -5,6 +5,7 @@ import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
 } from "../lib/displacementMap";
+import { calculateMagnifyingDisplacementMap } from "../lib/magnifyingDisplacement";
 import { calculateRefractionSpecular } from "../lib/specular";
 import { getValueOrMotion } from "../lib/useValueOrMotion";
 
@@ -33,6 +34,7 @@ type FilterProps = {
   refractiveIndex: number | MotionValue<number>;
   specularOpacity: number | MotionValue<number>;
   specularSaturation?: number | MotionValue<number>;
+  magnifyingScale?: number | MotionValue<number>;
   bezelHeightFn?: (x: number) => number;
 };
 
@@ -51,6 +53,7 @@ export const Filter: React.FC<FilterProps> = ({
   scaleRatio,
   specularOpacity,
   specularSaturation = 4,
+  magnifyingScale,
   bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
 }) => {
   const map = useTransform(() =>
@@ -90,6 +93,20 @@ export const Filter: React.FC<FilterProps> = ({
     )
   );
 
+  const magnifyingDisplacementMap = useTransform(() =>
+    magnifyingScale !== undefined
+      ? calculateMagnifyingDisplacementMap(
+          getValueOrMotion(canvasWidth ?? width),
+          getValueOrMotion(canvasHeight ?? height)
+        )
+      : undefined
+  );
+
+  const magnifyingDisplacementMapDataUrl = useTransform(() => {
+    if (magnifyingScale) {
+      return imageDataToUrl(magnifyingDisplacementMap.get());
+    }
+  });
   const displacementMapDataUrl = useTransform(() =>
     imageDataToUrl(displacementMap.get())
   );
@@ -102,8 +119,34 @@ export const Filter: React.FC<FilterProps> = ({
 
   const content = (
     <filter id={id} filterRes="128">
+      {magnifyingScale && (
+        <>
+          <motion.feImage
+            href={magnifyingDisplacementMapDataUrl}
+            x={0}
+            y={0}
+            width={canvasWidth ?? width}
+            height={canvasHeight ?? height}
+            result="magnifying_displacement_map"
+          />
+
+          <motion.feDisplacementMap
+            in="SourceGraphic"
+            in2="magnifying_displacement_map"
+            scale={magnifyingScale}
+            xChannelSelector="R"
+            yChannelSelector="G"
+            result="magnified_source"
+          />
+        </>
+      )}
+
       <motion.feGaussianBlur
-        in="SourceGraphic"
+        in={
+          magnifyingDisplacementMapDataUrl
+            ? "magnified_source"
+            : "SourceGraphic"
+        }
         stdDeviation={blur}
         result="blurred_source"
       />
