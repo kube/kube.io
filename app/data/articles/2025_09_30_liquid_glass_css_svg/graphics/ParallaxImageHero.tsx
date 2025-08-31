@@ -23,7 +23,8 @@ export const ParallaxImageHero: React.FC = () => {
   const glassThickness = 90;
   const refractiveIndex = 1.5;
   const blur = 0;
-  const specularOpacity = 0.4;
+  const specularOpacity = 0.2;
+  const specularSaturation = 10;
 
   return (
     <>
@@ -39,14 +40,13 @@ export const ParallaxImageHero: React.FC = () => {
       >
         {/* Firefox-compatible: apply filter to an SVG <image> overlay instead of CSS filter */}
         <svg
-          className="w-[30%] aspect-square"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] overflow-hidden"
           viewBox="0 0 150 150"
           preserveAspectRatio="xMidYMid slice"
           color-interpolation-filters="sRGB"
           style={{
             pointerEvents: "none",
-            borderRadius: "100%",
-            boxShadow: "0 2px 20px rgba(0,0,0,0.1)",
+            borderRadius: "100px",
           }}
         >
           <Filter
@@ -60,6 +60,7 @@ export const ParallaxImageHero: React.FC = () => {
             refractiveIndex={refractiveIndex}
             blur={blur}
             specularOpacity={specularOpacity}
+            specularSaturation={specularSaturation}
           />
           <g filter={`url(#${filterId})`}>
             <motion.image
@@ -85,8 +86,8 @@ export const ParallaxImageHero: React.FC = () => {
             <LogoStatic
               className="w-20"
               gradientId="parallax-image-hero-logo-gradient"
-              gradientFrom="rgba(0,0,0,0.6)"
-              gradientTo="rgba(0,0,0,0.9)"
+              gradientFrom="rgba(36,33,33,0.5)"
+              gradientTo="rgba(36,33,33,0.7)"
             />
           </motion.div>
         </motion.button>
