@@ -7,6 +7,7 @@ import { Filter } from "../components/Filter";
 export const MagnifyingGlass: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDragging = useMotionValue(false);
+  const velocityX = useMotionValue(0);
 
   // Lens geometry
   const width = 200;
@@ -14,17 +15,35 @@ export const MagnifyingGlass: React.FC = () => {
   const radius = height / 2;
 
   // Optical parameters (kept simple; no live controls here)
-  const bezelWidth = 45;
-  const glassThickness = 90;
+  const bezelWidth = 16;
+  const glassThickness = 160;
   const refractiveIndex = 1.5;
   const specularOpacity = 0.75;
   const specularSaturation = 9;
   const refractionLevel = useSpring(
-    useTransform(isDragging, (d): number => (d ? 1 : 0.6)),
+    useTransform(isDragging, (d): number => (d ? 1 : 0.8)),
     {
       stiffness: 250,
       damping: 14,
     }
+  );
+
+  const objectScale = useSpring(
+    useTransform(isDragging, (d): number => (d ? 1 : 0.8)),
+    { stiffness: 340, damping: 20 }
+  );
+
+  const objectScaleY = useSpring(
+    useTransform(
+      (): number =>
+        objectScale.get() * Math.max(0.7, 1 - Math.abs(velocityX.get()) / 5000)
+    ),
+    { stiffness: 340, damping: 30 }
+  );
+
+  const objectScaleX = useSpring(
+    useTransform((): number => objectScale.get() + (1 - objectScaleY.get())),
+    { stiffness: 340, damping: 30 }
   );
 
   const shadowSx = useSpring(
@@ -44,7 +63,13 @@ export const MagnifyingGlass: React.FC = () => {
   );
   const boxShadow = useTransform(
     () =>
-      `${shadowSx.get()}px ${shadowSy.get()}px 24px rgba(0,0,0,${shadowAlpha.get()})`
+      `${shadowSx.get()}px ${shadowSy.get()}px 24px rgba(0,0,0,${shadowAlpha.get()}),
+      inset ${shadowSx.get() / 2}px ${shadowSy.get() / 2}px 24px rgba(0,0,0,${
+        shadowAlpha.get() * 0.8
+      }),
+      inset ${-shadowSx.get() / 2}px ${
+        -shadowSy.get() / 2
+      }px 24px rgba(255,255,255,${shadowAlpha.get() * 0.8})`
   );
 
   // Reset dragging on any global pointer/mouse/touch end
@@ -99,11 +124,19 @@ export const MagnifyingGlass: React.FC = () => {
       {/* Draggable circular lens */}
       <motion.div
         className="absolute top-6 left-6 z-10 cursor-grab active:cursor-grabbing"
-        style={{ width, height, borderRadius: radius }}
+        style={{
+          width,
+          height,
+          borderRadius: radius,
+          scaleX: objectScaleX,
+          scaleY: objectScaleY,
+        }}
         drag
         dragConstraints={containerRef}
-        dragElastic={0.18}
+        dragElastic={0.13}
         dragMomentum={false}
+        onDrag={(_, info) => velocityX.set(info.velocity.x)}
+        onDragEnd={() => velocityX.set(0)}
         onMouseDown={() => isDragging.set(true)}
         onTouchStart={() => isDragging.set(true)}
       >
