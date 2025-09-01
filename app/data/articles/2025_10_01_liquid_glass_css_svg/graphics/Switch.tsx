@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Filter } from "../components/Filter";
 import { LIP } from "../lib/surfaceEquations";
 
@@ -11,18 +11,23 @@ export const Switch: React.FC = () => {
   const width = 171;
   const height = 111;
   const radius = 58;
-  const bezelWidth = 24;
-  const glassThickness = 65;
-  const refractiveIndex = 1.6;
+  const bezelWidth = 36;
+  const glassThickness = 54;
+  const refractiveIndex = 1.5;
   const blur = useMotionValue(0); // 0..40
-  const specularOpacity = useMotionValue(0.6); // 0..1
-  const specularSaturation = useMotionValue(31); // 0..50
+  const specularOpacity = useMotionValue(0.4); // 0..1
+  const specularSaturation = useMotionValue(6); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
 
   // —————————————————————————————————————————————
   // SOURCES OF TRUTH (Motion)
   const checkedMV = useMotionValue<number>(1); // 0->off, 1->on
   const pointerDownMV = useMotionValue<number>(0); // 0->idle, 1->pressed
+  const forceActive = useMotionValue(false);
+
+  const isUp = useTransform((): number =>
+    forceActive.get() || pointerDownMV.get() > 0.5 ? 1 : 0
+  );
 
   const toggleChecked = () => {
     checkedMV.set(checkedMV.get() ? 0 : 1);
@@ -46,9 +51,9 @@ export const Switch: React.FC = () => {
   const trackBg = useTransform(checkedMV, [0, 1], ["#85858599", "#5BBF5EDD"]);
   // Keep relative positions equivalent after halving sizes
   const buttonXTarget = useTransform(checkedMV, [0, 1], [-69, -31]); // in % (unchanged)
-  const backgroundOpacityTarget = useTransform(pointerDownMV, [0, 1], [1, 0.1]);
-  const thumbScaleTarget = useTransform(pointerDownMV, [0, 1], [0.6, 1]);
-  const pressMultiplier = useTransform(pointerDownMV, [0, 1], [0.4, 0.9]);
+  const backgroundOpacityTarget = useTransform(isUp, [0, 1], [1, 0.1]);
+  const thumbScaleTarget = useTransform(isUp, [0, 1], [0.6, 1]);
+  const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);
   const scaleRatioTarget = useTransform(
     [pressMultiplier, refractionBase],
     ([m, base]) => (Number(m) || 0) * (Number(base) || 0)
@@ -88,31 +93,19 @@ export const Switch: React.FC = () => {
   const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
   const blurText = useTransform(blur, (v) => v.toFixed(1));
 
-  // —————————————————————————————————————————————
-  // Background toggle (grid pattern vs. Unsplash image)
-  const [useImageBg, setUseImageBg] = useState(false);
-  const containerStyle: React.CSSProperties = useImageBg
-    ? {
-        backgroundImage:
-          'url("https://images.unsplash.com/photo-1532210317995-cc56d90177d9?q=80&w=1600&auto=format&fit=crop")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }
-    : {
-        backgroundImage:
-          "linear-gradient(to right, currentColor 1px, transparent 1px)," +
-          "linear-gradient(to bottom, currentColor 1px, transparent 1px)," +
-          "radial-gradient(120% 100% at 10% 0%, var(--bg1), var(--bg2))",
-        backgroundSize: "24px 24px, 24px 24px, 100% 100%",
-        // Offset the grid so it doesn't align with the top/left border
-        backgroundPosition: "12px 12px, 12px 12px, 0 0",
-      };
-
   return (
     <>
       <div
         className="relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef] dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
-        style={containerStyle}
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, currentColor 1px, transparent 1px)," +
+            "linear-gradient(to bottom, currentColor 1px, transparent 1px)," +
+            "radial-gradient(120% 100% at 10% 0%, var(--bg1), var(--bg2))",
+          backgroundSize: "24px 24px, 24px 24px, 100% 100%",
+          // Offset the grid so it doesn't align with the top/left border
+          backgroundPosition: "12px 12px, 12px 12px, 0 0",
+        }}
       >
         <motion.div
           style={{
@@ -161,7 +154,7 @@ export const Switch: React.FC = () => {
                 return (
                   "0 4px 22px rgba(0,0,0,0.1)" +
                   (isPressed
-                    ? ", inset 2px 7px 24px rgba(0,0,0,0.13), inset -2px -7px 24px rgba(255,255,255,0.13)"
+                    ? ", inset 2px 7px 24px rgba(0,0,0,0.09), inset -2px -7px 24px rgba(255,255,255,0.09)"
                     : "")
                 );
               }),
@@ -173,11 +166,11 @@ export const Switch: React.FC = () => {
         <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
           <input
             type="checkbox"
-            checked={useImageBg}
-            onChange={(e) => setUseImageBg(e.target.checked)}
+            defaultChecked={forceActive.get()}
+            onChange={(e) => forceActive.set(e.currentTarget.checked)}
             className="accent-blue-600"
           />
-          Use image background
+          Force active
         </label>
       </div>
 

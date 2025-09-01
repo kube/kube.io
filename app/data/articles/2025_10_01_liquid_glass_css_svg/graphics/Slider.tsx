@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Filter } from "../components/Filter";
-import { LIP } from "../lib/surfaceEquations";
+import { CONVEX } from "../lib/surfaceEquations";
 
 export const Slider: React.FC = () => {
   const min = 0;
@@ -12,20 +12,25 @@ export const Slider: React.FC = () => {
   const sliderWidth = 360;
 
   // Use numeric MotionValue (0/1) instead of boolean for compatibility with transforms
-  const pointerDown = useMotionValue(1);
+  const pointerDown = useMotionValue(0);
+  const forceActive = useMotionValue(false);
+
+  const isUp = useTransform((): number =>
+    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0
+  );
 
   const thumbWidth = 100;
   const thumbHeight = 60;
   const thumbRadius = 30;
-  const bezelWidth = 25;
-  const glassThickness = 76;
+  const bezelWidth = 18;
+  const glassThickness = 130;
   const refractiveIndex = 1.45;
   // MotionValue-based controls
   const blur = useMotionValue(0); // 0..40
-  const specularOpacity = useMotionValue(0.9); // 0..1
-  const specularSaturation = useMotionValue(9); // 0..50
+  const specularOpacity = useMotionValue(0.4); // 0..1
+  const specularSaturation = useMotionValue(7); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
-  const pressMultiplier = useTransform(pointerDown, [0, 1], [0.4, 0.9]);
+  const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);
   const scaleRatio = useSpring(
     useTransform(
       [pressMultiplier, refractionBase],
@@ -41,20 +46,17 @@ export const Slider: React.FC = () => {
   const thumbWidthRest = thumbWidth * SCALE_REST;
 
   const scaleSpring = useSpring(
-    useTransform(pointerDown, [0, 1], [SCALE_REST, SCALE_DRAG]),
+    useTransform(isUp, [0, 1], [SCALE_REST, SCALE_DRAG]),
     {
       damping: 80,
       stiffness: 2000,
     }
   );
 
-  const backgroundOpacity = useSpring(
-    useTransform(pointerDown, [0, 1], [1, 0.1]),
-    {
-      damping: 80,
-      stiffness: 2000,
-    }
-  );
+  const backgroundOpacity = useSpring(useTransform(isUp, [0, 1], [1, 0.1]), {
+    damping: 80,
+    stiffness: 2000,
+  });
 
   // End drag when releasing outside the element
   useEffect(() => {
@@ -71,26 +73,6 @@ export const Slider: React.FC = () => {
     };
   }, []);
 
-  // —————————————————————————————————————————————
-  // Background toggle (grid pattern vs. Unsplash image)
-  const [useImageBg, setUseImageBg] = useState(false);
-  const containerStyle: React.CSSProperties = useImageBg
-    ? {
-        backgroundImage:
-          'url("https://images.unsplash.com/photo-1532210317995-cc56d90177d9?q=80&w=1600&auto=format&fit=crop")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }
-    : {
-        backgroundImage:
-          "linear-gradient(to right, currentColor 1px, transparent 1px)," +
-          "linear-gradient(to bottom, currentColor 1px, transparent 1px)," +
-          "radial-gradient(120% 100% at 10% 0%, var(--bg1), var(--bg2))",
-        backgroundSize: "24px 24px, 24px 24px, 100% 100%",
-        // Offset the grid so it doesn't align with the top/left border
-        backgroundPosition: "12px 12px, 12px 12px, 0 0",
-      };
-
   // Readouts for controls UI
   const specularOpacityText = useTransform(specularOpacity, (v) =>
     v.toFixed(2)
@@ -105,7 +87,15 @@ export const Slider: React.FC = () => {
     <>
       <div
         className="relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef] dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
-        style={containerStyle}
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, currentColor 1px, transparent 1px)," +
+            "linear-gradient(to bottom, currentColor 1px, transparent 1px)," +
+            "radial-gradient(120% 100% at 10% 0%, var(--bg1), var(--bg2))",
+          backgroundSize: "24px 24px, 24px 24px, 100% 100%",
+          // Offset the grid so it doesn't align with the top/left border
+          backgroundPosition: "12px 12px, 12px 12px, 0 0",
+        }}
       >
         <motion.div
           style={{
@@ -162,7 +152,7 @@ export const Slider: React.FC = () => {
             scaleRatio={scaleRatio}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={LIP.fn}
+            bezelHeightFn={CONVEX.fn}
           />
 
           <motion.div
@@ -227,11 +217,11 @@ export const Slider: React.FC = () => {
         <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
           <input
             type="checkbox"
-            checked={useImageBg}
-            onChange={(e) => setUseImageBg(e.target.checked)}
+            defaultChecked={forceActive.get()}
+            onChange={(e) => forceActive.set(e.currentTarget.checked)}
             className="accent-blue-600"
           />
-          Use image background
+          Force active
         </label>
       </div>
 
