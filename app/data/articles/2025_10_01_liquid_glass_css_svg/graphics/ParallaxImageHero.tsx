@@ -1,18 +1,20 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import { LogoStatic } from "../../../../components/Logo";
 import { Filter } from "../components/Filter";
-import coverAUrl from "../images/cover.jpg";
+
+const imageUrl =
+  "https://images.unsplash.com/photo-1688494930098-e88c53c26e3a?auto=format&q=80&fit=crop&w=1400&h=1600&crop=focalpoint&fp-x=0.3&fp-y=0.5&fp-z=1";
+const imageUrlMiddle =
+  "https://images.unsplash.com/photo-1688494930098-e88c53c26e3a?auto=format&q=80&fit=crop&w=400&h=700&crop=focalpoint&fp-x=0.3&fp-y=0.6&fp-z=1.9";
 
 export const ParallaxImageHero: React.FC = () => {
   const filterId = "parallax-image-hero-filter";
 
   // Parallax
-  const parallaxBaseOffset = -90;
-  const parallaxSpeed = -0.27;
+  const parallaxSpeed = -0.25;
   const { scrollY } = useScroll();
   const backgroundParallaxOffset = useTransform(
     scrollY,
-    (v) => parallaxBaseOffset + v * parallaxSpeed
+    (v) => v * parallaxSpeed
   );
 
   // Glass preset
@@ -20,21 +22,22 @@ export const ParallaxImageHero: React.FC = () => {
   const width = 150;
   const radius = 75;
   const bezelWidth = 40;
-  const glassThickness = 90;
+  const glassThickness = 120;
   const refractiveIndex = 1.5;
   const blur = 0;
-  const specularOpacity = 0.2;
-  const specularSaturation = 10;
+  const specularOpacity = 0.3;
+  const specularSaturation = 5;
 
   return (
     <>
       <motion.div
-        className="relative aspect-[5/3] w-full overflow-hidden rounded-xl bg-red-300 flex items-center justify-center"
+        className="relative h-[400px] w-full overflow-hidden rounded-xl bg-slate-600/20 flex items-center justify-center"
         style={{
-          backgroundImage: `url(${coverAUrl})`,
-          backgroundSize: "cover",
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: "700px auto",
+          backgroundPositionX: "center",
           backgroundPositionY: useTransform(
-            () => 80 + backgroundParallaxOffset.get()
+            () => -60 + backgroundParallaxOffset.get()
           ),
         }}
       >
@@ -47,6 +50,7 @@ export const ParallaxImageHero: React.FC = () => {
           style={{
             pointerEvents: "none",
             borderRadius: "100px",
+            boxShadow: "0 16px 31px rgba(0,0,0,0.4)",
           }}
         >
           <Filter
@@ -61,36 +65,21 @@ export const ParallaxImageHero: React.FC = () => {
             blur={blur}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
+            bezelHeightFn={(x) => Math.pow(1 - Math.pow(1 - x, 4), 1 / 4)} // Squircle (n=4)
           />
           <g filter={`url(#${filterId})`}>
             <motion.image
-              href={coverAUrl}
-              width="362%"
+              href={imageUrlMiddle}
+              width="200px"
               style={{
-                x: -195,
-                y: useTransform(() => backgroundParallaxOffset.get()),
+                x: -29,
+                y: useTransform(
+                  () => 13 + backgroundParallaxOffset.get() * 0.75
+                ),
               }}
             />
           </g>
         </svg>
-
-        <motion.button
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          style={{
-            height,
-            width,
-            borderRadius: `${radius}px`,
-          }}
-        >
-          <motion.div className="relative h-full w-full flex items-center justify-center">
-            <LogoStatic
-              className="w-20"
-              gradientId="parallax-image-hero-logo-gradient"
-              gradientFrom="rgba(36,33,33,0.5)"
-              gradientTo="rgba(36,33,33,0.7)"
-            />
-          </motion.div>
-        </motion.button>
       </motion.div>
     </>
   );
