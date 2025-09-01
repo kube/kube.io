@@ -1,6 +1,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
 import { Filter } from "../components/Filter";
 
 export const Searchbox: React.FC = () => {
@@ -10,13 +11,13 @@ export const Searchbox: React.FC = () => {
   const radius = height / 2;
 
   // Optical parameters reused from other components
-  const bezelWidth = 25;
-  const glassThickness = 100;
+  const bezelWidth = 31;
+  const glassThickness = 70;
   const refractiveIndex = 1.5;
   // Glass parameters as MotionValues (no React state)
-  const specularOpacity = useMotionValue(0.7); // 0..1
-  const specularSaturation = useMotionValue(9); // 0..50
-  const refractionLevel = useMotionValue(0.55); // 0..1
+  const specularOpacity = useMotionValue(0.2); // 0..1
+  const specularSaturation = useMotionValue(4); // 0..50
+  const refractionLevel = useMotionValue(0.7); // 0..1
   const blur = useMotionValue(1); // 0..40
   // Focus state
   const focused = useMotionValue(0);
@@ -92,9 +93,29 @@ export const Searchbox: React.FC = () => {
   return (
     <>
       <div
-        className="relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef] dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
+        className={twMerge(
+          "relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none",
+          "text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef]",
+          "dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10"
+        )}
         style={containerStyle}
       >
+        {useImageBg && (
+          <a
+            href="https://unsplash.com/fr/photos/photo-de-plante-de-fougere-verte-OOE4xAnBhKo"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={twMerge(
+              "absolute left-3 top-3 inline-block [line-height:1.1]",
+              "text-[9px] uppercase tracking-[0.1em]"
+            )}
+            style={{ color: "rgba(255, 255, 255, 0.4)" }}
+          >
+            Photo by Teemu Paananen
+            <br />
+            on Unsplash
+          </a>
+        )}
         {/* Track */}
         <motion.div
           className="relative"
@@ -127,18 +148,21 @@ export const Searchbox: React.FC = () => {
               backgroundColor: useTransform(
                 () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`
               ),
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.16)",
               transform: "translateZ(0)", // Create a new layer to improve performance
             }}
           />
 
           {/* Content overlay */}
           <div
-            className="absolute inset-0 flex items-center gap-3 px-5"
+            className={twMerge(
+              "absolute inset-0 flex items-center gap-3 px-5",
+              useImageBg ? "text-white/90" : "text-black/90 dark:text-white/90"
+            )}
             style={{ borderRadius: radius, zIndex: 1 }}
           >
             <IoSearch
-              className="text-black/70 dark:text-white/70 shrink-0"
+              className="shrink-0 opacity-70"
               size={20}
               aria-hidden="true"
             />
@@ -147,7 +171,12 @@ export const Searchbox: React.FC = () => {
               type="search"
               placeholder="Search"
               aria-label="Search"
-              className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[15px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text"
+              className={twMerge(
+                "flex-1 min-w-0 bg-transparent outline-none border-0 text-[15px] leading-none selection:bg-blue-500/30 selection:text-inherit select-text",
+                useImageBg
+                  ? "text-white/70"
+                  : "text-black/70 dark:text-white/70"
+              )}
               style={{ padding: 0 }}
               onFocus={() => focused.set(1)}
               onBlur={() => focused.set(0)}
@@ -159,7 +188,14 @@ export const Searchbox: React.FC = () => {
         </motion.div>
 
         {/* Toggle control */}
-        <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
+        <label
+          className={twMerge(
+            "absolute bottom-2 left-1/2 -translate-x-1/2 text-xs backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80",
+            useImageBg
+              ? "text-white/90 bg-black/10"
+              : "text-black/90 dark:text-white/90 bg-white/10 dark:bg-black/10"
+          )}
+        >
           <input
             type="checkbox"
             checked={useImageBg}
