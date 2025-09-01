@@ -65,7 +65,6 @@ export const ParallaxImageHero: React.FC = () => {
             blur={blur}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={(x) => Math.pow(1 - Math.pow(1 - x, 4), 1 / 4)} // Squircle (n=4)
           />
           <g filter={`url(#${filterId})`}>
             <motion.image

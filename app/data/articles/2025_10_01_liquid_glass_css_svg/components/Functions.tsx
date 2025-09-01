@@ -1,45 +1,11 @@
-import * as React from "react";
-
-type FnDef = {
-  key: string;
-  title: string;
-  desc: string;
-  equation: string;
-  fn: (x: number) => number;
-};
-
-const CONVEX: FnDef = {
-  key: "convex",
-  title: "Convex",
-  desc: "Dome-like bezel profile. Produces inward refraction near edges.",
-  equation: "y = \\sqrt{1 - (1 - x)^2}",
-  fn: (x) => Math.sqrt(1 - (1 - x) ** 2),
-};
-
-const CONCAVE: FnDef = {
-  key: "concave",
-  title: "Concave",
-  desc: "Cave-like profile. Can push rays outward; heavier visual distortion.",
-  equation: "y = 1 - \\sqrt{1 - (1 - x)^2}",
-  fn: (x) => 1 - Math.sqrt(1 - (1 - x) ** 2),
-};
-
-const LIP: FnDef = {
-  key: "lip",
-  title: "Lip",
-  desc: "Lipped bezel mixing a circular edge with a subtle sinusoidal lip.",
-  equation:
-    "y = mix(circle(2x), 0.5 + 0.025,cos(2\\pi(x+0.5)), 1 - smootherstep(x))",
-  fn: (x) => {
-    const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-    const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-    const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-    const ratioCircle = 1 - smootherstep;
-    return circle * ratioCircle + sin * (1 - ratioCircle);
-  },
-};
-
-const fns: FnDef[] = [CONVEX, CONCAVE, LIP];
+import { Fragment, useMemo } from "react";
+import {
+  CONCAVE,
+  CONVEX,
+  LIP,
+  type SurfaceFnDef,
+  fns,
+} from "../lib/surfaceEquations";
 
 // Reusable path generator for icons or plots
 export function generateFunctionPath(
@@ -86,7 +52,7 @@ export const FunctionPlot: React.FC<{
   const h = size;
   const samples = 96;
 
-  const path = React.useMemo(
+  const path = useMemo(
     () => generateFunctionPath(fn, { size, pad, samples }),
     [fn, size, pad, samples]
   );
@@ -122,7 +88,7 @@ function FunctionDetails({
   title,
   desc,
   equation,
-}: Pick<FnDef, "title" | "desc" | "equation">) {
+}: Pick<SurfaceFnDef, "title" | "desc" | "equation">) {
   return (
     <div className="min-w-0 h-full flex flex-col justify-center">
       <div className="font-semibold text-base">{title}</div>
@@ -141,14 +107,14 @@ export const Functions: React.FC = () => {
   return (
     <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-8 items-start w-full">
       {fns.map((d) => (
-        <React.Fragment key={d.key}>
+        <Fragment key={d.key}>
           <FunctionPlot fn={d.fn} label={d.title} />
           <FunctionDetails
             title={d.title}
             desc={d.desc}
             equation={d.equation}
           />
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );

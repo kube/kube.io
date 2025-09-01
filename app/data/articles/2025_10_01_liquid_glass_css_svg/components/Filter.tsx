@@ -7,6 +7,7 @@ import {
 } from "../lib/displacementMap";
 import { calculateMagnifyingDisplacementMap } from "../lib/magnifyingDisplacement";
 import { calculateRefractionSpecular } from "../lib/specular";
+import { CONVEX } from "../lib/surfaceEquations";
 import { getValueOrMotion } from "../lib/useValueOrMotion";
 
 function imageDataToUrl(imageData: ImageData): string {
@@ -56,7 +57,7 @@ export const Filter: React.FC<FilterProps> = ({
   specularSaturation = 4,
   magnifyingScale,
   colorScheme,
-  bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
+  bezelHeightFn = CONVEX.fn,
 }) => {
   const map = useTransform(() => {
     return calculateDisplacementMap(

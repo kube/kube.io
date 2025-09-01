@@ -21,6 +21,7 @@ import {
 } from "react-icons/io5";
 import { LogoStatic } from "../../../../components/Logo";
 import { Filter } from "../components/Filter";
+import { CONVEX } from "../lib/surfaceEquations";
 
 type Album = {
   collectionId: number;
@@ -29,7 +30,7 @@ type Album = {
   artistName: string;
 };
 
-const bezelHeightFn = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
+const bezelHeightFn = CONVEX.fn;
 
 function upscaleArtwork(url: string, size = 600) {
   // iTunes artwork URLs include the size; replace to request a larger image
@@ -66,7 +67,7 @@ export const MixedUI: React.FC = ({}) => {
   const sbHeight = 42;
   const sbWidth = 320;
   const sbRadius = sbHeight / 2;
-  const sbBezelWidth = 7;
+  const sbBezelWidth = 18;
   const sbGlassThickness = 100;
   const sbRefractiveIndex = 1.3;
 
@@ -101,7 +102,7 @@ export const MixedUI: React.FC = ({}) => {
   const playerRadius = playerHeight / 2;
   const playerBottomOffset = 24; // Tailwind bottom-6 = 1.5rem = 24px
   const playerExtraBreathingRoom = 24; // small gap so the last row isn't glued to the player
-  const playerBezelWidth = 13;
+  const playerBezelWidth = 31;
   const playerGlassThickness = 90;
   const playerRefractiveIndex = 1.3;
 

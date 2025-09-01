@@ -8,18 +8,8 @@ import {
 } from "../lib/displacementMap";
 import { imageDataToUrl } from "../lib/imageDataToUrl";
 import { getRayColor } from "../lib/rayColor";
+import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
-
-type BezelFn = (x: number) => number;
-const CONCAVE: BezelFn = (x) => 1 - Math.sqrt(1 - (1 - x) ** 2);
-const CONVEX: BezelFn = (x) => Math.sqrt(1 - (1 - x) ** 2);
-const LIP: BezelFn = (x) => {
-  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-  const ratioCircle = 1 - smootherstep;
-  return circle * ratioCircle + sin * (1 - ratioCircle);
-};
 
 export const Playground: React.FC = () => {
   const filterId = useId();
@@ -44,11 +34,11 @@ export const Playground: React.FC = () => {
     calculateDisplacementMap(
       glassThickness.get(),
       bezelWidth.get(),
-      (surface.get() === "convex"
-        ? CONVEX
+      surface.get() === "convex"
+        ? CONVEX.fn
         : surface.get() === "concave"
-        ? CONCAVE
-        : LIP) as BezelFn,
+        ? CONCAVE.fn
+        : LIP.fn,
       refractiveIndex
     )
   );

@@ -15,11 +15,11 @@ export const MagnifyingGlass: React.FC = () => {
   const radius = height / 2;
 
   // Optical parameters (kept simple; no live controls here)
-  const bezelWidth = 16;
-  const glassThickness = 160;
+  const bezelWidth = 27;
+  const glassThickness = 130;
   const refractiveIndex = 1.5;
   // Controls (MotionValues) — same pattern as Searchbox/MixedUI
-  const specularOpacity = useMotionValue(0.75); // 0..1
+  const specularOpacity = useMotionValue(0.5); // 0..1
   const specularSaturation = useMotionValue(9); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
   // Readouts
@@ -193,7 +193,6 @@ export const MagnifyingGlass: React.FC = () => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
             magnifyingScale={magnifyingScale}
-            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
           />
 
           {/* The glass layer using the filter as a backdrop */}

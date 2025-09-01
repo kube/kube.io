@@ -116,7 +116,6 @@ export const Searchbox: React.FC = () => {
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={(x) => Math.sqrt(1 - (1 - x) ** 2)}
           />
 
           {/* Glass layer */}

@@ -17,16 +17,7 @@ import {
 } from "../components/Buttons";
 import { calculateDisplacementMap } from "../lib/displacementMap";
 import { getRayColor } from "../lib/rayColor";
-
-const CONCAVE_BEZEL_FN = (x: number) => 1 - Math.sqrt(1 - (1 - x) ** 2);
-const CONVEX_BEZEL_FN = (x: number) => Math.sqrt(1 - (1 - x) ** 2);
-const LIP_BEZEL_FN = (x: number) => {
-  const circle = Math.sqrt(1 - (1 - x * 2) ** 2);
-  const sin = Math.cos((x + 0.5) * 2 * Math.PI) / 40 + 0.5;
-  const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-  const ratioCircle = 1 - smootherstep;
-  return circle * ratioCircle + sin * (1 - ratioCircle);
-};
+import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
 
 export const DisplacementVectorField: React.FC = () => {
   const glassThickness = 20;
@@ -41,9 +32,7 @@ export const DisplacementVectorField: React.FC = () => {
   const bezelWidth = 120;
 
   // Bezel Height Function (interpolated with animation on change)
-  const bezelHeightFn_target = useMotionValue((x: number) => {
-    return Math.sqrt(1 - (1 - x) ** 2);
-  });
+  const bezelHeightFn_target = useMotionValue(CONVEX.fn);
   const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
   const bezelHeightFn_interpolationProgress = useMotionValue(1);
 
@@ -414,7 +403,7 @@ export const DisplacementVectorField: React.FC = () => {
                 duration: 0.6,
                 ease: "easeInOut",
               });
-              bezelHeightFn_target.set(CONVEX_BEZEL_FN);
+              bezelHeightFn_target.set(CONVEX.fn);
               animate(xAxisRotation, 0, {
                 duration: 0.6,
                 ease: "easeInOut",
@@ -430,7 +419,7 @@ export const DisplacementVectorField: React.FC = () => {
                 duration: 0.6,
                 ease: "easeInOut",
               });
-              bezelHeightFn_target.set(CONCAVE_BEZEL_FN);
+              bezelHeightFn_target.set(CONCAVE.fn);
               animate(xAxisRotation, 0, {
                 duration: 0.6,
                 ease: "easeInOut",
@@ -446,7 +435,7 @@ export const DisplacementVectorField: React.FC = () => {
                 duration: 0.6,
                 ease: "easeInOut",
               });
-              bezelHeightFn_target.set(LIP_BEZEL_FN);
+              bezelHeightFn_target.set(LIP.fn);
               animate(xAxisRotation, 0, {
                 duration: 0.6,
                 ease: "easeInOut",
