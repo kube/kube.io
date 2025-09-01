@@ -1,5 +1,11 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, {
+  use,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   IoEllipsisHorizontal,
   IoListOutline,
@@ -41,6 +47,16 @@ export const MixedUI: React.FC = ({}) => {
   const blur = useMotionValue(1.5); // 0..40
   const progressiveBlurStrength = useMotionValue(3); // how much to ease the blur in the top overlay
   const glassBackgroundOpacity = useMotionValue(0.4); // 0..1
+  // Tracks preferred color scheme as a MotionValue: 'light' | 'dark'
+  const colorScheme = useMotionValue<"light" | "dark">("light");
+  // Sync colorScheme with prefers-color-scheme
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => colorScheme.set(mq.matches ? "dark" : "light");
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, [colorScheme]);
 
   // Hold last loaded albums so bottom player can render outside Suspense
   const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
@@ -57,6 +73,27 @@ export const MixedUI: React.FC = ({}) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pointerDown = useMotionValue(0);
   const focused = useMotionValue(0);
+
+  // Sync colorScheme with prefers-color-scheme
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    )
+      return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => colorScheme.set(mq.matches ? "dark" : "light");
+    apply();
+    // Support older Safari by falling back to addListener/removeListener
+    const listener = () => apply();
+    if (typeof mq.addEventListener === "function") {
+      mq.addEventListener("change", listener);
+      return () => mq.removeEventListener("change", listener);
+    } else if (typeof mq.addListener === "function") {
+      mq.addListener(listener);
+      return () => mq.removeListener(listener);
+    }
+  }, [colorScheme]);
 
   // Floating player dimensions (used to pad the scroll area bottom)
   const playerHeight = 63; // must match the player container height
@@ -141,6 +178,7 @@ export const MixedUI: React.FC = ({}) => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
             bezelHeightFn={bezelHeightFn}
+            colorScheme={colorScheme}
           />
 
           <motion.div
@@ -226,6 +264,7 @@ export const MixedUI: React.FC = ({}) => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
             bezelHeightFn={bezelHeightFn}
+            colorScheme={colorScheme}
           />
           <div
             className="absolute inset-0 bg-[var(--glass-rgb)]/[var(--glass-bg-alpha)]"

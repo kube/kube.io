@@ -35,6 +35,7 @@ type FilterProps = {
   specularOpacity: number | MotionValue<number>;
   specularSaturation?: number | MotionValue<number>;
   magnifyingScale?: number | MotionValue<number>;
+  colorScheme?: MotionValue<"light" | "dark">;
   bezelHeightFn?: (x: number) => number;
 };
 
@@ -54,6 +55,7 @@ export const Filter: React.FC<FilterProps> = ({
   specularOpacity,
   specularSaturation = 4,
   magnifyingScale,
+  colorScheme,
   bezelHeightFn = (x) => Math.sqrt(1 - (1 - x) ** 2), // Quarter circle
 }) => {
   const map = useTransform(() => {
@@ -141,9 +143,31 @@ export const Filter: React.FC<FilterProps> = ({
         </>
       )}
 
+      {/* Augment brightness and saturation */}
+      {colorScheme && (
+        <motion.feColorMatrix
+          in={
+            magnifyingDisplacementMapDataUrl
+              ? "magnified_source"
+              : "SourceGraphic"
+          }
+          type="matrix"
+          values={
+            useTransform(() =>
+              getValueOrMotion(colorScheme) === "dark"
+                ? "0.9 0 0 0 -0.3 0 0.9 0 0 -0.3 0 0 0.9 0 -0.3 0 0 0 1 0"
+                : "1.1 0 0 0 0.3 0 1.1 0 0 0.3 0 0 1.1 0 0.3 0 0 0 1 0"
+            ) as any
+          }
+          result="brightened_source"
+        />
+      )}
+
       <motion.feGaussianBlur
         in={
-          magnifyingDisplacementMapDataUrl
+          colorScheme
+            ? "brightened_source"
+            : magnifyingDisplacementMapDataUrl
             ? "magnified_source"
             : "SourceGraphic"
         }
@@ -172,9 +196,11 @@ export const Filter: React.FC<FilterProps> = ({
       <motion.feColorMatrix
         in="displaced"
         type="saturate"
-        values={useTransform(() =>
-          getValueOrMotion(specularSaturation).toString()
-        )}
+        values={
+          useTransform(() =>
+            getValueOrMotion(specularSaturation).toString()
+          ) as any
+        }
         result="displaced_saturated"
       />
 
@@ -194,35 +220,20 @@ export const Filter: React.FC<FilterProps> = ({
         result="specular_saturated"
       />
 
-      <feComponentTransfer in="specular_layer" result="fadedLight1">
-        <motion.feFuncA type="linear" slope={specularOpacity} />
-      </feComponentTransfer>
-
-      <feComponentTransfer in="specular_layer" result="fadedLight2">
+      <feComponentTransfer in="specular_layer" result="specular_faded">
         <motion.feFuncA
           type="linear"
-          slope={useTransform(() => getValueOrMotion(specularOpacity) / 2)}
+          slope={useTransform(() => getValueOrMotion(specularOpacity))}
         />
       </feComponentTransfer>
 
       <motion.feBlend
         in="specular_saturated"
         in2="displaced"
-        mode="screen"
+        mode="normal"
         result="withSaturation"
       />
-      <motion.feBlend
-        in="fadedLight1"
-        in2="withSaturation"
-        mode="overlay"
-        result="withOverlay"
-      />
-      <motion.feBlend
-        in="fadedLight2"
-        in2="withOverlay"
-        mode="screen"
-        result="withSpecular"
-      />
+      <motion.feBlend in="specular_faded" in2="withSaturation" mode="normal" />
     </filter>
   );
 
