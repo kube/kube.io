@@ -29,7 +29,7 @@ export const ParallaxImageHero: React.FC = () => {
   const specularSaturation = 5;
 
   return (
-    <>
+    <div>
       <motion.div
         className="relative h-[400px] w-full overflow-hidden rounded-xl bg-slate-600/20 flex items-center justify-center"
         style={{
@@ -81,6 +81,17 @@ export const ParallaxImageHero: React.FC = () => {
           </g>
         </svg>
       </motion.div>
-    </>
+      {/* Credit: Unsplash (conventional wording) */}
+      <div className="text-right mr-1.5 mt-0.5">
+        <a
+          href="https://unsplash.com/photos/a-black-and-pink-abstract-background-with-curves-wRuhOOaG-Z4"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block text-[10px] md:text-xs uppercase tracking-[0.2em] text-slate-500 hover:text-slate-700"
+        >
+          Photo by Martin Martz on Unsplash
+        </a>
+      </div>
+    </div>
   );
 };
