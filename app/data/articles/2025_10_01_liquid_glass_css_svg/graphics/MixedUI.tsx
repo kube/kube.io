@@ -170,7 +170,7 @@ export const MixedUI: React.FC = ({}) => {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => focused.set(1)}
               onBlur={() => focused.set(0)}
-              className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[16px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text text-shadow-xs text-shadow-white/70 dark:text-shadow-black/70"
+              className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[16px] leading-none text-black/80 dark:text-white/80 placeholder-black/40 dark:placeholder-white/40 selection:bg-blue-500/30 selection:text-inherit select-text text-shadow-xs text-shadow-white/30 dark:text-shadow-black/60"
               style={{ padding: 0 }}
             />
           </div>
