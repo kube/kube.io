@@ -8,16 +8,17 @@ import {
   useMotionValue,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   ConcaveButton,
-  ConvexButton,
+  ConvexCircleButton,
+  ConvexSquircleButton,
   LipButton,
   ReplayButton,
 } from "../components/Buttons";
 import { calculateDisplacementMap } from "../lib/displacementMap";
 import { getRayColor } from "../lib/rayColor";
-import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 export const DisplacementVectorField: React.FC = () => {
   const glassThickness = 20;
@@ -29,7 +30,7 @@ export const DisplacementVectorField: React.FC = () => {
     if (isInView) startAnimation();
   }, [isInView]);
 
-  const bezelWidth = 120;
+  const bezelWidth = 130;
 
   // Bezel Height Function (interpolated with animation on change)
   const bezelHeightFn_target = useMotionValue(CONVEX.fn);
@@ -68,8 +69,8 @@ export const DisplacementVectorField: React.FC = () => {
     Math.max(...displacementMap.get().map(Math.abs))
   );
 
-  const NUMBER_OF_RADIUSES = 48;
-  const NUMBER_OF_VECTORS_PER_RADIUS = 10;
+  const NUMBER_OF_RADIUSES = 44;
+  const NUMBER_OF_VECTORS_PER_RADIUS = 12;
 
   const canvasWidth = 300;
   const canvasHeight = 300;
@@ -84,9 +85,9 @@ export const DisplacementVectorField: React.FC = () => {
   const projectRayOnSurfaceProgress = useMotionValue(1);
   const normalisationProgress = useMotionValue(1);
   const revolutionProgress = useMotionValue(1);
-  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
-    "convex"
-  );
+  const surface = useMotionValue<
+    "convex_circle" | "convex_squircle" | "concave" | "lip"
+  >("convex_circle");
 
   const NUMBER_OF_SAMPLES = 64;
 
@@ -395,10 +396,26 @@ export const DisplacementVectorField: React.FC = () => {
       <div className="mt-4 px-4 flex items-center">
         <div className="flex-1" />
         <div className="flex items-center gap-3">
-          <ConvexButton
-            active={surface === "convex"}
+          <ConvexCircleButton
+            active={surface.get() === "convex_circle"}
             onClick={async () => {
-              setSurface("convex");
+              surface.set("convex_circle");
+              await animate(xAxisRotation, 65, {
+                duration: 0.6,
+                ease: "easeInOut",
+              });
+              bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
+              animate(xAxisRotation, 0, {
+                duration: 0.6,
+                ease: "easeInOut",
+                delay: 1,
+              });
+            }}
+          />
+          <ConvexSquircleButton
+            active={surface.get() === "convex_squircle"}
+            onClick={async () => {
+              surface.set("convex_squircle");
               await animate(xAxisRotation, 65, {
                 duration: 0.6,
                 ease: "easeInOut",
@@ -412,9 +429,9 @@ export const DisplacementVectorField: React.FC = () => {
             }}
           />
           <ConcaveButton
-            active={surface === "concave"}
+            active={surface.get() === "concave"}
             onClick={async () => {
-              setSurface("concave");
+              surface.set("concave");
               await animate(xAxisRotation, 65, {
                 duration: 0.6,
                 ease: "easeInOut",
@@ -428,9 +445,9 @@ export const DisplacementVectorField: React.FC = () => {
             }}
           />
           <LipButton
-            active={surface === "lip"}
+            active={surface.get() === "lip"}
             onClick={async () => {
-              setSurface("lip");
+              surface.set("lip");
               await animate(xAxisRotation, 65, {
                 duration: 0.6,
                 ease: "easeInOut",

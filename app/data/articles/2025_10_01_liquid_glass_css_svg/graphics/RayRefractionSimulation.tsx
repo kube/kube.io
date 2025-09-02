@@ -3,12 +3,13 @@ import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
 import {
   ConcaveButton,
-  ConvexButton,
+  ConvexCircleButton,
+  ConvexSquircleButton,
   LipButton,
   ReplayButton,
 } from "../components/Buttons";
 import { getRayColor } from "../lib/rayColor";
-import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 /**
  * Ray segments used to render the incident and refracted rays.
@@ -140,7 +141,7 @@ function buildGlassOutlinePath(
 ): string {
   const head = `M ${glassX} ${glassY + glassHeight}`;
   const leftBezel = Array.from({ length: samples }, (_, i) => {
-    const x = i / samples;
+    const x = i / (samples - 1);
     const y = bezelHeightFn(x);
     return `L ${glassX + x * bezelWidth} ${glassY + (1 - y) * bezelWidth}`;
   }).join(" ");
@@ -148,13 +149,13 @@ function buildGlassOutlinePath(
     glassY + (1 - bezelHeightFn(1)) * bezelWidth
   }`;
   const rightBezel = Array.from({ length: samples }, (_, i) => {
-    const x = 1 - i / samples;
+    const x = 1 - i / (samples - 1);
     const y = bezelHeightFn(x);
     return `L ${glassX + glassWidth - x * bezelWidth} ${
       glassY + (1 - y) * bezelWidth
     }`;
   }).join(" ");
-  const tail = `L ${glassX + glassWidth} ${glassY + glassHeight} Z`;
+  const tail = `L ${glassX + glassWidth} ${glassY + glassHeight}`;
   return [head, leftBezel, bottomJoin, rightBezel, tail].join("\n\n");
 }
 
@@ -196,9 +197,9 @@ export const RayRefractionSimulation: React.FC = () => {
   const refractionIndex = useMotionValue(GLASS_REFRACTIVE_INDEX);
   // Incident ray x position, clamped to the viewport width
   const currentX = useMotionValue((glassWidth - viewWidth) / 2);
-  const [surface, setSurface] = useState<"convex" | "concave" | "lip">(
-    "convex"
-  );
+  const [surface, setSurface] = useState<
+    "convex_circle" | "convex_squircle" | "concave" | "lip"
+  >("convex_circle");
 
   const backgroundWidth = viewWidth;
   const backgroundHeight = 40;
@@ -332,7 +333,7 @@ export const RayRefractionSimulation: React.FC = () => {
 
         <motion.path
           d={surfacePath}
-          className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/20"
+          className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/30"
           strokeWidth="1.5"
         />
 
@@ -346,6 +347,15 @@ export const RayRefractionSimulation: React.FC = () => {
         >
           Glass
         </motion.text>
+
+        <line
+          x1="0"
+          y1={viewHeight - backgroundHeight}
+          x2={viewWidth}
+          y2={viewHeight - backgroundHeight}
+          className="select-none stroke-slate-400/40 dark:stroke-slate-400/30"
+          strokeWidth="1.5"
+        />
 
         <rect
           width={backgroundWidth}
@@ -418,10 +428,17 @@ export const RayRefractionSimulation: React.FC = () => {
       <div className="py-8 flex items-center">
         <div className="flex-1" />
         <div className="flex items-center gap-4">
-          <ConvexButton
-            active={surface === "convex"}
+          <ConvexCircleButton
+            active={surface === "convex_circle"}
             onClick={() => {
-              setSurface("convex");
+              setSurface("convex_circle");
+              bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
+            }}
+          />
+          <ConvexSquircleButton
+            active={surface === "convex_squircle"}
+            onClick={() => {
+              setSurface("convex_squircle");
               bezelHeightFn_target.set(CONVEX.fn);
             }}
           />

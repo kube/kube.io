@@ -1,7 +1,12 @@
 import { RotateCcwIcon } from "lucide-react";
 import { motion, type MotionValue, useTransform } from "motion/react";
 import * as React from "react";
-import { ConcavePath24, ConvexPath24, LipPath24 } from "./Functions";
+import {
+  ConcavePath24,
+  ConvexCirclePath24,
+  ConvexPath24,
+  LipPath24,
+} from "./Functions";
 
 type ButtonProps = {
   onClick?: () => void;
@@ -101,10 +106,18 @@ function SurfaceButtonBase({
   );
 }
 
-export const ConvexButton: React.FC<ButtonProps> = (props) => (
+export const ConvexCircleButton: React.FC<ButtonProps> = (props) => (
   <SurfaceButtonBase
     {...props}
-    title={props.title ?? "Convex"}
+    title={props.title ?? "Convex Circle"}
+    d={ConvexCirclePath24}
+  />
+);
+
+export const ConvexSquircleButton: React.FC<ButtonProps> = (props) => (
+  <SurfaceButtonBase
+    {...props}
+    title={props.title ?? "Convex Squircle"}
     d={ConvexPath24}
   />
 );

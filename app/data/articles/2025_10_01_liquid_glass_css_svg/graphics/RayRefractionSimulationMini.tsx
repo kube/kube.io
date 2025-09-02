@@ -1,10 +1,6 @@
 import { motion, type MotionValue, useTransform } from "motion/react";
 import { getRayColor } from "../lib/rayColor";
-import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
-
-// Ray type removed; values are derived via Motion transforms
-
-// Note: RayWithRefraction no longer needed; we render directly from Motion transforms
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 const AIR_REFRACTIVE_INDEX = 1;
 const GLASS_REFRACTIVE_INDEX = 1.5;
@@ -63,7 +59,9 @@ function buildGlassOutlinePath(
 }
 
 type RayRefractionSimulationMiniProps = {
-  surface?: MotionValue<"convex" | "concave" | "lip">;
+  surface?: MotionValue<
+    "convex_circle" | "convex_squircle" | "concave" | "lip"
+  >;
   bezelWidth: MotionValue<number>;
   glassThickness: MotionValue<number>;
   refractionIndex?: number;
@@ -97,8 +95,10 @@ export const RayRefractionSimulationMini: React.FC<
   );
 
   const bezelFn = (x: number) => {
-    const s = surface?.get() ?? "convex";
-    return s === "convex"
+    const s = surface?.get() ?? "convex_circle";
+    return s === "convex_circle"
+      ? CONVEX_CIRCLE.fn(x)
+      : s === "convex_squircle"
       ? CONVEX.fn(x)
       : s === "concave"
       ? CONCAVE.fn(x)

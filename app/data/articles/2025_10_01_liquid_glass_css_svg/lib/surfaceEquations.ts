@@ -4,18 +4,18 @@ export type SurfaceFnDef = {
 };
 
 export const CONVEX_CIRCLE: SurfaceFnDef = {
-  title: "Convex (circle)",
+  title: "Convex Circle",
   fn: (x) => Math.sqrt(1 - (1 - x) ** 2),
 };
 
 export const CONVEX: SurfaceFnDef = {
-  title: "Convex",
+  title: "Convex Squircle",
   fn: (x) => Math.pow(1 - Math.pow(1 - x, 4), 1 / 4),
 };
 
 export const CONCAVE: SurfaceFnDef = {
   title: "Concave",
-  fn: (x) => 1 - CONVEX.fn(x),
+  fn: (x) => 1 - CONVEX_CIRCLE.fn(x),
 };
 
 export const LIP: SurfaceFnDef = {

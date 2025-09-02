@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 // Reusable path generator for icons or plots
 export function generateFunctionPath(
@@ -23,6 +23,10 @@ export function generateFunctionPath(
 }
 
 // Export ready-to-use path data for button icons (24px)
+export const ConvexCirclePath24 = generateFunctionPath(CONVEX_CIRCLE.fn, {
+  size: 24,
+  pad: 3,
+});
 export const ConvexPath24 = generateFunctionPath(CONVEX.fn, {
   size: 24,
   pad: 3,

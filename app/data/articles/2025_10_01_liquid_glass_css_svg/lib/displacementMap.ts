@@ -59,10 +59,11 @@ export function calculateDisplacementMap2(
   radius: number,
   bezelWidth: number,
   maximumDisplacement: number,
-  precomputedDisplacementMap: number[] = []
+  precomputedDisplacementMap: number[] = [],
+  dpr?: number
 ) {
   const devicePixelRatio =
-    typeof window !== "undefined" ? window.devicePixelRatio ?? 1 : 1;
+    dpr ?? (typeof window !== "undefined" ? window.devicePixelRatio ?? 1 : 1);
   const bufferWidth = canvasWidth * devicePixelRatio;
   const bufferHeight = canvasHeight * devicePixelRatio;
   const imageData = createImageData(bufferWidth, bufferHeight);

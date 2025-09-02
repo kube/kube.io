@@ -122,7 +122,9 @@ const derivative = (y2 - y1) / (2 * delta);
 const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
 ```
 
-For this article, we will use three different height functions to demonstrate the effect of the surface shape on the refraction:
+## Equations
+
+For this article, we will use four different height functions to demonstrate the effect of the surface shape on the refraction:
 
 <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-8 items-start w-full">
 
@@ -183,6 +185,8 @@ For this article, we will use three different height functions to demonstrate th
   </div>
 </div>
 </div>
+
+We could make the surface function more complex by adding more parameters, but these four already give a good idea of how the surface shape affects the refraction.
 
 ## Simulation
 

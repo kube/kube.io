@@ -37,6 +37,7 @@ type FilterProps = {
   specularSaturation?: number | MotionValue<number>;
   magnifyingScale?: number | MotionValue<number>;
   colorScheme?: MotionValue<"light" | "dark">;
+  dpr?: number;
   bezelHeightFn?: (x: number) => number;
 };
 
@@ -58,6 +59,7 @@ export const Filter: React.FC<FilterProps> = ({
   magnifyingScale,
   colorScheme,
   bezelHeightFn = CONVEX.fn,
+  dpr,
 }) => {
   const map = useTransform(() => {
     return calculateDisplacementMap(
@@ -81,7 +83,8 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(radius),
       getValueOrMotion(bezelWidth),
       getValueOrMotion(maximumDisplacement),
-      getValueOrMotion(map)
+      getValueOrMotion(map),
+      dpr
     );
   });
 
@@ -92,7 +95,8 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(radius),
       50,
       Math.PI / 4,
-      0.5
+      0.5,
+      dpr
     );
   });
 

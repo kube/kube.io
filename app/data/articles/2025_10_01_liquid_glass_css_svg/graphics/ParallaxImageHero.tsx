@@ -24,7 +24,7 @@ export const ParallaxImageHero: React.FC = () => {
   const bezelWidth = 40;
   const glassThickness = 120;
   const refractiveIndex = 1.5;
-  const blur = 0;
+  const blur = 0.1;
   const specularOpacity = 0.3;
   const specularSaturation = 5;
 

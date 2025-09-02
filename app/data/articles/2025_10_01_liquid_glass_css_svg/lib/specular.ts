@@ -6,10 +6,11 @@ export function calculateRefractionSpecular(
   radius: number,
   bezelWidth: number,
   specularAngle = Math.PI / 4,
-  specularOpacity = 0.5
+  specularOpacity = 0.5,
+  dpr?: number
 ) {
   const devicePixelRatio =
-    typeof window !== "undefined" ? window.devicePixelRatio ?? 1 : 1;
+    dpr ?? (typeof window !== "undefined" ? window.devicePixelRatio ?? 1 : 1);
   const bufferWidth = objectWidth * devicePixelRatio;
   const bufferHeight = objectHeight * devicePixelRatio;
   const imageData = createImageData(bufferWidth, bufferHeight);

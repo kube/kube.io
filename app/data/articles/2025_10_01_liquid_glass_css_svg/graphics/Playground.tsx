@@ -1,14 +1,19 @@
 import type { ImageData as CanvasImageData } from "canvas";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useId } from "react";
-import { ConcaveButton, ConvexButton, LipButton } from "../components/Buttons";
+import {
+  ConcaveButton,
+  ConvexCircleButton,
+  ConvexSquircleButton,
+  LipButton,
+} from "../components/Buttons";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
 } from "../lib/displacementMap";
 import { imageDataToUrl } from "../lib/imageDataToUrl";
 import { getRayColor } from "../lib/rayColor";
-import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 
 export const Playground: React.FC = () => {
@@ -27,14 +32,18 @@ export const Playground: React.FC = () => {
   const radius = 100;
   const scaleRatio = useMotionValue(1);
   // Surface selection (pure Motion)
-  const surface = useMotionValue<"convex" | "concave" | "lip">("convex");
+  const surface = useMotionValue<
+    "convex_circle" | "convex_squircle" | "concave" | "lip"
+  >("convex_circle");
 
   // Heavy computations as derived MotionValues
   const precomputedDisplacementMap = useTransform(() =>
     calculateDisplacementMap(
       glassThickness.get(),
       bezelWidth.get(),
-      surface.get() === "convex"
+      surface.get() === "convex_circle"
+        ? CONVEX_CIRCLE.fn
+        : surface.get() === "convex_squircle"
         ? CONVEX.fn
         : surface.get() === "concave"
         ? CONCAVE.fn
@@ -98,8 +107,6 @@ export const Playground: React.FC = () => {
     (ratio) => maximumDisplacement.get() * ratio
   );
 
-  // No React state: pass MotionValues to the Mini directly
-
   // Color for the displacement indicator based on normalized intensity at currentX
   const displacementIntensity = useTransform(() => {
     const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
@@ -126,9 +133,13 @@ export const Playground: React.FC = () => {
       <div className={`flex flex-col ${panel}`}>
         <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
         <div className="p-4 flex items-center justify-center gap-4 grow">
-          <ConvexButton
-            active={useTransform(surface, (s) => s === "convex")}
-            onClick={() => surface.set("convex")}
+          <ConvexCircleButton
+            active={useTransform(surface, (s) => s === "convex_circle")}
+            onClick={() => surface.set("convex_circle")}
+          />
+          <ConvexSquircleButton
+            active={useTransform(surface, (s) => s === "convex_squircle")}
+            onClick={() => surface.set("convex_squircle")}
           />
           <ConcaveButton
             active={useTransform(surface, (s) => s === "concave")}
