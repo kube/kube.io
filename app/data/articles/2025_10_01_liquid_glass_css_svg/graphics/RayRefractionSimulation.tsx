@@ -1,13 +1,11 @@
 import { animate } from "motion";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
+import { ReplayButton } from "../components/Buttons";
 import {
-  ConcaveButton,
-  ConvexCircleButton,
-  ConvexSquircleButton,
-  LipButton,
-  ReplayButton,
-} from "../components/Buttons";
+  SurfaceEquationSelector,
+  SurfaceType,
+} from "../components/SurfaceEquationSelector";
 import { getRayColor } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
@@ -197,9 +195,7 @@ export const RayRefractionSimulation: React.FC = () => {
   const refractionIndex = useMotionValue(GLASS_REFRACTIVE_INDEX);
   // Incident ray x position, clamped to the viewport width
   const currentX = useMotionValue((glassWidth - viewWidth) / 2);
-  const [surface, setSurface] = useState<
-    "convex_circle" | "convex_squircle" | "concave" | "lip"
-  >("convex_circle");
+  const surface = useMotionValue<SurfaceType>("convex_circle");
 
   const backgroundWidth = viewWidth;
   const backgroundHeight = 40;
@@ -427,36 +423,25 @@ export const RayRefractionSimulation: React.FC = () => {
 
       <div className="py-8 flex items-center">
         <div className="flex-1" />
-        <div className="flex items-center gap-4">
-          <ConvexCircleButton
-            active={surface === "convex_circle"}
-            onClick={() => {
-              setSurface("convex_circle");
-              bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
-            }}
-          />
-          <ConvexSquircleButton
-            active={surface === "convex_squircle"}
-            onClick={() => {
-              setSurface("convex_squircle");
-              bezelHeightFn_target.set(CONVEX.fn);
-            }}
-          />
-          <ConcaveButton
-            active={surface === "concave"}
-            onClick={() => {
-              setSurface("concave");
-              bezelHeightFn_target.set(CONCAVE.fn);
-            }}
-          />
-          <LipButton
-            active={surface === "lip"}
-            onClick={() => {
-              setSurface("lip");
-              bezelHeightFn_target.set(LIP.fn);
-            }}
-          />
-        </div>
+        <SurfaceEquationSelector
+          surface={surface}
+          onSurfaceChange={(newSurface) => {
+            switch (newSurface) {
+              case "convex_circle":
+                bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
+                break;
+              case "convex_squircle":
+                bezelHeightFn_target.set(CONVEX.fn);
+                break;
+              case "concave":
+                bezelHeightFn_target.set(CONCAVE.fn);
+                break;
+              case "lip":
+                bezelHeightFn_target.set(LIP.fn);
+                break;
+            }
+          }}
+        />
         <div className="flex-1 flex justify-end">
           <ReplayButton
             onClick={() => {

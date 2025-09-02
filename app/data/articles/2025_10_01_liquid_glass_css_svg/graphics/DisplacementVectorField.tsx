@@ -9,13 +9,8 @@ import {
   useTransform,
 } from "motion/react";
 import { useEffect, useRef } from "react";
-import {
-  ConcaveButton,
-  ConvexCircleButton,
-  ConvexSquircleButton,
-  LipButton,
-  ReplayButton,
-} from "../components/Buttons";
+import { ReplayButton } from "../components/Buttons";
+import { SurfaceEquationSelector } from "../components/SurfaceEquationSelector";
 import { calculateDisplacementMap } from "../lib/displacementMap";
 import { getRayColor } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
@@ -395,72 +390,36 @@ export const DisplacementVectorField: React.FC = () => {
 
       <div className="mt-4 px-4 flex items-center">
         <div className="flex-1" />
-        <div className="flex items-center gap-3">
-          <ConvexCircleButton
-            active={surface.get() === "convex_circle"}
-            onClick={async () => {
-              surface.set("convex_circle");
-              await animate(xAxisRotation, 65, {
-                duration: 0.6,
-                ease: "easeInOut",
-              });
-              bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
-              animate(xAxisRotation, 0, {
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 1,
-              });
-            }}
-          />
-          <ConvexSquircleButton
-            active={surface.get() === "convex_squircle"}
-            onClick={async () => {
-              surface.set("convex_squircle");
-              await animate(xAxisRotation, 65, {
-                duration: 0.6,
-                ease: "easeInOut",
-              });
-              bezelHeightFn_target.set(CONVEX.fn);
-              animate(xAxisRotation, 0, {
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 1,
-              });
-            }}
-          />
-          <ConcaveButton
-            active={surface.get() === "concave"}
-            onClick={async () => {
-              surface.set("concave");
-              await animate(xAxisRotation, 65, {
-                duration: 0.6,
-                ease: "easeInOut",
-              });
-              bezelHeightFn_target.set(CONCAVE.fn);
-              animate(xAxisRotation, 0, {
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 1,
-              });
-            }}
-          />
-          <LipButton
-            active={surface.get() === "lip"}
-            onClick={async () => {
-              surface.set("lip");
-              await animate(xAxisRotation, 65, {
-                duration: 0.6,
-                ease: "easeInOut",
-              });
-              bezelHeightFn_target.set(LIP.fn);
-              animate(xAxisRotation, 0, {
-                duration: 0.6,
-                ease: "easeInOut",
-                delay: 1,
-              });
-            }}
-          />
-        </div>
+        <SurfaceEquationSelector
+          surface={surface}
+          onSurfaceChange={async (newSurface) => {
+            await animate(xAxisRotation, 65, {
+              duration: 0.6,
+              ease: "easeInOut",
+            });
+
+            switch (newSurface) {
+              case "convex_circle":
+                bezelHeightFn_target.set(CONVEX_CIRCLE.fn);
+                break;
+              case "convex_squircle":
+                bezelHeightFn_target.set(CONVEX.fn);
+                break;
+              case "concave":
+                bezelHeightFn_target.set(CONCAVE.fn);
+                break;
+              case "lip":
+                bezelHeightFn_target.set(LIP.fn);
+                break;
+            }
+
+            animate(xAxisRotation, 0, {
+              duration: 0.6,
+              ease: "easeInOut",
+              delay: 1,
+            });
+          }}
+        />
         <div className="flex-1 flex justify-end">
           <ReplayButton onClick={startAnimation} />
         </div>

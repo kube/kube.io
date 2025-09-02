@@ -1,12 +1,7 @@
 import type { ImageData as CanvasImageData } from "canvas";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import { useId } from "react";
-import {
-  ConcaveButton,
-  ConvexCircleButton,
-  ConvexSquircleButton,
-  LipButton,
-} from "../components/Buttons";
+import { SurfaceEquationSelector } from "../components/SurfaceEquationSelector";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
@@ -133,22 +128,7 @@ export const Playground: React.FC = () => {
       <div className={`flex flex-col ${panel}`}>
         <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
         <div className="p-4 flex items-center justify-center gap-4 grow">
-          <ConvexCircleButton
-            active={useTransform(surface, (s) => s === "convex_circle")}
-            onClick={() => surface.set("convex_circle")}
-          />
-          <ConvexSquircleButton
-            active={useTransform(surface, (s) => s === "convex_squircle")}
-            onClick={() => surface.set("convex_squircle")}
-          />
-          <ConcaveButton
-            active={useTransform(surface, (s) => s === "concave")}
-            onClick={() => surface.set("concave")}
-          />
-          <LipButton
-            active={useTransform(surface, (s) => s === "lip")}
-            onClick={() => surface.set("lip")}
-          />
+          <SurfaceEquationSelector surface={surface} />
         </div>
       </div>
 
