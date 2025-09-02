@@ -110,8 +110,8 @@ export function calculateDisplacementMap2(
       const distanceToCenterSquared = x * x + y * y;
 
       const isInBezel =
-        distanceToCenterSquared < radiusSquared &&
-        distanceToCenterSquared > radiusMinusBezelSquared;
+        distanceToCenterSquared <= radiusSquared &&
+        distanceToCenterSquared >= radiusMinusBezelSquared;
 
       // Only write non-neutral displacements (when isInBezel)
       if (isInBezel) {
