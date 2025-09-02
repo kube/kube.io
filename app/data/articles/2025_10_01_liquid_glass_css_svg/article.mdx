@@ -7,7 +7,7 @@ published: true
 ---
 
 import { SiGooglechrome } from "react-icons/si";
-import { Functions } from "./components/Functions";
+import { FunctionPlot } from "./components/Functions";
 import { DisplacementVectorField } from "./graphics/DisplacementVectorField";
 import { MagnifyingGlass } from "./graphics/MagnifyingGlass";
 import { MixedUI } from "./graphics/MixedUI";
@@ -15,10 +15,12 @@ import { ParallaxImageHero } from "./graphics/ParallaxImageHero";
 import { Playground } from "./graphics/Playground";
 import { RayRefractionSimulation } from "./graphics/RayRefractionSimulation";
 import { RefractionAnglesExplanation } from "./graphics/RefractionAnglesExplanation";
+import { ScreenLightToEyeDiagram } from "./graphics/ScreenLightToEyeDiagram";
 import { Searchbox } from "./graphics/Searchbox";
 import { Slider } from "./graphics/Slider";
 import { Switch } from "./graphics/Switch";
 import { VectorToRedGreen } from "./graphics/VectorToRedGreen";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
 
 <ParallaxImageHero />
 
@@ -90,6 +92,10 @@ Under these assumptions every ray we care about has a well-defined refracted dir
 
 > If you want to understand a it more about why refraction works like this, check out this [video by Veritasium about Infinite Paths](https://www.youtube.com/watch?v=qJZ1Ez28C-A). Though what we'll do here is simply applying Snell's Law to calculate the refraction angle based on the incident angle and the refractive index of the glass.
 
+## What are Ray Lights here?
+
+<ScreenLightToEyeDiagram />
+
 ## Limitations in this project
 
 We will also simplify the geometry of any refracting object:
@@ -118,9 +124,69 @@ const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
 
 For this article, we will use three different height functions to demonstrate the effect of the surface shape on the refraction:
 
-<Functions />
+<div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-8 items-start w-full">
+
+<FunctionPlot fn={CONVEX_CIRCLE.fn} />
+<div className="min-w-0 h-full flex flex-col justify-center">
+  <div className="font-semibold">Convex Circle</div>
+  <div className="mt-2 text-base my-1">$y = \sqrt{(1 - (1 - x)) ^ 2}$</div>
+  <div className="text-sm opacity-80 mt-1">
+    This convex circle surface uses a simple circular arc equation, creating a
+    perfectly spherical dome shape. While simpler than the squircle approach,
+    this creates more abrupt transitions between the curved bezel and flat
+    surface, resulting in sharper refraction boundaries that can be more
+    noticeable when stretched into non-circular shapes.
+  </div>
+</div>
+
+<FunctionPlot fn={CONVEX.fn} />
+<div className="min-w-0 h-full flex flex-col justify-center">
+  <div className="font-semibold">Convex Squircle</div>
+  <div className="mt-2 text-base my-1">$y = \sqrt[4]{(1 - (1 - x)) ^ 4}$</div>
+  <div className="text-sm opacity-80 mt-1">
+    This convex surface uses a
+    [Squircle](https://en.wikipedia.org/wiki/Squircle) equation, that Apple
+    commonly employs, which provides better smoothing between flat and curved
+    surface transitions for more natural refraction effects. This approach
+    allows objects to be stretched into rectangular shapes without creating
+    harsh boundaries at the flat surface areas.
+
+    It makes the bezel optical size appear tinyer than its physical size, as the flatter areas near the edges contribute less to refraction.
+
+  </div>
+</div>
+
+<FunctionPlot fn={CONCAVE.fn} />
+<div className="min-w-0 h-full flex flex-col justify-center">
+  <div className="font-semibold">Concave</div>
+  <div className="mt-2 text-base my-1">$y = 1 - \text{Convex}(x)$</div>
+  <div className="text-sm opacity-80 mt-1">
+    The concave surface is the horizontal symmetry of the convex function,
+    creating a bowl-like depression. This surface causes light rays to diverge
+    outward, potentially displacing them beyond the glass boundaries, which can
+    impact performance but creates interesting magnification effects at the
+    edges.
+  </div>
+</div>
+
+<FunctionPlot fn={LIP.fn}  />
+<div className="min-w-0 h-full flex flex-col justify-center">
+  <div className="font-semibold">Lip</div>
+  <div className="mt-2 text-base my-1">
+    $y = \text{mix}(\text{Convex}(x), \text{Concave}(x + 0.5), \text{Smootherstep}(x))$
+  </div>
+  <div className="text-sm opacity-80 mt-1">
+    The lip bezel combines both convex and concave characteristics, interpolated using [Smootherstep](https://en.wikipedia.org/wiki/Smoothstep). This creates a raised edge that transitions to a slight depression in the center.
+
+    The $+ 0.5$ offset in the concave function is just to reduce the depth of the concave part, therefore reducing refraction outwards.
+
+  </div>
+</div>
+</div>
 
 ## Simulation
+
+Now let's see these surface functions in action through interactive ray tracing simulations. The following visualization demonstrates how light rays behave differently as they pass through each surface type, helping us understand the practical implications of our mathematical choices.
 
 <RayRefractionSimulation />
 

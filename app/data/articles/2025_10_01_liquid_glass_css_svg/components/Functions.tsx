@@ -1,11 +1,5 @@
-import { Fragment, useMemo } from "react";
-import {
-  CONCAVE,
-  CONVEX,
-  LIP,
-  type SurfaceFnDef,
-  fns,
-} from "../lib/surfaceEquations";
+import { useMemo } from "react";
+import { CONCAVE, CONVEX, LIP } from "../lib/surfaceEquations";
 
 // Reusable path generator for icons or plots
 export function generateFunctionPath(
@@ -44,10 +38,9 @@ export const LipPath24 = generateFunctionPath(LIP.fn, {
 
 export const FunctionPlot: React.FC<{
   fn: (x: number) => number;
-  label: string;
-}> = ({ fn, label }) => {
+}> = ({ fn }) => {
   const size = 128;
-  const pad = 8;
+  const pad = 11;
   const w = size;
   const h = size;
   const samples = 96;
@@ -73,49 +66,6 @@ export const FunctionPlot: React.FC<{
         strokeWidth={2.5}
         fill="none"
       />
-      <text
-        x={pad}
-        y={h - 4}
-        className="fill-slate-600 dark:fill-slate-300 text-[10px]"
-      >
-        {label}
-      </text>
     </svg>
-  );
-};
-
-function FunctionDetails({
-  title,
-  desc,
-  equation,
-}: Pick<SurfaceFnDef, "title" | "desc" | "equation">) {
-  return (
-    <div className="min-w-0 h-full flex flex-col justify-center">
-      <div className="font-semibold text-base">{title}</div>
-      <div className="text-xs sm:text-sm opacity-80 mt-1">{desc}</div>
-      <div className="mt-2 text-xs sm:text-sm">
-        <span className="opacity-70 mr-2">Equation:</span>
-        <code className="px-1 py-0.5 rounded bg-slate-500/10 dark:bg-slate-300/10">
-          {equation}
-        </code>
-      </div>
-    </div>
-  );
-}
-
-export const Functions: React.FC = () => {
-  return (
-    <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-8 items-start w-full">
-      {fns.map((d) => (
-        <Fragment key={d.key}>
-          <FunctionPlot fn={d.fn} label={d.title} />
-          <FunctionDetails
-            title={d.title}
-            desc={d.desc}
-            equation={d.equation}
-          />
-        </Fragment>
-      ))}
-    </div>
   );
 };
