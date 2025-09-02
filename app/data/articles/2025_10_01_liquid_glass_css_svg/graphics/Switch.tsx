@@ -6,15 +6,15 @@ import { LIP } from "../lib/surfaceEquations";
 export const Switch: React.FC = () => {
   // —————————————————————————————————————————————
   // CONSTANTS (layout + optics)
-  const sliderHeight = 76;
-  const sliderWidth = 180;
-  const width = 171;
-  const height = 111;
-  const radius = 58;
-  const bezelWidth = 36;
-  const glassThickness = 54;
+  const sliderHeight = 67;
+  const sliderWidth = 160;
+  const thumbWidth = 146;
+  const thumbHeight = 92;
+  const thumbRadius = thumbHeight / 2;
+  const bezelWidth = 29;
+  const glassThickness = 19;
   const refractiveIndex = 1.5;
-  const blur = useMotionValue(0); // 0..40
+  const blur = useMotionValue(0.2); // 0..40
   const specularOpacity = useMotionValue(0.4); // 0..1
   const specularSaturation = useMotionValue(6); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
@@ -48,11 +48,11 @@ export const Switch: React.FC = () => {
 
   // —————————————————————————————————————————————
   // DERIVED TRANSFORMS (pure)
-  const trackBg = useTransform(checkedMV, [0, 1], ["#85858599", "#5BBF5EDD"]);
+  const trackBg = useTransform(checkedMV, [0, 1], ["#94949F77", "#3BBF4EEE"]);
   // Keep relative positions equivalent after halving sizes
-  const buttonXTarget = useTransform(checkedMV, [0, 1], [-69, -31]); // in % (unchanged)
+  const buttonXTarget = useTransform(checkedMV, [0, 1], [-69.5, -30.5]); // in % (unchanged)
   const backgroundOpacityTarget = useTransform(isUp, [0, 1], [1, 0.1]);
-  const thumbScaleTarget = useTransform(isUp, [0, 1], [0.6, 1]);
+  const thumbScaleTarget = useTransform(isUp, [0, 1], [0.65, 1]);
   const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);
   const scaleRatioTarget = useTransform(
     [pressMultiplier, refractionBase],
@@ -123,9 +123,9 @@ export const Switch: React.FC = () => {
         >
           <Filter
             id="thumb-filter"
-            width={width}
-            height={height}
-            radius={radius}
+            width={thumbWidth}
+            height={thumbHeight}
+            radius={thumbRadius}
             bezelWidth={bezelWidth}
             glassThickness={glassThickness}
             refractiveIndex={refractiveIndex}
@@ -139,11 +139,11 @@ export const Switch: React.FC = () => {
           <motion.div
             className="absolute"
             style={{
-              height,
-              width,
+              height: thumbHeight,
+              width: thumbWidth,
               x: thumbXPercent,
               y: "-50%",
-              borderRadius: radius,
+              borderRadius: thumbRadius,
               top: sliderHeight / 2,
               left: sliderWidth / 2,
               backdropFilter: `url(#thumb-filter)`,

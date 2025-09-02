@@ -19,15 +19,15 @@ export const Slider: React.FC = () => {
     forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0
   );
 
-  const thumbWidth = 100;
+  const thumbWidth = 90;
   const thumbHeight = 60;
   const thumbRadius = 30;
-  const bezelWidth = 18;
-  const glassThickness = 130;
+  const bezelWidth = 15;
+  const glassThickness = 80;
   const refractiveIndex = 1.45;
   // MotionValue-based controls
   const blur = useMotionValue(0); // 0..40
-  const specularOpacity = useMotionValue(0.4); // 0..1
+  const specularOpacity = useMotionValue(0.3); // 0..1
   const specularSaturation = useMotionValue(7); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
   const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);
@@ -112,7 +112,7 @@ export const Slider: React.FC = () => {
               height: sliderHeight,
               left: 0,
               top: (thumbHeight - sliderHeight) / 2,
-              backgroundColor: "#77777799",
+              backgroundColor: "#89898F66",
               borderRadius: sliderHeight / 2,
               position: "absolute",
               cursor: "pointer",
@@ -131,9 +131,7 @@ export const Slider: React.FC = () => {
                   left: 0,
                   height: sliderHeight,
                   width: useTransform(value, (v) => `${v}%`),
-                  borderRadius: `${sliderHeight / 2}px 1px 1px ${
-                    sliderHeight / 2
-                  }px`,
+                  borderRadius: 6,
                   backgroundColor: "#0377F7",
                 }}
               />
