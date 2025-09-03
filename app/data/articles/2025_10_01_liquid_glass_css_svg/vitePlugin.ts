@@ -32,6 +32,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     specularOpacity?: number;
     specularSaturation?: number;
     blur?: number;
+    magnify?: boolean;
     bezelType?: "convex_circle" | "convex_squircle" | "concave" | "lip";
   } {
     const url = new URL(id);
@@ -61,6 +62,8 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       );
     if (url.searchParams.has("blur"))
       params.blur = parseFloat(url.searchParams.get("blur")!);
+    if (url.searchParams.has("magnify"))
+      params.magnify = url.searchParams.get("magnify") === "true";
     if (url.searchParams.has("bezelType")) {
       const bezelType = url.searchParams.get("bezelType");
       if (
@@ -342,20 +345,26 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
           specularMapCache.set(specularCacheKey, buffer);
         }
 
-        // Always generate magnifying map (using width/height from params)
-        const magnifyingParams = { width: params.width, height: params.height };
-        const magnifyingCacheKey = getCacheKey(magnifyingParams);
-        if (!magnifyingMapCache.has(magnifyingCacheKey)) {
-          const buffer = generateMagnifyingMap(magnifyingParams);
-          magnifyingMapCache.set(magnifyingCacheKey, buffer);
+        // Conditionally generate magnifying map only if magnify=true
+        let magnifyingFilename = "";
+        if (params.magnify) {
+          const magnifyingParams = {
+            width: params.width,
+            height: params.height,
+          };
+          const magnifyingCacheKey = getCacheKey(magnifyingParams);
+          if (!magnifyingMapCache.has(magnifyingCacheKey)) {
+            const buffer = generateMagnifyingMap(magnifyingParams);
+            magnifyingMapCache.set(magnifyingCacheKey, buffer);
+          }
+          const magnifyingFilenameParams = paramsToFilename(magnifyingParams);
+          magnifyingFilename = `magnifying-map-${magnifyingFilenameParams}.png`;
         }
 
         const cachedResult = displacementMapCache.get(displacementCacheKey)!;
         const filenameParams = paramsToFilename(params);
-        const magnifyingFilenameParams = paramsToFilename(magnifyingParams);
         const displacementFilename = `displacement-map-${filenameParams}.png`;
         const specularFilename = `specular-map-${filenameParams}.png`;
-        const magnifyingFilename = `magnifying-map-${magnifyingFilenameParams}.png`;
 
         // Return a React component that uses the generated assets
         return `
@@ -365,7 +374,11 @@ import { motion, useTransform } from "motion/react";
 
 const displacementMapAsset = "/assets/${displacementFilename}";
 const specularMapAsset = "/assets/${specularFilename}";
-const magnifyingMapAsset = "/assets/${magnifyingFilename}";
+${
+  params.magnify
+    ? `const magnifyingMapAsset = "/assets/${magnifyingFilename}";`
+    : ""
+}
 const maxDisplacement = ${cachedResult.maxDisplacement};
 
 export const Filter = ({
@@ -375,7 +388,7 @@ export const Filter = ({
   scaleRatio = 1,
   specularOpacity = 0.4,
   specularSaturation = 4,
-  magnifyingScale,
+  ${params.magnify ? "magnifyingScale," : ""}
   width = ${params.width || 150},
   height = ${params.height || 150},
 }) => {
@@ -395,27 +408,31 @@ export const Filter = ({
   });
 
   const content = React.createElement("filter", { id: id, filterRes: "128" },
-    // Conditionally include magnifying displacement map when magnifyingScale is provided
-    ...(magnifyingScale ? [
-      React.createElement("feImage", {
-        href: magnifyingMapAsset,
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-        result: "magnifying_displacement_map"
-      }),
-      React.createElement(motion.feDisplacementMap, {
-        in: "SourceGraphic",
-        in2: "magnifying_displacement_map",
-        scale: typeof magnifyingScale === "number" ? magnifyingScale : magnifyingScale,
-        xChannelSelector: "R",
-        yChannelSelector: "G",
-        result: "magnified_source"
-      })
-    ] : []),
+    ${
+      params.magnify
+        ? `
+    // Magnifying displacement map elements (when magnify=true)
+    React.createElement("feImage", {
+      href: magnifyingMapAsset,
+      x: 0,
+      y: 0,
+      width: width,
+      height: height,
+      result: "magnifying_displacement_map"
+    }),
+    React.createElement(motion.feDisplacementMap, {
+      in: "SourceGraphic",
+      in2: "magnifying_displacement_map",
+      scale: typeof magnifyingScale === "number" ? magnifyingScale : magnifyingScale,
+      xChannelSelector: "R",
+      yChannelSelector: "G",
+      result: "magnified_source"
+    }),
+    `
+        : ""
+    }
     React.createElement(motion.feGaussianBlur, {
-      in: magnifyingScale ? "magnified_source" : "SourceGraphic",
+      in: ${params.magnify ? '"magnified_source"' : '"SourceGraphic"'},
       stdDeviation: blur,
       result: "blurred_source"
     }),
