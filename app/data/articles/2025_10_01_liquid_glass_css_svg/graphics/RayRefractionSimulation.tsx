@@ -1,6 +1,6 @@
 import { animate } from "motion";
-import { motion, useMotionValue, useTransform } from "motion/react";
-import { useEffect, useState } from "react";
+import { motion, useInView, useMotionValue, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { ReplayButton } from "../components/Buttons";
 import {
   SurfaceEquationSelector,
@@ -158,6 +158,49 @@ function buildGlassOutlinePath(
 }
 
 export const RayRefractionSimulation: React.FC = () => {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const isInView = useInView(svgRef, { once: true, amount: 0.7 });
+  useEffect(() => {
+    if (isInView) startAnimation();
+  }, [isInView]);
+
+  function startAnimation() {
+    animate([
+      [
+        currentX,
+        viewWidth / 2,
+        {
+          duration: 0.5,
+          ease: "easeInOut",
+        },
+      ],
+      [
+        currentX,
+        (viewWidth - glassWidth) / 2,
+        {
+          duration: 1,
+          ease: "easeInOut",
+        },
+      ],
+      [
+        currentX,
+        (viewWidth - glassWidth) / 2 + glassWidth,
+        {
+          duration: 2,
+          ease: "easeInOut",
+        },
+      ],
+      [
+        currentX,
+        viewWidth / 2,
+        {
+          duration: 1,
+          ease: "easeInOut",
+        },
+      ],
+    ]);
+  }
+
   // Viewport & geometry (px)
   const glassWidth = 400;
   const glassHeight = 200;
@@ -169,7 +212,7 @@ export const RayRefractionSimulation: React.FC = () => {
   // Bezel Height Function (interpolated with animation on change)
   // We morph between functions by animating a progress value and blending
   // between the previous and target functions.
-  const bezelHeightFn_target = useMotionValue(CONVEX.fn);
+  const bezelHeightFn_target = useMotionValue(CONVEX_CIRCLE.fn);
   const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
   const bezelHeightFn_interpolationProgress = useMotionValue(1);
 
@@ -300,6 +343,7 @@ export const RayRefractionSimulation: React.FC = () => {
   return (
     <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
       <motion.svg
+        ref={svgRef}
         viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns="http://www.w3.org/2000/svg"
         onClick={(e) =>
@@ -443,44 +487,7 @@ export const RayRefractionSimulation: React.FC = () => {
           }}
         />
         <div className="flex-1 flex justify-end">
-          <ReplayButton
-            onClick={() => {
-              animate([
-                [
-                  currentX,
-                  viewWidth / 2,
-                  {
-                    duration: 0.5,
-                    ease: "easeInOut",
-                  },
-                ],
-                [
-                  currentX,
-                  (viewWidth - glassWidth) / 2,
-                  {
-                    duration: 1,
-                    ease: "easeInOut",
-                  },
-                ],
-                [
-                  currentX,
-                  (viewWidth - glassWidth) / 2 + glassWidth,
-                  {
-                    duration: 2,
-                    ease: "easeInOut",
-                  },
-                ],
-                [
-                  currentX,
-                  viewWidth / 2,
-                  {
-                    duration: 1,
-                    ease: "easeInOut",
-                  },
-                ],
-              ]);
-            }}
-          />
+          <ReplayButton onClick={startAnimation} />
         </div>
       </div>
     </div>

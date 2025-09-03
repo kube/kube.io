@@ -114,16 +114,17 @@ export const RefractionAnglesExplanation: React.FC = () => {
         INITIAL_RAY_ANGLE,
         { type: "tween", ease: "easeInOut", duration: 1 },
       ],
-      [n2, 0.1, { type: "tween", ease: "easeInOut", duration: 2 }],
+      [n2, 1.0, { type: "tween", ease: "easeInOut", duration: 1 }],
+      [n2, 0.7, { type: "tween", ease: "easeInOut", duration: 2, delay: 1 }],
       [
         incidentRayAngle,
-        TARGET_RAY_ANGLE,
-        { type: "tween", ease: "easeInOut", duration: 1 },
+        Math.PI / 2,
+        { type: "tween", ease: "easeInOut", duration: 2 },
       ],
       [
         incidentRayAngle,
         INITIAL_RAY_ANGLE,
-        { type: "tween", ease: "easeInOut", duration: 1 },
+        { type: "tween", ease: "easeInOut", duration: 2 },
       ],
       [n2, 1.5, { type: "tween", ease: "easeInOut", duration: 2 }],
     ]);
