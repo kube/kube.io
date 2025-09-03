@@ -78,15 +78,15 @@ export const VectorToRedGreen: React.FC = () => {
   const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
   const redIntensity = useTransform(nx, (v: number) => clamp01((v + 1) / 2));
   const greenIntensity = useTransform(ny, (v: number) => clamp01((v + 1) / 2));
-  const r = useTransform(redIntensity, (v) => Math.round(v * 256));
-  const g = useTransform(greenIntensity, (v) => Math.round(v * 256));
+  const r = useTransform(redIntensity, (v) => Math.round(v * 255));
+  const g = useTransform(greenIntensity, (v) => Math.round(v * 255));
   const redColor = useTransform(() => `rgb(${r.get()},0,0)`);
   const greenColor = useTransform(() => `rgb(0,${g.get()},0)`);
   const blendedColor = useTransform(
     [redIntensity, greenIntensity],
     ([ri, gi]: number[]) => {
-      const r = Math.round(ri * 256);
-      const g = Math.round(gi * 256);
+      const r = Math.round(ri * 255);
+      const g = Math.round(gi * 255);
       return `rgb(${r},${g},0)`;
     }
   );
