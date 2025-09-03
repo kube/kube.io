@@ -1,4 +1,10 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import React, {
   use,
   useEffect,
@@ -43,11 +49,38 @@ export const MixedUI: React.FC = ({}) => {
   const specularSaturation = useMotionValue(6); // 0..50
   const specularOpacity = useMotionValue(0.4); // 0..1
   const refractionLevel = useMotionValue(1); // 0..1
-  const blur = useMotionValue(1.5); // 0..40
+  const blur = useMotionValue(1); // 0..40
   const progressiveBlurStrength = useMotionValue(1); // how much to ease the blur in the top overlay
   const glassBackgroundOpacity = useMotionValue(0.5); // 0..1
   // Tracks preferred color scheme as a MotionValue: 'light' | 'dark'
   const colorScheme = useMotionValue<"light" | "dark">("light");
+  // Track scroll position for bottom gradient fade
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { scrollY, scrollYProgress } = useScroll({
+    container: scrollContainerRef,
+  });
+
+  const scrollDistanceToBottom = useTransform(() => {
+    const y = scrollY.get();
+    const progress = scrollYProgress.get();
+    return (1 - progress) * (y / progress);
+  });
+
+  // Transform scroll position to bottom fade (fade out when within 200px of bottom)
+  const bottomGradientOpacity = useTransform(() => {
+    const distanceToBottom = scrollDistanceToBottom.get();
+    if (distanceToBottom < 200) {
+      return distanceToBottom / 200;
+    }
+    return 1;
+  });
+
+  // Transform scroll position to top fade (fade in when scrolled past 200px)
+  const topGradientOpacity = useTransform(() => {
+    // Fade in from 0 to 1 over first 200px of scroll
+    return Math.min(1, scrollY.get() / 100);
+  });
+
   // Sync colorScheme with prefers-color-scheme
   useLayoutEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -121,6 +154,7 @@ export const MixedUI: React.FC = ({}) => {
       >
         {/* Albums grid layer (behind) */}
         <div
+          ref={scrollContainerRef}
           className="absolute inset-0 overflow-y-auto px-6 z-0"
           style={{
             paddingTop: sbHeight + 42,
@@ -170,7 +204,7 @@ export const MixedUI: React.FC = ({}) => {
             style={{
               borderRadius: sbRadius,
               backdropFilter: `url(#mixed-ui-search-filter)`,
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.16)",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
             }}
           />
 
@@ -198,13 +232,19 @@ export const MixedUI: React.FC = ({}) => {
           </div>
         </motion.div>
 
-        <div className="absolute top-0 left-0 w-full h-[130px] pointer-events-none overflow-hidden">
+        <motion.div className="absolute top-0 left-0 w-full h-[130px] pointer-events-none overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-full backdrop-blur-[0.8px] mask-b-from-70% mask-b-to-100%"
             style={{
               backdropFilter: useTransform(
-                progressiveBlurStrength,
-                (v) => `blur(${Math.sqrt(Math.sqrt(v)) / 2}px)`
+                () =>
+                  `blur(${
+                    Math.sqrt(
+                      Math.sqrt(
+                        progressiveBlurStrength.get() * topGradientOpacity.get()
+                      )
+                    ) / 2
+                  }px)`
               ),
             }}
           />
@@ -212,8 +252,10 @@ export const MixedUI: React.FC = ({}) => {
             className="absolute top-0 left-0 w-full h-full backdrop-blur-[2px] mask-b-from-50% mask-b-to-75%"
             style={{
               backdropFilter: useTransform(
-                progressiveBlurStrength,
-                (v) => `blur(${Math.sqrt(v)}px)`
+                () =>
+                  `blur(${Math.sqrt(
+                    progressiveBlurStrength.get() * topGradientOpacity.get()
+                  )}px)`
               ),
             }}
           />
@@ -221,13 +263,15 @@ export const MixedUI: React.FC = ({}) => {
             className="absolute top-0 left-0 w-full h-full backdrop-blur-[4px] mask-b-from-20% mask-b-to-55%"
             style={{
               backdropFilter: useTransform(
-                progressiveBlurStrength,
-                (v) => `blur(${v}px)`
+                () =>
+                  `blur(${
+                    progressiveBlurStrength.get() * topGradientOpacity.get()
+                  }px)`
               ),
             }}
           />
           <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-b from-[var(--glass-rgb)]/40 to-transparent" />
-        </div>
+        </motion.div>
 
         {/* Bottom player overlay (Apple Music–like) */}
         <div
@@ -247,7 +291,7 @@ export const MixedUI: React.FC = ({}) => {
             style={{
               borderRadius: 34,
               backdropFilter: `url(#mixed-ui-player-filter)`,
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.16)",
+              boxShadow: "0 4px 18px rgba(0, 0, 0, 0.5)",
             }}
           />
 
@@ -365,6 +409,17 @@ export const MixedUI: React.FC = ({}) => {
             </div>
           </div>
         </div>
+
+        {/* Bottom black gradient overlay with blur layers */}
+        <motion.div
+          className="absolute bottom-0 left-0 w-full h-[130px] pointer-events-none overflow-hidden"
+          style={{
+            opacity: bottomGradientOpacity,
+          }}
+        >
+          <motion.div className="absolute bottom-0 left-0 w-full h-full backdrop-blur-[0.4px] mask-t-from-0% mask-t-to-100%" />
+          <motion.div className="pointer-events-none absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/20 dark:from-black/60 to-transparent" />
+        </motion.div>
       </motion.div>
 
       {/* Controls (MotionValue-driven; Swiss Design style; no React state) */}
