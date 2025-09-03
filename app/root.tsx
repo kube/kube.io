@@ -45,6 +45,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="kube.io — Blog"
+          href="/rss.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title="kube.io — Blog (Atom)"
+          href="/atom.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/feed+json"
+          title="kube.io — Blog (JSON Feed)"
+          href="/feed.json"
+        />
+        <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"

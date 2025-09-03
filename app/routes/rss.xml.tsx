@@ -1,27 +1,12 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { getAllPosts } from "../data/blog";
-
-function escapeXml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
+import { escapeXml, getFeedData } from "../data/feeds";
 
 export async function loader(_: LoaderFunctionArgs) {
-  const posts = getAllPosts();
-  // Always use the canonical domain for RSS links
-  const origin = "https://kube.io";
-
-  const channelTitle = "kube.io";
-  const channelLink = origin;
-  const channelDescription = "Articles and notes";
+  const { posts, config } = getFeedData();
 
   const items = posts
     .map((post) => {
-      const link = `${origin}/blog/${post.slug}`;
+      const link = `${config.origin}/blog/${post.slug}`;
       const title = escapeXml(post.title);
       const description = post.description ? escapeXml(post.description) : "";
       const pubDate = new Date(post.date).toUTCString();
@@ -39,9 +24,9 @@ export async function loader(_: LoaderFunctionArgs) {
   const xml = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
   <channel>
-    <title>${escapeXml(channelTitle)}</title>
-    <link>${channelLink}</link>
-    <description>${escapeXml(channelDescription)}</description>
+    <title>${escapeXml(config.title)}</title>
+    <link>${config.origin}</link>
+    <description>${escapeXml(config.description)}</description>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items}
   </channel>

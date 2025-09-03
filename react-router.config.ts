@@ -27,6 +27,8 @@ export default {
       ),
 
       "/rss.xml",
+      "/atom.xml",
+      "/feed.json",
 
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];

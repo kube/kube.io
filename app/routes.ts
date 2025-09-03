@@ -9,5 +9,7 @@ export default [
   route("blog", "./routes/blog/index.tsx"),
   route("blog/:slug", "./routes/blog/post.tsx"),
   route("rss.xml", "./routes/rss.xml.tsx"),
+  route("atom.xml", "./routes/atom.xml.tsx"),
+  route("feed.json", "./routes/feed.json.tsx"),
   ...(FLAGS.WORKSHOP ? [route("workshop", "./routes/workshop/page.tsx")] : []),
 ] satisfies RouteConfig;
