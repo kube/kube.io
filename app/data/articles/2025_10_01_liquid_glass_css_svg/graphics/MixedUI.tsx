@@ -19,9 +19,9 @@ import {
   IoShuffleOutline,
   IoVolumeHighOutline,
 } from "react-icons/io5";
+import { Filter as SearchboxFilter } from "virtual:refractionFilter?width=320&height=42&radius=21&bezelWidth=18&glassThickness=100&refractiveIndex=1.3&bezelType=convex_squircle";
+import { Filter as PlayerFilter } from "virtual:refractionFilter?width=640&height=63&radius=31&bezelWidth=29&glassThickness=90&refractiveIndex=1.3&bezelType=convex_squircle";
 import { LogoStatic } from "../../../../components/Logo";
-import { Filter } from "../components/Filter";
-import { CONVEX } from "../lib/surfaceEquations";
 
 type Album = {
   collectionId: number;
@@ -29,8 +29,6 @@ type Album = {
   artworkUrl100: string;
   artistName: string;
 };
-
-const bezelHeightFn = CONVEX.fn;
 
 function upscaleArtwork(url: string, size = 600) {
   // iTunes artwork URLs include the size; replace to request a larger image
@@ -42,12 +40,12 @@ export const MixedUI: React.FC = ({}) => {
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Interactive controls (MotionValues only)
-  const specularSaturation = useMotionValue(9); // 0..50
-  const specularOpacity = useMotionValue(0.4); // 0..1
+  const specularSaturation = useMotionValue(6); // 0..50
+  const specularOpacity = useMotionValue(0.3); // 0..1
   const refractionLevel = useMotionValue(1); // 0..1
   const blur = useMotionValue(1.5); // 0..40
-  const progressiveBlurStrength = useMotionValue(3); // how much to ease the blur in the top overlay
-  const glassBackgroundOpacity = useMotionValue(0.4); // 0..1
+  const progressiveBlurStrength = useMotionValue(1); // how much to ease the blur in the top overlay
+  const glassBackgroundOpacity = useMotionValue(0.5); // 0..1
   // Tracks preferred color scheme as a MotionValue: 'light' | 'dark'
   const colorScheme = useMotionValue<"light" | "dark">("light");
   // Sync colorScheme with prefers-color-scheme
@@ -67,9 +65,6 @@ export const MixedUI: React.FC = ({}) => {
   const sbHeight = 42;
   const sbWidth = 320;
   const sbRadius = sbHeight / 2;
-  const sbBezelWidth = 18;
-  const sbGlassThickness = 100;
-  const sbRefractiveIndex = 1.3;
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pointerDown = useMotionValue(0);
@@ -99,26 +94,22 @@ export const MixedUI: React.FC = ({}) => {
   // Floating player dimensions (used to pad the scroll area bottom)
   const playerHeight = 63; // must match the player container height
   const playerWidth = 640;
-  const playerRadius = playerHeight / 2;
   const playerBottomOffset = 24; // Tailwind bottom-6 = 1.5rem = 24px
   const playerExtraBreathingRoom = 24; // small gap so the last row isn't glued to the player
-  const playerBezelWidth = 31;
-  const playerGlassThickness = 90;
-  const playerRefractiveIndex = 1.3;
 
   const listBottomPadding =
     playerHeight + playerBottomOffset + playerExtraBreathingRoom; // 68 + 24 + 24 = 116
 
   // UI scale: 0.9 idle → 1 when focused
   const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
-    damping: 40,
+    damping: 34,
     stiffness: 800,
   });
 
   return (
     <div>
       <motion.div
-        className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#161616]"
+        className="relative h-[640px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#222222]"
         style={
           {
             "--glass-bg-alpha": useTransform(
@@ -166,20 +157,12 @@ export const MixedUI: React.FC = ({}) => {
           }}
           onMouseUp={() => pointerDown.set(0)}
         >
-          <Filter
+          <SearchboxFilter
             id="mixed-ui-search-filter"
-            width={sbWidth}
-            height={sbHeight}
-            radius={sbRadius}
-            bezelWidth={sbBezelWidth}
-            glassThickness={sbGlassThickness}
-            refractiveIndex={sbRefractiveIndex}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={bezelHeightFn}
-            colorScheme={colorScheme}
           />
 
           <motion.div
@@ -252,20 +235,12 @@ export const MixedUI: React.FC = ({}) => {
           style={{ width: playerWidth, height: playerHeight }}
         >
           {/* Glass backdrop */}
-          <Filter
+          <PlayerFilter
             id="mixed-ui-player-filter"
-            width={playerWidth}
-            height={playerHeight}
-            radius={playerRadius}
-            bezelWidth={playerBezelWidth}
-            glassThickness={playerGlassThickness}
-            refractiveIndex={playerRefractiveIndex}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={bezelHeightFn}
-            colorScheme={colorScheme}
           />
           <div
             className="absolute inset-0 bg-[var(--glass-rgb)]/[var(--glass-bg-alpha)]"
@@ -499,7 +474,7 @@ export const MixedUI: React.FC = ({}) => {
           <input
             type="range"
             min={0}
-            max={20}
+            max={10}
             step={0.01}
             defaultValue={progressiveBlurStrength.get()}
             onInput={(e) =>

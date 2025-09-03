@@ -2,7 +2,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
-import { Filter } from "../components/Filter";
+import { Filter } from "virtual:refractionFilter?width=420&height=56&radius=28&bezelWidth=27&glassThickness=70&refractiveIndex=1.5&bezelType=convex_squircle";
 
 export const Searchbox: React.FC = () => {
   // Dimensions ratio for a search field
@@ -10,10 +10,6 @@ export const Searchbox: React.FC = () => {
   const width = 420;
   const radius = height / 2;
 
-  // Optical parameters reused from other components
-  const bezelWidth = 31;
-  const glassThickness = 70;
-  const refractiveIndex = 1.5;
   // Glass parameters as MotionValues (no React state)
   const specularOpacity = useMotionValue(0.2); // 0..1
   const specularSaturation = useMotionValue(4); // 0..50
@@ -127,12 +123,6 @@ export const Searchbox: React.FC = () => {
           {/* Filter definition */}
           <Filter
             id="searchbox-filter"
-            width={width}
-            height={height}
-            radius={radius}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractiveIndex={refractiveIndex}
             blur={blur}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}
