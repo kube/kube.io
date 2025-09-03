@@ -1,7 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useRef } from "react";
-import { Filter } from "../components/Filter";
-import { CONVEX } from "../lib/surfaceEquations";
+import { Filter } from "virtual:refractionFilter?width=90&height=60&radius=30&bezelWidth=16&glassThickness=80&refractiveIndex=1.45&bezelType=convex_squircle";
 
 export const Slider: React.FC = () => {
   const min = 0;
@@ -22,9 +21,6 @@ export const Slider: React.FC = () => {
   const thumbWidth = 90;
   const thumbHeight = 60;
   const thumbRadius = 30;
-  const bezelWidth = 15;
-  const glassThickness = 80;
-  const refractiveIndex = 1.45;
   // MotionValue-based controls
   const blur = useMotionValue(0); // 0..40
   const specularOpacity = useMotionValue(0.3); // 0..1
@@ -140,17 +136,10 @@ export const Slider: React.FC = () => {
 
           <Filter
             id="thumb-filter-slider"
-            width={thumbWidth}
-            height={thumbHeight}
-            radius={thumbRadius}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractiveIndex={refractiveIndex}
             blur={blur}
             scaleRatio={scaleRatio}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={CONVEX.fn}
           />
 
           <motion.div

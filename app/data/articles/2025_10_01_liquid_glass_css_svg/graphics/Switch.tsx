@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect } from "react";
-import { Filter } from "virtual:refractionFilter?width=146&height=92&radius=46&bezelWidth=29&glassThickness=19&refractiveIndex=1.5";
+import { Filter } from "virtual:refractionFilter?width=146&height=92&radius=46&bezelWidth=27&glassThickness=58&bezelType=lip&refractiveIndex=1.5";
 
 export const Switch: React.FC = () => {
   // —————————————————————————————————————————————

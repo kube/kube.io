@@ -6,7 +6,7 @@ import {
   calculateDisplacementMap2,
 } from "./lib/displacementMap";
 import { calculateRefractionSpecular } from "./lib/specular";
-import { CONVEX } from "./lib/surfaceEquations";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
 
 /**
  * A custom Vite plugin to generate refraction displacement map assets.
@@ -30,6 +30,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     specularOpacity?: number;
     specularSaturation?: number;
     blur?: number;
+    bezelType?: "convex_circle" | "convex_squircle" | "concave" | "lip";
   } {
     const url = new URL(id);
     const params: any = {};
@@ -58,6 +59,19 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       );
     if (url.searchParams.has("blur"))
       params.blur = parseFloat(url.searchParams.get("blur")!);
+    if (url.searchParams.has("bezelType")) {
+      const bezelType = url.searchParams.get("bezelType");
+      if (
+        bezelType === "convex_circle" ||
+        bezelType === "convex_squircle" ||
+        bezelType === "concave" ||
+        bezelType === "lip"
+      ) {
+        params.bezelType = bezelType;
+      }
+    }
+
+    console.log("Parsed parameters BEZEL TYPE:", params.bezelType);
 
     return params;
   }
@@ -103,6 +117,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       bezelWidth: 40,
       glassThickness: 120,
       refractiveIndex: 1.5,
+      bezelType: "convex_squircle",
     };
 
     // Merge custom parameters with defaults
@@ -114,13 +129,33 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       bezelWidth,
       glassThickness,
       refractiveIndex,
+      bezelType,
     } = params;
+
+    // Select the appropriate surface function based on bezelType
+    let surfaceFn;
+    switch (bezelType) {
+      case "convex_circle":
+        surfaceFn = CONVEX_CIRCLE.fn;
+        break;
+      case "convex_squircle":
+        surfaceFn = CONVEX.fn;
+        break;
+      case "concave":
+        surfaceFn = CONCAVE.fn;
+        break;
+      case "lip":
+        surfaceFn = LIP.fn;
+        break;
+      default:
+        surfaceFn = CONVEX.fn;
+    }
 
     // Generate the precomputed displacement map using the parameters
     const precomputedMap = calculateDisplacementMap(
       glassThickness,
       bezelWidth,
-      CONVEX.fn,
+      surfaceFn,
       refractiveIndex
     );
 
