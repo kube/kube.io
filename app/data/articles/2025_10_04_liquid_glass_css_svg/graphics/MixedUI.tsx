@@ -90,6 +90,15 @@ export const MixedUI: React.FC = ({}) => {
     }
   );
 
+  // Transform scroll distance to bottom for player shadow opacity (fade in when close to bottom)
+  const playerShadowOpacity = useTransform(
+    scrollDistanceToBottom,
+    (distanceToBottom) => {
+      // Start at reduced opacity, fade in as user gets closer to bottom
+      return Math.min(1, 0.2 + (distanceToBottom / 300) * 0.8);
+    }
+  );
+
   // Sync colorScheme with prefers-color-scheme
   useLayoutEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -304,12 +313,15 @@ export const MixedUI: React.FC = ({}) => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
           />
-          <div
+          <motion.div
             className="absolute inset-0 bg-[var(--glass-rgb)]/[var(--glass-bg-alpha)]"
             style={{
               borderRadius: 34,
               backdropFilter: `url(#mixed-ui-player-filter)`,
-              boxShadow: "0 4px 18px rgba(0, 0, 0, 0.5)",
+              boxShadow: useTransform(
+                () =>
+                  `0 4px 19px rgba(0, 0, 0, ${0.5 * playerShadowOpacity.get()})`
+              ),
             }}
           />
 
