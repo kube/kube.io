@@ -5,8 +5,7 @@ export function calculateRefractionSpecular(
   objectHeight: number,
   radius: number,
   bezelWidth: number,
-  specularAngle = Math.PI / 4,
-  specularOpacity = 0.5,
+  specularAngle = Math.PI / 3,
   dpr?: number
 ) {
   const devicePixelRatio =
@@ -68,19 +67,19 @@ export function calculateRefractionSpecular(
         const sin = y / distanceFromCenter;
 
         // Dot product of orientation
-        const ratioInBezel = 1 - distanceFromSide / bezelWidth;
-        const dotProduct = cos * specular_vector[0] + sin * specular_vector[1];
-        const dotProductSquared = dotProduct * dotProduct; // Square the dot to reduce highlight width
-        const coefficient =
-          (dotProductSquared / (distanceFromSide / (3 * devicePixelRatio))) *
-          ratioInBezel;
+        const dotProduct = Math.abs(
+          cos * specular_vector[0] + sin * specular_vector[1]
+        );
 
-        const color = 255 * coefficient * specularOpacity;
+        const coefficient =
+          dotProduct * Math.sqrt(1 - (1 - distanceFromSide / 1.6) ** 2);
+
+        const color = 255 * coefficient;
 
         imageData.data[idx] = color;
         imageData.data[idx + 1] = color;
         imageData.data[idx + 2] = color;
-        imageData.data[idx + 3] = color;
+        imageData.data[idx + 3] = color * coefficient;
       }
     }
   }

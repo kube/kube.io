@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useRef } from "react";
-import { Filter } from "virtual:refractionFilter?width=210&height=150&radius=75&bezelWidth=27&glassThickness=130&refractiveIndex=1.5&bezelType=convex_squircle&magnify=true";
+import { Filter } from "virtual:refractionFilter?width=210&height=150&radius=75&bezelWidth=25&glassThickness=110&refractiveIndex=1.5&bezelType=convex_squircle&magnify=true";
 
 // A simple draggable circular glass lens over background text.
 // Uses the same SVG filter pipeline as other demos.

@@ -23,7 +23,7 @@ export const Slider: React.FC = () => {
   const thumbRadius = 30;
   // MotionValue-based controls
   const blur = useMotionValue(0); // 0..40
-  const specularOpacity = useMotionValue(0.3); // 0..1
+  const specularOpacity = useMotionValue(0.4); // 0..1
   const specularSaturation = useMotionValue(7); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
   const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);

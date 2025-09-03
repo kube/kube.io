@@ -41,7 +41,7 @@ export const MixedUI: React.FC = ({}) => {
 
   // Interactive controls (MotionValues only)
   const specularSaturation = useMotionValue(6); // 0..50
-  const specularOpacity = useMotionValue(0.3); // 0..1
+  const specularOpacity = useMotionValue(0.4); // 0..1
   const refractionLevel = useMotionValue(1); // 0..1
   const blur = useMotionValue(1.5); // 0..40
   const progressiveBlurStrength = useMotionValue(1); // how much to ease the blur in the top overlay

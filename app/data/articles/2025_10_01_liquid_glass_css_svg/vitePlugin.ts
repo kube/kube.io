@@ -32,7 +32,6 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     bezelWidth?: number;
     glassThickness?: number;
     refractiveIndex?: number;
-    specularOpacity?: number;
     specularSaturation?: number;
     blur?: number;
     magnify?: boolean;
@@ -54,10 +53,6 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     if (url.searchParams.has("refractiveIndex"))
       params.refractiveIndex = parseFloat(
         url.searchParams.get("refractiveIndex")!
-      );
-    if (url.searchParams.has("specularOpacity"))
-      params.specularOpacity = parseFloat(
-        url.searchParams.get("specularOpacity")!
       );
     if (url.searchParams.has("specularSaturation"))
       params.specularSaturation = parseFloat(
@@ -94,7 +89,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     if (str.length === 0) return hash.toString(36);
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32bit integer
     }
     const hashString = Math.abs(hash).toString(36);
@@ -197,12 +192,11 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       width: 150,
       radius: 75,
       bezelWidth: 40,
-      specularOpacity: 0.3,
     };
 
     // Merge custom parameters with defaults
     const params = { ...defaults, ...customParams };
-    const { height, width, radius, bezelWidth, specularOpacity } = params;
+    const { height, width, radius, bezelWidth } = params;
 
     // Generate the specular map
     const imageData = calculateRefractionSpecular(
@@ -210,8 +204,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       height, // objectHeight
       radius, // radius
       bezelWidth, // bezelWidth
-      Math.PI / 4, // specularAngle - 45 degrees
-      specularOpacity, // specularOpacity
+      undefined, // specularAngle
       2 // dpr (device pixel ratio)
     );
 

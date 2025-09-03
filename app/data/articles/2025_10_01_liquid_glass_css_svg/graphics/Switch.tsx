@@ -11,7 +11,7 @@ export const Switch: React.FC = () => {
   const thumbHeight = 92;
   const thumbRadius = thumbHeight / 2;
   const blur = useMotionValue(0.2); // 0..40
-  const specularOpacity = useMotionValue(0.4); // 0..1
+  const specularOpacity = useMotionValue(0.5); // 0..1
   const specularSaturation = useMotionValue(6); // 0..50
   const refractionBase = useMotionValue(1); // 0..1
 

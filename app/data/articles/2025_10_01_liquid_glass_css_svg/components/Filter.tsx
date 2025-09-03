@@ -94,8 +94,7 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(height),
       getValueOrMotion(radius),
       50,
-      Math.PI / 4,
-      0.5,
+      undefined,
       dpr
     );
   });
