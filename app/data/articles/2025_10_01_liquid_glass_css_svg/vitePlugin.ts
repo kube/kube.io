@@ -5,6 +5,7 @@ import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
 } from "./lib/displacementMap";
+import { calculateMagnifyingDisplacementMap } from "./lib/magnifyingDisplacement";
 import { calculateRefractionSpecular } from "./lib/specular";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
 
@@ -18,6 +19,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     { buffer: Buffer; maxDisplacement: number }
   >();
   const specularMapCache = new Map<string, Buffer>();
+  const magnifyingMapCache = new Map<string, Buffer>();
 
   // Parse query parameters from virtual module ID
   function parseParams(id: string): {
@@ -70,8 +72,6 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         params.bezelType = bezelType;
       }
     }
-
-    console.log("Parsed parameters BEZEL TYPE:", params.bezelType);
 
     return params;
   }
@@ -160,8 +160,6 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     );
 
     const maxDisplacement = Math.max(...precomputedMap.map((x) => Math.abs(x)));
-    console.log("Max Displacement Value:", maxDisplacement);
-
     // Generate the displacement map using the dimensions
     const imageData = calculateDisplacementMap2(
       width, // canvasWidth
@@ -172,7 +170,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       bezelWidth, // bezelWidth
       100, // maximumDisplacement
       precomputedMap,
-      4 // dpr (device pixel ratio)
+      2 // dpr (device pixel ratio)
     );
 
     // Convert ImageData to PNG buffer
@@ -211,8 +209,32 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       bezelWidth, // bezelWidth
       Math.PI / 4, // specularAngle - 45 degrees
       specularOpacity, // specularOpacity
-      4 // dpr (device pixel ratio)
+      2 // dpr (device pixel ratio)
     );
+
+    // Convert ImageData to PNG buffer
+    const canvas = createCanvas(imageData.width, imageData.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      throw new Error("Failed to get canvas context");
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toBuffer("image/png");
+  }
+
+  function generateMagnifyingMap(customParams: any = {}): Buffer {
+    // Default parameters (same as MagnifyingGlass component)
+    const defaults = {
+      width: 210,
+      height: 150,
+    };
+
+    // Merge custom parameters with defaults
+    const params = { ...defaults, ...customParams };
+    const { width, height } = params;
+
+    // Generate the magnifying displacement map
+    const imageData = calculateMagnifyingDisplacementMap(width, height);
 
     // Convert ImageData to PNG buffer
     const canvas = createCanvas(imageData.width, imageData.height);
@@ -248,6 +270,9 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         return "\0" + id;
       }
       if (id.startsWith("virtual:refractionSpecularMap")) {
+        return "\0" + id;
+      }
+      if (id.startsWith("virtual:magnifying-scale")) {
         return "\0" + id;
       }
       if (id.startsWith("virtual:refractionFilter")) {
@@ -288,6 +313,20 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
         const filename = `specular-map-${filenameParams}.png`;
         return `export default "/assets/${filename}";`;
       }
+      if (id.startsWith("\0virtual:magnifying-scale")) {
+        const params = parseParams(id.replace("\0", ""));
+        const cacheKey = getCacheKey(params);
+
+        // Ensure the magnifying map is in cache
+        if (!magnifyingMapCache.has(cacheKey)) {
+          const buffer = generateMagnifyingMap(params);
+          magnifyingMapCache.set(cacheKey, buffer);
+        }
+
+        const filenameParams = paramsToFilename(params);
+        const filename = `magnifying-map-${filenameParams}.png`;
+        return `export default "/assets/${filename}";`;
+      }
       if (id.startsWith("\0virtual:refractionFilter")) {
         const params = parseParams(id.replace("\0", "").replace(".tsx", ""));
         const displacementCacheKey = getCacheKey(params);
@@ -303,10 +342,20 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
           specularMapCache.set(specularCacheKey, buffer);
         }
 
+        // Always generate magnifying map (using width/height from params)
+        const magnifyingParams = { width: params.width, height: params.height };
+        const magnifyingCacheKey = getCacheKey(magnifyingParams);
+        if (!magnifyingMapCache.has(magnifyingCacheKey)) {
+          const buffer = generateMagnifyingMap(magnifyingParams);
+          magnifyingMapCache.set(magnifyingCacheKey, buffer);
+        }
+
         const cachedResult = displacementMapCache.get(displacementCacheKey)!;
         const filenameParams = paramsToFilename(params);
+        const magnifyingFilenameParams = paramsToFilename(magnifyingParams);
         const displacementFilename = `displacement-map-${filenameParams}.png`;
         const specularFilename = `specular-map-${filenameParams}.png`;
+        const magnifyingFilename = `magnifying-map-${magnifyingFilenameParams}.png`;
 
         // Return a React component that uses the generated assets
         return `
@@ -316,6 +365,7 @@ import { motion, useTransform } from "motion/react";
 
 const displacementMapAsset = "/assets/${displacementFilename}";
 const specularMapAsset = "/assets/${specularFilename}";
+const magnifyingMapAsset = "/assets/${magnifyingFilename}";
 const maxDisplacement = ${cachedResult.maxDisplacement};
 
 export const Filter = ({
@@ -325,6 +375,7 @@ export const Filter = ({
   scaleRatio = 1,
   specularOpacity = 0.4,
   specularSaturation = 4,
+  magnifyingScale,
   width = ${params.width || 150},
   height = ${params.height || 150},
 }) => {
@@ -344,8 +395,27 @@ export const Filter = ({
   });
 
   const content = React.createElement("filter", { id: id, filterRes: "128" },
+    // Conditionally include magnifying displacement map when magnifyingScale is provided
+    ...(magnifyingScale ? [
+      React.createElement("feImage", {
+        href: magnifyingMapAsset,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        result: "magnifying_displacement_map"
+      }),
+      React.createElement(motion.feDisplacementMap, {
+        in: "SourceGraphic",
+        in2: "magnifying_displacement_map",
+        scale: typeof magnifyingScale === "number" ? magnifyingScale : magnifyingScale,
+        xChannelSelector: "R",
+        yChannelSelector: "G",
+        result: "magnified_source"
+      })
+    ] : []),
     React.createElement(motion.feGaussianBlur, {
-      in: "SourceGraphic",
+      in: magnifyingScale ? "magnified_source" : "SourceGraphic",
       stdDeviation: blur,
       result: "blurred_source"
     }),
@@ -453,6 +523,25 @@ export default Filter;
           source: buffer,
         });
       }
+
+      // Emit all cached magnifying maps
+      for (const [cacheKey, buffer] of magnifyingMapCache) {
+        let params: any = {};
+        try {
+          params = JSON.parse(cacheKey);
+        } catch {
+          // If JSON parsing fails, it might be the old filename format
+          // Just use empty params for fallback
+          params = {};
+        }
+        const filenameParams = paramsToFilename(params);
+        const filename = `magnifying-map-${filenameParams}.png`;
+        this.emitFile({
+          type: "asset",
+          fileName: `assets/${filename}`,
+          source: buffer,
+        });
+      }
     },
 
     // Handle dev mode by serving both maps directly
@@ -503,16 +592,44 @@ export default Filter;
           res.end(buffer);
           return;
         }
+
+        if (req.url?.startsWith("/assets/magnifying-map-")) {
+          // Extract parameters from filename
+          const filename = req.url
+            .replace("/assets/magnifying-map-", "")
+            .replace(".png", "");
+          const params = filenameToParams(filename);
+          const cacheKey = getCacheKey(params);
+
+          let buffer = magnifyingMapCache.get(cacheKey);
+          if (!buffer) {
+            // Generate with parsed parameters
+            buffer = generateMagnifyingMap(params);
+            magnifyingMapCache.set(cacheKey, buffer);
+          }
+
+          res.writeHead(200, {
+            "Content-Type": "image/png",
+            "Cache-Control": "public, max-age=31536000",
+          });
+          res.end(buffer);
+          return;
+        }
         next();
       });
     },
 
     // Handle hot updates for development
     async handleHotUpdate({ file, server }) {
-      if (file.includes("displacementMap.ts") || file.includes("specular.ts")) {
+      if (
+        file.includes("displacementMap.ts") ||
+        file.includes("specular.ts") ||
+        file.includes("magnifyingDisplacement.ts")
+      ) {
         // Clear all caches if source files change
         displacementMapCache.clear();
         specularMapCache.clear();
+        magnifyingMapCache.clear();
 
         // Reload all virtual modules
         const modules = Array.from(server.moduleGraph.idToModuleMap.keys())

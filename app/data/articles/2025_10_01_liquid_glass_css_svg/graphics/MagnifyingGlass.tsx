@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect, useRef } from "react";
-import { Filter } from "../components/Filter";
+import { Filter } from "virtual:refractionFilter?width=210&height=150&radius=75&bezelWidth=27&glassThickness=130&refractiveIndex=1.5&bezelType=convex_squircle&_v=1";
 
 // A simple draggable circular glass lens over background text.
 // Uses the same SVG filter pipeline as other demos.
@@ -14,10 +14,6 @@ export const MagnifyingGlass: React.FC = () => {
   const height = 150;
   const radius = height / 2;
 
-  // Optical parameters (kept simple; no live controls here)
-  const bezelWidth = 27;
-  const glassThickness = 130;
-  const refractiveIndex = 1.5;
   // Controls (MotionValues) — same pattern as Searchbox/MixedUI
   const specularOpacity = useMotionValue(0.5); // 0..1
   const specularSaturation = useMotionValue(9); // 0..50
@@ -182,12 +178,6 @@ export const MagnifyingGlass: React.FC = () => {
           {/* SVG filter definition for the lens */}
           <Filter
             id="magnifying-glass-filter"
-            width={width}
-            height={height}
-            radius={radius}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractiveIndex={refractiveIndex}
             blur={0}
             scaleRatio={refractionLevel}
             specularOpacity={specularOpacity}

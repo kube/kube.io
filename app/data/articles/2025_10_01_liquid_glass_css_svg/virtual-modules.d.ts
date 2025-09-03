@@ -24,6 +24,7 @@ declare module "virtual:refractionFilter*" {
     scaleRatio?: number | MotionValue<number>;
     specularOpacity?: number | MotionValue<number>;
     specularSaturation?: number | MotionValue<number>;
+    magnifyingScale?: number | MotionValue<number>;
     width?: number;
     height?: number;
   }
