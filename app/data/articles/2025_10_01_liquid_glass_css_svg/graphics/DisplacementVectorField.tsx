@@ -28,7 +28,7 @@ export const DisplacementVectorField: React.FC = () => {
   const bezelWidth = 130;
 
   // Bezel Height Function (interpolated with animation on change)
-  const bezelHeightFn_target = useMotionValue(CONVEX.fn);
+  const bezelHeightFn_target = useMotionValue(CONVEX_CIRCLE.fn);
   const bezelHeightFn_previous = useMotionValue(bezelHeightFn_target.get());
   const bezelHeightFn_interpolationProgress = useMotionValue(1);
 

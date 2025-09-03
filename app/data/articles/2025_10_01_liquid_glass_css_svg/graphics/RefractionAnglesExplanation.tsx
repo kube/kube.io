@@ -138,7 +138,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const labelY = centerY + 13;
 
   return (
-    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20">
       <motion.svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
@@ -545,32 +545,50 @@ export const RefractionAnglesExplanation: React.FC = () => {
       <div className="mt-4 w-full flex items-center">
         {/* left spacer */}
         <div className="flex-1" />
+        {/* Swiss-style slider with bottom label */}
+        <div className="flex flex-col items-center">
+          {/* Slider */}
+          <div className="relative">
+            <input
+              id="n2-slider"
+              type="range"
+              min={N2_MIN}
+              max={N2_MAX}
+              step={0.002}
+              ref={n2SliderRef}
+              defaultValue={n2.get()}
+              onChange={(e) => n2.set(parseFloat(e.target.value))}
+              aria-label="Second medium refractive index"
+              className="w-96 h-[4px] bg-slate-400/80 dark:bg-slate-600 rounded appearance-none cursor-pointer
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
+                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-900 [&::-webkit-slider-thumb]:dark:bg-slate-100
+                [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:cursor-pointer
+                [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-150
+                [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95
+                [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 
+                [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-900 [&::-moz-range-thumb]:dark:bg-slate-100
+                [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+            />
 
-        {/* centered slider */}
-        <div className="rounded-full px-4 py-0 flex flex-col items-center gap-1">
-          <label
-            htmlFor="n2-slider"
-            className="text-xs text-slate-900/90 dark:text-slate-100/90"
-          >
-            n<span className="align-sub text-[8px]">2</span> =
-            <motion.span className="pl-1 w-4 inline-block">
-              {useTransform(() => n2.get().toFixed(2))}
-            </motion.span>
-          </label>
-          <input
-            id="n2-slider"
-            type="range"
-            min={N2_MIN}
-            max={N2_MAX}
-            step={0.01}
-            ref={n2SliderRef}
-            defaultValue={n2.get()}
-            onChange={(e) => n2.set(parseFloat(e.target.value))}
-            aria-label="Second medium refractive index"
-            className="w-56 accent-cyan-500"
-          />
+            {/* Range indicators */}
+            <div className="flex justify-between text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.1em] w-96">
+              <span>{N2_MIN}</span>
+              <span>{N2_MAX}</span>
+            </div>
+          </div>
+
+          {/* Bottom: Parameter label and value */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-[16px] tracking-[0.1em] text-slate-500 dark:text-slate-500">
+              n₂
+            </span>
+            <span className="text-slate-900 dark:text-slate-100 font-mono text-[14px] tabular-nums">
+              <motion.span>
+                {useTransform(() => n2.get().toFixed(2))}
+              </motion.span>
+            </span>
+          </div>
         </div>
-
         {/* right-aligned replay button */}
         <div className="flex-1 flex justify-end">
           <button
