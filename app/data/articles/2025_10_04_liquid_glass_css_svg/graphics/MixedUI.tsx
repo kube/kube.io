@@ -236,12 +236,12 @@ export const MixedUI: React.FC = ({}) => {
           />
 
           <div
-            className="absolute inset-0 flex items-center gap-3 px-5"
+            className="absolute inset-0 flex items-center gap-3 px-3.5"
             style={{ borderRadius: sbRadius, zIndex: 1 }}
           >
             <IoSearch
-              className="text-black/60 dark:text-white/60 shrink-0"
-              size={25}
+              className="text-black/60 dark:text-white/50 shrink-0"
+              size={22}
               aria-hidden="true"
             />
             <input
@@ -297,7 +297,12 @@ export const MixedUI: React.FC = ({}) => {
               ),
             }}
           />
-          <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-b from-[var(--glass-rgb)]/40 to-transparent" />
+          <motion.div
+            className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-b from-[var(--glass-rgb)]/40 dark:from-[var(--glass-rgb)]/60 to-transparent"
+            style={{
+              opacity: topGradientOpacity,
+            }}
+          />
         </motion.div>
 
         {/* Bottom player overlay (Apple Music–like) */}
