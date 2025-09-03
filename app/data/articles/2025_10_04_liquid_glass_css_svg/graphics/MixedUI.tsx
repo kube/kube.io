@@ -229,7 +229,7 @@ export const MixedUI: React.FC = ({}) => {
               boxShadow: useTransform(
                 () =>
                   `0 4px 20px rgba(0, 0, 0, ${
-                    0.5 * searchboxShadowOpacity.get()
+                    0.4 * searchboxShadowOpacity.get()
                   })`
               ),
             }}
@@ -320,7 +320,7 @@ export const MixedUI: React.FC = ({}) => {
               backdropFilter: `url(#mixed-ui-player-filter)`,
               boxShadow: useTransform(
                 () =>
-                  `0 4px 19px rgba(0, 0, 0, ${0.5 * playerShadowOpacity.get()})`
+                  `0 4px 19px rgba(0, 0, 0, ${0.4 * playerShadowOpacity.get()})`
               ),
             }}
           />
@@ -448,7 +448,7 @@ export const MixedUI: React.FC = ({}) => {
           }}
         >
           <motion.div className="absolute bottom-0 left-0 w-full h-full backdrop-blur-[0.4px] mask-t-from-0% mask-t-to-100%" />
-          <motion.div className="pointer-events-none absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/20 dark:from-black/60 to-transparent" />
+          <motion.div className="pointer-events-none absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/10 dark:from-black/60 to-transparent" />
         </motion.div>
       </motion.div>
 
