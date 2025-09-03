@@ -1,6 +1,10 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import displacementMapUrl from "virtual:refractionDisplacementMap";
-import specularMapUrl from "virtual:refractionSpecularMap";
+// Import parameterized virtual modules with custom glass preset values
+import displacementMapUrl from "virtual:refractionDisplacementMap?width=150&height=150&radius=75&bezelWidth=40&glassThickness=120&refractiveIndex=1.5";
+import specularMapUrl from "virtual:refractionSpecularMap?width=150&height=150&radius=75&bezelWidth=40&specularOpacity=0.3";
+
+const height = 150;
+const width = 150;
 
 const imageUrl =
   "https://images.unsplash.com/photo-1688494930098-e88c53c26e3a?auto=format&q=80&fit=crop&w=1400&h=1600&crop=focalpoint&fp-x=0.3&fp-y=0.5&fp-z=1";
@@ -19,9 +23,6 @@ export const ParallaxImageHero: React.FC = () => {
   );
 
   // Glass preset
-  const height = 150;
-  const width = 150;
-  const blur = 0.1;
   const specularOpacity = 0.3;
   const specularSaturation = 7;
 
@@ -51,12 +52,6 @@ export const ParallaxImageHero: React.FC = () => {
           }}
         >
           <filter id={filterId} filterRes="128">
-            <motion.feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation={blur}
-              result="blurred_source"
-            />
-
             <motion.feImage
               href={displacementMapUrl}
               x={0}
@@ -67,7 +62,7 @@ export const ParallaxImageHero: React.FC = () => {
             />
 
             <motion.feDisplacementMap
-              in="blurred_source"
+              in="SourceGraphic"
               in2="displacement_map"
               scale={133}
               xChannelSelector="R"
@@ -75,8 +70,14 @@ export const ParallaxImageHero: React.FC = () => {
               result="displaced"
             />
 
-            <feColorMatrix
+            <motion.feGaussianBlur
               in="displaced"
+              stdDeviation={0.0}
+              result="blurred_source"
+            />
+
+            <feColorMatrix
+              in="blurred_source"
               type="saturate"
               values={specularSaturation.toString()}
               result="displaced_saturated"
@@ -104,7 +105,7 @@ export const ParallaxImageHero: React.FC = () => {
 
             <feBlend
               in="specular_saturated"
-              in2="displaced"
+              in2="blurred_source"
               mode="normal"
               result="withSaturation"
             />
