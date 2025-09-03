@@ -18,6 +18,7 @@ import { RefractionAnglesExplanation } from "./graphics/RefractionAnglesExplanat
 import { ScreenLightToEyeDiagram } from "./graphics/ScreenLightToEyeDiagram";
 import { Searchbox } from "./graphics/Searchbox";
 import { Slider } from "./graphics/Slider";
+import { SpecularPreview } from "./graphics/SpecularPreview";
 import { Switch } from "./graphics/Switch";
 import { VectorToRedGreen } from "./graphics/VectorToRedGreen";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
@@ -334,6 +335,22 @@ After converting every vector in the map to color value, we get an image that ca
 This playground applies the SVG displacement filter to a simple scene and lets you tweak surface shape, bezel width, glass thickness, and effect scale. Watch how these inputs change the refraction field, the generated displacement map, and the final rendering.
 
 <Playground />
+
+# Specular
+
+What Apple seems to call "specular" in Liquid Glass is a border around the object, which opacity is defined by the dot product (or alignment) of the normal to border and an arbitrary vector.
+
+This specular highlight simulates the way light reflects off curved surfaces, creating bright edges where the surface normal aligns with a specified light direction. The effect is most prominent along the bezel edges where the surface curves meet the viewing angle, giving objects that characteristic glassy, three-dimensional appearance.
+
+The calculation involves taking the dot product between the surface normal at each point along the border and a directional vector (typically representing the light source direction). This dot product gives us a measure of how aligned these vectors are—when they're perfectly aligned, we get maximum specular intensity, and when they're perpendicular, we get no specular reflection.
+
+In our implementation, we apply this specular calculation only to the bezel region, creating a subtle rim lighting effect that enhances the perception of depth and material properties of the glass surface.
+
+<SpecularPreview />
+
+# Compositing the Filter
+
+To combine the refraction displacement map and the specular highlight, we can use SVG's `<feImage />` to overlay the specular image on top of the displacement map. This way, we can apply both effects in a single filter.
 
 # Demo
 
