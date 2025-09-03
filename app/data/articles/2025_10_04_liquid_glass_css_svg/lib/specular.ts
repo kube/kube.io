@@ -25,6 +25,7 @@ export function calculateRefractionSpecular(
   new Uint32Array(imageData.data.buffer).fill(neutral);
 
   const radiusSquared = radius_ ** 2;
+  const radiusPlusOneSquared = (radius_ + 1) ** 2;
   const radiusMinusBezelSquared = (radius_ - bezel_) ** 2;
 
   const widthBetweenRadiuses = bufferWidth - radius_ * 2;
@@ -54,13 +55,20 @@ export function calculateRefractionSpecular(
       const distanceToCenterSquared = x * x + y * y;
 
       const isInBezel =
-        distanceToCenterSquared <= radiusSquared &&
+        distanceToCenterSquared <= radiusPlusOneSquared &&
         distanceToCenterSquared >= radiusMinusBezelSquared;
 
-      // Only write non-neutral displacements (when isInBezel)
+      // Process pixels that are in bezel or near bezel edge for anti-aliasing
       if (isInBezel) {
         const distanceFromCenter = Math.sqrt(distanceToCenterSquared);
         const distanceFromSide = radius_ - distanceFromCenter;
+
+        const opacity =
+          distanceToCenterSquared < radiusSquared
+            ? 1
+            : 1 -
+              (distanceFromCenter - Math.sqrt(radiusSquared)) /
+                (Math.sqrt(radiusPlusOneSquared) - Math.sqrt(radiusSquared));
 
         // Viewed from top
         const cos = x / distanceFromCenter;
@@ -75,11 +83,12 @@ export function calculateRefractionSpecular(
           dotProduct * Math.sqrt(1 - (1 - distanceFromSide / 1.6) ** 2);
 
         const color = 255 * coefficient;
+        const finalOpacity = color * coefficient * opacity;
 
         imageData.data[idx] = color;
         imageData.data[idx + 1] = color;
         imageData.data[idx + 2] = color;
-        imageData.data[idx + 3] = color * coefficient;
+        imageData.data[idx + 3] = finalOpacity;
       }
     }
   }

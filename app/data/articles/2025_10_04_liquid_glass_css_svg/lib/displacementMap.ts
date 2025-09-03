@@ -76,6 +76,7 @@ export function calculateDisplacementMap2(
   const bezel = bezelWidth * devicePixelRatio;
 
   const radiusSquared = radius_ ** 2;
+  const radiusPlusOneSquared = (radius_ + 1) ** 2;
   const radiusMinusBezelSquared = (radius_ - bezel) ** 2;
 
   const objectWidth_ = objectWidth * devicePixelRatio;
@@ -110,11 +111,18 @@ export function calculateDisplacementMap2(
       const distanceToCenterSquared = x * x + y * y;
 
       const isInBezel =
-        distanceToCenterSquared <= radiusSquared &&
+        distanceToCenterSquared <= radiusPlusOneSquared &&
         distanceToCenterSquared >= radiusMinusBezelSquared;
 
       // Only write non-neutral displacements (when isInBezel)
       if (isInBezel) {
+        const opacity =
+          distanceToCenterSquared < radiusSquared
+            ? 1
+            : 1 -
+              (Math.sqrt(distanceToCenterSquared) - Math.sqrt(radiusSquared)) /
+                (Math.sqrt(radiusPlusOneSquared) - Math.sqrt(radiusSquared));
+
         const distanceFromCenter = Math.sqrt(distanceToCenterSquared);
         const distanceFromSide = radius_ - distanceFromCenter;
 
@@ -128,8 +136,8 @@ export function calculateDisplacementMap2(
         const dX = (-cos * distance) / maximumDisplacement;
         const dY = (-sin * distance) / maximumDisplacement;
 
-        imageData.data[idx] = 128 + dX * 127; // R
-        imageData.data[idx + 1] = 128 + dY * 127; // G
+        imageData.data[idx] = 128 + dX * 127 * opacity; // R
+        imageData.data[idx + 1] = 128 + dY * 127 * opacity; // G
         imageData.data[idx + 2] = 0; // B
         imageData.data[idx + 3] = 255; // A
       }
