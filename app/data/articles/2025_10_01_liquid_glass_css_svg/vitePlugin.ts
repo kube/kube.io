@@ -21,6 +21,9 @@ export default function refractionDisplacementMapPlugin(): Plugin {
   const specularMapCache = new Map<string, Buffer>();
   const magnifyingMapCache = new Map<string, Buffer>();
 
+  // Hash to params mapping for dev server
+  const hashToParamsMap = new Map<string, any>();
+
   // Parse query parameters from virtual module ID
   function parseParams(id: string): {
     width?: number;
@@ -84,28 +87,25 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     return JSON.stringify(params);
   }
 
-  // Create filename-safe version of parameters
-  function paramsToFilename(params: any): string {
-    const entries = Object.entries(params);
-    if (entries.length === 0) return "";
-    return entries.map(([key, value]) => `${key}=${value}`).join("&");
+  // Generate hash from parameters for filename and store mapping for dev server
+  function paramsToHash(params: any): string {
+    const str = JSON.stringify(params);
+    let hash = 0;
+    if (str.length === 0) return hash.toString(36);
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    const hashString = Math.abs(hash).toString(36);
+    // Store the mapping for dev server
+    hashToParamsMap.set(hashString, params);
+    return hashString;
   }
 
-  // Parse parameters from filename
-  function filenameToParams(filename: string): any {
-    if (!filename) return {};
-    const params: any = {};
-    filename.split("&").forEach((pair) => {
-      const [key, value] = pair.split("=");
-      if (key && value) {
-        // Convert string values back to appropriate types
-        if (value === "true") params[key] = true;
-        else if (value === "false") params[key] = false;
-        else if (!isNaN(Number(value))) params[key] = Number(value);
-        else params[key] = value;
-      }
-    });
-    return params;
+  // Get params from hash
+  function hashToParams(hashString: string): any {
+    return hashToParamsMap.get(hashString) || {};
   }
 
   function generateDisplacementMap(customParams: any = {}): {
@@ -295,8 +295,8 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         }
 
         const cachedResult = displacementMapCache.get(cacheKey)!;
-        const filenameParams = paramsToFilename(params);
-        const filename = `displacement-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `displacement-map-${filenameHash}.png`;
 
         return `export const url = "/assets/${filename}";
 export const maxDisplacement = ${cachedResult.maxDisplacement};
@@ -312,8 +312,8 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
           specularMapCache.set(cacheKey, buffer);
         }
 
-        const filenameParams = paramsToFilename(params);
-        const filename = `specular-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `specular-map-${filenameHash}.png`;
         return `export default "/assets/${filename}";`;
       }
       if (id.startsWith("\0virtual:magnifying-scale")) {
@@ -326,8 +326,8 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
           magnifyingMapCache.set(cacheKey, buffer);
         }
 
-        const filenameParams = paramsToFilename(params);
-        const filename = `magnifying-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `magnifying-map-${filenameHash}.png`;
         return `export default "/assets/${filename}";`;
       }
       if (id.startsWith("\0virtual:refractionFilter")) {
@@ -357,14 +357,14 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
             const buffer = generateMagnifyingMap(magnifyingParams);
             magnifyingMapCache.set(magnifyingCacheKey, buffer);
           }
-          const magnifyingFilenameParams = paramsToFilename(magnifyingParams);
-          magnifyingFilename = `magnifying-map-${magnifyingFilenameParams}.png`;
+          const magnifyingFilenameHash = paramsToHash(magnifyingParams);
+          magnifyingFilename = `magnifying-map-${magnifyingFilenameHash}.png`;
         }
 
         const cachedResult = displacementMapCache.get(displacementCacheKey)!;
-        const filenameParams = paramsToFilename(params);
-        const displacementFilename = `displacement-map-${filenameParams}.png`;
-        const specularFilename = `specular-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const displacementFilename = `displacement-map-${filenameHash}.png`;
+        const specularFilename = `specular-map-${filenameHash}.png`;
 
         // Return a React component that uses the generated assets
         return `
@@ -513,8 +513,8 @@ export default Filter;
           // Just use empty params for fallback
           params = {};
         }
-        const filenameParams = paramsToFilename(params);
-        const filename = `displacement-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `displacement-map-${filenameHash}.png`;
         this.emitFile({
           type: "asset",
           fileName: `assets/${filename}`,
@@ -532,8 +532,8 @@ export default Filter;
           // Just use empty params for fallback
           params = {};
         }
-        const filenameParams = paramsToFilename(params);
-        const filename = `specular-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `specular-map-${filenameHash}.png`;
         this.emitFile({
           type: "asset",
           fileName: `assets/${filename}`,
@@ -551,8 +551,8 @@ export default Filter;
           // Just use empty params for fallback
           params = {};
         }
-        const filenameParams = paramsToFilename(params);
-        const filename = `magnifying-map-${filenameParams}.png`;
+        const filenameHash = paramsToHash(params);
+        const filename = `magnifying-map-${filenameHash}.png`;
         this.emitFile({
           type: "asset",
           fileName: `assets/${filename}`,
@@ -565,11 +565,11 @@ export default Filter;
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url?.startsWith("/assets/displacement-map-")) {
-          // Extract parameters from filename
-          const filename = req.url
+          // Extract hash from filename
+          const hashString = req.url
             .replace("/assets/displacement-map-", "")
             .replace(".png", "");
-          const params = filenameToParams(filename);
+          const params = hashToParams(hashString);
           const cacheKey = getCacheKey(params);
 
           let result = displacementMapCache.get(cacheKey);
@@ -588,11 +588,11 @@ export default Filter;
         }
 
         if (req.url?.startsWith("/assets/specular-map-")) {
-          // Extract parameters from filename
-          const filename = req.url
+          // Extract hash from filename
+          const hashString = req.url
             .replace("/assets/specular-map-", "")
             .replace(".png", "");
-          const params = filenameToParams(filename);
+          const params = hashToParams(hashString);
           const cacheKey = getCacheKey(params);
 
           let buffer = specularMapCache.get(cacheKey);
@@ -611,11 +611,11 @@ export default Filter;
         }
 
         if (req.url?.startsWith("/assets/magnifying-map-")) {
-          // Extract parameters from filename
-          const filename = req.url
+          // Extract hash from filename
+          const hashString = req.url
             .replace("/assets/magnifying-map-", "")
             .replace(".png", "");
-          const params = filenameToParams(filename);
+          const params = hashToParams(hashString);
           const cacheKey = getCacheKey(params);
 
           let buffer = magnifyingMapCache.get(cacheKey);
