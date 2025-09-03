@@ -1,10 +1,6 @@
 import { motion, useScroll, useTransform } from "motion/react";
-// Import parameterized virtual modules with custom glass preset values
-import displacementMapUrl from "virtual:refractionDisplacementMap?width=150&height=150&radius=75&bezelWidth=40&glassThickness=120&refractiveIndex=1.5";
-import specularMapUrl from "virtual:refractionSpecularMap?width=150&height=150&radius=75&bezelWidth=40&specularOpacity=0.3";
 
-const height = 150;
-const width = 150;
+import { Filter } from "virtual:refractionFilter?width=150&height=150&radius=75&bezelWidth=40&glassThickness=120&refractiveIndex=1.5&specularOpacity=0.3";
 
 const imageUrl =
   "https://images.unsplash.com/photo-1688494930098-e88c53c26e3a?auto=format&q=80&fit=crop&w=1400&h=1600&crop=focalpoint&fp-x=0.3&fp-y=0.5&fp-z=1";
@@ -51,66 +47,12 @@ export const ParallaxImageHero: React.FC = () => {
             boxShadow: "0 16px 31px rgba(0,0,0,0.4)",
           }}
         >
-          <filter id={filterId} filterRes="128">
-            <motion.feImage
-              href={displacementMapUrl}
-              x={0}
-              y={0}
-              width={width}
-              height={height}
-              result="displacement_map"
-            />
-
-            <motion.feDisplacementMap
-              in="SourceGraphic"
-              in2="displacement_map"
-              scale={133}
-              xChannelSelector="R"
-              yChannelSelector="G"
-              result="displaced"
-            />
-
-            <motion.feGaussianBlur
-              in="displaced"
-              stdDeviation={0.0}
-              result="blurred_source"
-            />
-
-            <feColorMatrix
-              in="blurred_source"
-              type="saturate"
-              values={specularSaturation.toString()}
-              result="displaced_saturated"
-            />
-
-            <feImage
-              href={specularMapUrl}
-              x={0}
-              y={0}
-              width={width}
-              height={height}
-              result="specular_layer"
-            />
-
-            <feComposite
-              in="displaced_saturated"
-              in2="specular_layer"
-              operator="in"
-              result="specular_saturated"
-            />
-
-            <feComponentTransfer in="specular_layer" result="specular_faded">
-              <feFuncA type="linear" slope={specularOpacity} />
-            </feComponentTransfer>
-
-            <feBlend
-              in="specular_saturated"
-              in2="blurred_source"
-              mode="normal"
-              result="withSaturation"
-            />
-            <feBlend in="specular_faded" in2="withSaturation" mode="normal" />
-          </filter>
+          <Filter
+            id={filterId}
+            specularOpacity={specularOpacity}
+            specularSaturation={specularSaturation}
+            withSvgWrapper={false}
+          />
           <g filter={`url(#${filterId})`}>
             <motion.image
               href={imageUrlMiddle}

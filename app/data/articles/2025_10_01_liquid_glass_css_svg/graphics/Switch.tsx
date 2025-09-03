@@ -1,7 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import React, { useEffect } from "react";
-import { Filter } from "../components/Filter";
-import { LIP } from "../lib/surfaceEquations";
+import { Filter } from "virtual:refractionFilter?width=146&height=92&radius=46&bezelWidth=29&glassThickness=19&refractiveIndex=1.5";
 
 export const Switch: React.FC = () => {
   // —————————————————————————————————————————————
@@ -11,9 +10,6 @@ export const Switch: React.FC = () => {
   const thumbWidth = 146;
   const thumbHeight = 92;
   const thumbRadius = thumbHeight / 2;
-  const bezelWidth = 29;
-  const glassThickness = 19;
-  const refractiveIndex = 1.5;
   const blur = useMotionValue(0.2); // 0..40
   const specularOpacity = useMotionValue(0.4); // 0..1
   const specularSaturation = useMotionValue(6); // 0..50
@@ -121,19 +117,13 @@ export const Switch: React.FC = () => {
           onMouseDown={() => pointerDownMV.set(1)}
           onMouseUp={() => pointerDownMV.set(0)}
         >
+          {/* Virtual Filter with inlined parameters */}
           <Filter
             id="thumb-filter"
-            width={thumbWidth}
-            height={thumbHeight}
-            radius={thumbRadius}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractiveIndex={refractiveIndex}
             blur={blur}
             scaleRatio={scaleRatio}
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
-            bezelHeightFn={LIP.fn}
           />
 
           <motion.div

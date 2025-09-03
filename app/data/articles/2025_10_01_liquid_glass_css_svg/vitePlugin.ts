@@ -13,7 +13,10 @@ import { CONVEX } from "./lib/surfaceEquations";
  */
 export default function refractionDisplacementMapPlugin(): Plugin {
   // Cache for generated maps with different parameters
-  const displacementMapCache = new Map<string, Buffer>();
+  const displacementMapCache = new Map<
+    string,
+    { buffer: Buffer; maxDisplacement: number }
+  >();
   const specularMapCache = new Map<string, Buffer>();
 
   // Parse query parameters from virtual module ID
@@ -88,7 +91,10 @@ export default function refractionDisplacementMapPlugin(): Plugin {
     return params;
   }
 
-  function generateDisplacementMap(customParams: any = {}): Buffer {
+  function generateDisplacementMap(customParams: any = {}): {
+    buffer: Buffer;
+    maxDisplacement: number;
+  } {
     // Default parameters (same as ParallaxImageHero component)
     const defaults = {
       height: 150,
@@ -141,7 +147,11 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       throw new Error("Failed to get canvas context");
     }
     ctx.putImageData(imageData, 0, 0);
-    return canvas.toBuffer("image/png");
+
+    return {
+      buffer: canvas.toBuffer("image/png"),
+      maxDisplacement,
+    };
   }
 
   function generateSpecularMap(customParams: any = {}): Buffer {
@@ -205,6 +215,9 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       if (id.startsWith("virtual:refractionSpecularMap")) {
         return "\0" + id;
       }
+      if (id.startsWith("virtual:refractionFilter")) {
+        return "\0" + id + ".tsx";
+      }
     },
 
     load(id) {
@@ -214,13 +227,17 @@ export default function refractionDisplacementMapPlugin(): Plugin {
 
         // Ensure the displacement map is in cache
         if (!displacementMapCache.has(cacheKey)) {
-          const buffer = generateDisplacementMap(params);
-          displacementMapCache.set(cacheKey, buffer);
+          const result = generateDisplacementMap(params);
+          displacementMapCache.set(cacheKey, result);
         }
 
+        const cachedResult = displacementMapCache.get(cacheKey)!;
         const filenameParams = paramsToFilename(params);
         const filename = `displacement-map-${filenameParams}.png`;
-        return `export default "/assets/${filename}";`;
+
+        return `export const url = "/assets/${filename}";
+export const maxDisplacement = ${cachedResult.maxDisplacement};
+export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.maxDisplacement} };`;
       }
       if (id.startsWith("\0virtual:refractionSpecularMap")) {
         const params = parseParams(id.replace("\0", ""));
@@ -236,12 +253,136 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         const filename = `specular-map-${filenameParams}.png`;
         return `export default "/assets/${filename}";`;
       }
+      if (id.startsWith("\0virtual:refractionFilter")) {
+        const params = parseParams(id.replace("\0", "").replace(".tsx", ""));
+        const displacementCacheKey = getCacheKey(params);
+        const specularCacheKey = getCacheKey(params);
+
+        // Ensure both maps are in cache
+        if (!displacementMapCache.has(displacementCacheKey)) {
+          const result = generateDisplacementMap(params);
+          displacementMapCache.set(displacementCacheKey, result);
+        }
+        if (!specularMapCache.has(specularCacheKey)) {
+          const buffer = generateSpecularMap(params);
+          specularMapCache.set(specularCacheKey, buffer);
+        }
+
+        const cachedResult = displacementMapCache.get(displacementCacheKey)!;
+        const filenameParams = paramsToFilename(params);
+        const displacementFilename = `displacement-map-${filenameParams}.png`;
+        const specularFilename = `specular-map-${filenameParams}.png`;
+
+        // Return a React component that uses the generated assets
+        return `
+/** @jsx React.createElement */
+import React from "react";
+import { motion, useTransform } from "motion/react";
+
+const displacementMapAsset = "/assets/${displacementFilename}";
+const specularMapAsset = "/assets/${specularFilename}";
+const maxDisplacement = ${cachedResult.maxDisplacement};
+
+export const Filter = ({
+  id,
+  withSvgWrapper = true,
+  blur = 0.2,
+  scaleRatio = 1,
+  specularOpacity = 0.4,
+  specularSaturation = 4,
+  width = ${params.width || 150},
+  height = ${params.height || 150},
+}) => {
+  // Calculate final scale using maxDisplacement and scaleRatio
+  const scale = useTransform(() => {
+    const ratio = typeof scaleRatio === "number" ? scaleRatio : scaleRatio.get();
+    return maxDisplacement * ratio;
+  });
+
+  // Convert specularSaturation to string format for feColorMatrix
+  const specularSaturationValue = useTransform(() => {
+    const value =
+      typeof specularSaturation === "number"
+        ? specularSaturation
+        : specularSaturation.get();
+    return value.toString();
+  });
+
+  const content = React.createElement("filter", { id: id, filterRes: "128" },
+    React.createElement(motion.feGaussianBlur, {
+      in: "SourceGraphic",
+      stdDeviation: blur,
+      result: "blurred_source"
+    }),
+    React.createElement("feImage", {
+      href: displacementMapAsset,
+      x: 0,
+      y: 0,
+      width: width,
+      height: height,
+      result: "displacement_map"
+    }),
+    React.createElement(motion.feDisplacementMap, {
+      in: "blurred_source",
+      in2: "displacement_map",
+      scale: scale,
+      xChannelSelector: "R",
+      yChannelSelector: "G",
+      result: "displaced"
+    }),
+    React.createElement(motion.feColorMatrix, {
+      in: "displaced",
+      type: "saturate",
+      values: specularSaturationValue,
+      result: "displaced_saturated"
+    }),
+    React.createElement("feImage", {
+      href: specularMapAsset,
+      x: 0,
+      y: 0,
+      width: width,
+      height: height,
+      result: "specular_layer"
+    }),
+    React.createElement("feComposite", {
+      in: "displaced_saturated",
+      in2: "specular_layer",
+      operator: "in",
+      result: "specular_saturated"
+    }),
+    React.createElement("feComponentTransfer", { in: "specular_layer", result: "specular_faded" },
+      React.createElement(motion.feFuncA, { type: "linear", slope: specularOpacity })
+    ),
+    React.createElement("feBlend", {
+      in: "specular_saturated",
+      in2: "displaced",
+      mode: "normal",
+      result: "withSaturation"
+    }),
+    React.createElement("feBlend", {
+      in: "specular_faded",
+      in2: "withSaturation",
+      mode: "normal"
+    })
+  );
+
+  return withSvgWrapper ? React.createElement("svg", {
+    colorInterpolationFilters: "sRGB",
+    style: { display: "none" }
+  },
+    React.createElement("defs", null, content)
+  ) : content;
+};
+
+export default Filter;
+`;
+      }
     },
 
     // Generate the asset files during build
     generateBundle() {
       // Emit all cached displacement maps
-      for (const [cacheKey, buffer] of displacementMapCache) {
+      for (const [cacheKey, result] of displacementMapCache) {
         let params: any = {};
         try {
           params = JSON.parse(cacheKey);
@@ -255,7 +396,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         this.emitFile({
           type: "asset",
           fileName: `assets/${filename}`,
-          source: buffer,
+          source: result.buffer,
         });
       }
 
@@ -290,18 +431,18 @@ export default function refractionDisplacementMapPlugin(): Plugin {
           const params = filenameToParams(filename);
           const cacheKey = getCacheKey(params);
 
-          let buffer = displacementMapCache.get(cacheKey);
-          if (!buffer) {
+          let result = displacementMapCache.get(cacheKey);
+          if (!result) {
             // Generate with parsed parameters
-            buffer = generateDisplacementMap(params);
-            displacementMapCache.set(cacheKey, buffer);
+            result = generateDisplacementMap(params);
+            displacementMapCache.set(cacheKey, result);
           }
 
           res.writeHead(200, {
             "Content-Type": "image/png",
             "Cache-Control": "public, max-age=31536000",
           });
-          res.end(buffer);
+          res.end(result.buffer);
           return;
         }
 
