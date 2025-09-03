@@ -81,6 +81,15 @@ export const MixedUI: React.FC = ({}) => {
     return Math.min(1, scrollY.get() / 100);
   });
 
+  // Transform scroll position for searchbox opacity (fade out as user scrolls)
+  const searchboxShadowOpacity = useTransform(
+    scrollY,
+    (scrollYValue: number) => {
+      // Start at full opacity, fade out over first 100px of scroll
+      return Math.min(1, 0.2 + (scrollYValue / 200) * 0.8);
+    }
+  );
+
   // Sync colorScheme with prefers-color-scheme
   useLayoutEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -184,7 +193,11 @@ export const MixedUI: React.FC = ({}) => {
         {/* Top searchbox overlay */}
         <motion.div
           className="absolute left-1/2 top-6 -translate-x-1/2 z-10"
-          style={{ width: sbWidth, height: sbHeight, scale: uiScale }}
+          style={{
+            width: sbWidth,
+            height: sbHeight,
+            scale: uiScale,
+          }}
           onMouseDown={() => {
             pointerDown.set(1);
             inputRef.current?.focus();
@@ -204,7 +217,12 @@ export const MixedUI: React.FC = ({}) => {
             style={{
               borderRadius: sbRadius,
               backdropFilter: `url(#mixed-ui-search-filter)`,
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
+              boxShadow: useTransform(
+                () =>
+                  `0 4px 20px rgba(0, 0, 0, ${
+                    0.5 * searchboxShadowOpacity.get()
+                  })`
+              ),
             }}
           />
 
