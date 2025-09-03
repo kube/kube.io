@@ -12,7 +12,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
 import babel from "vite-plugin-babel";
 
-import refractionDisplacementMapPlugin from "./app/data/articles/2025_10_01_liquid_glass_css_svg/vitePlugin.ts";
+import refractionDisplacementMapPlugin from "./app/data/articles/2025_10_04_liquid_glass_css_svg/vitePlugin.ts";
 import { createFavicon } from "./createFavicon";
 import faviconsPlugin from "./faviconsPlugin";
 
