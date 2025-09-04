@@ -59,17 +59,6 @@ We'll build up the effect from first principles, starting with how light bends w
   </div>
 </div>
 
-<blockquote className="mt-8 text-[15px] leading-7 border-l-2 pl-4 border-zinc-300/70 dark:border-white/15 text-zinc-800/90 dark:text-zinc-100/90">
-  <span className="font-semibold tracking-[0.2em] uppercase">TL;DR</span>
-  <span className="mx-2 text-zinc-400/80">—</span>
-  <a
-    href="#demo"
-    className="font-medium underline decoration-dotted underline-offset-4 hover:decoration-2"
-  >
-    Jump to the demo →
-  </a>
-</blockquote>
-
 # Understanding Refraction
 
 **Refraction** is what happens when light changes direction as it passes from one material to another (like from air into glass). This bending occurs because light travels at different speeds through different materials.
@@ -101,16 +90,6 @@ In the above interactive diagram, you can see that:
 - When n2 < n1, the ray bends away from the normal, and depending on the angle of incidence, it may bend so much that it reflects back into the original medium instead of passing through. This is called [Total Internal Reflection](https://en.wikipedia.org/wiki/Total_internal_reflection)
 - When incident ray is orthogonal to the surface, it passes straight through regardless of refractive indices.
 
-## What are Light Rays in this context?
-
-In our simulation, we're modeling how light travels from your screen to your eyes. Each "ray" represents the path a photon takes as it bounces off screen pixels, passes through our virtual glass surface, and reaches your retina.
-
-<ScreenLightToEyeDiagram />
-
-There is one big thing to understand though. These rays are not the actual light rays going from your screen to your eyes. Because they are all orthogonal to the screen. They are just a simulation in the device, where there is There is no perspective. But this will allow us to simplify the math a lot, and we would not know anyway the actual position of your eyes.
-
-This is a point that allows a big simplification of the math and code.
-
 ## Limitations in this project
 
 To keep things focused we avoid complex branches of behavior by constraining the scenario:
@@ -118,7 +97,7 @@ To keep things focused we avoid complex branches of behavior by constraining the
 - Ambient medium has refractive index of 1 (air).
 - Use materials with refractive index > 1, and prefer 1.5 (glass).
 - Only one refraction event (ignore any later exit / second refraction).
-- Incident rays are always orthogonal to the background plane.
+- Incident rays are always orthogonal to the background plane (no perspective).
 - Objects are 2D shapes parallel to the background (no 3D, no perspective).
 - No gap: objects touch the background plane.
 - Two controls: bezel (edge transition) and thickness (height under bezel).
@@ -220,55 +199,43 @@ Now let's see these surface functions in action through interactive ray tracing 
 
 <RayRefractionSimulation />
 
-You can see in the above simulations that in concave surfaces, the light ray can go outside of the glass, while in convex surfaces it always stays inside.
+From the simulation, you can see that concave surfaces push rays outside the glass; convex surfaces keep them inside.
 
-Displacing the ray outside of the object is a behavior we want to avoid, as it requires to access the background outside of the object. Apple seems to only use convex surfaces in Liquid Glass (with the exception of the Switch components, which we will cover later). It is important then to understand that the final displacement will be less performant if we try to simulate concave surfaces.
+We want to avoid outside displacement because it requires sampling background beyond the object. Apple’s Liquid Glass appears to favor convex profiles (except the Switch, covered later).
 
-- The background arrow shows displacement: how far a ray lands vs. without glass. Its color encodes magnitude (longer → more purple) and is reused in the visualization below.
+The background arrow indicates displacement—how far a ray lands compared to where it would have landed without glass. Color encodes magnitude (longer → more purple).
 
-- Symmetry: rays at the same border distance have the same incidence and displacement magnitude. Compute once and reuse around the bezel or object.
+Take a look at symmetry: rays at the same distance from the border share the same displacement magnitude on each side. Compute once, reuse around the bezel/object.
 
 # Displacement Vector Field
 
-Now that we know how to calculate the displacement at a distance from border, let's calculate the displacement vector field for the entire glass surface.
+Now that calculated the displacement at a distance from border, let's calculate the displacement vector field for the entire glass surface.
 
-The vector field here just describes at every position on the glass surface how much the light ray is displaced from its original position. This displacement is a vector calculated based on the angle of incidence and the refractive index of the glass.
+The vector field describes at every position on the glass surface how much the light ray is displaced from its original position, and in which direction. In a circle, this displacement is always orthogonal to the border.
 
 ## Pre-calculating the displacement magnitude
 
 Because we saw that this displacement magnitude is symmetric around the bezel, we can pre-calculate it for a range of distances from the border, on a single radius.
 
-This allows us to calculate everything in two dimensions once (x and z axis), on one "half-slice" of the object, and we will the rotate these pre-calculated vectors around the z-axis, which will move these vectors in the y-axis.
+This allows us to calculate everything in two dimensions once (x and z axis), on one "half-slice" of the object, and we will the rotate these pre-calculated displacements around the z-axis.
 
-We do that for two reasons:
-
-- Performance, even if this is not a big optimisation, given the fact that the main bottleneck here is the fact that everything will be done in the JS main thread.
-- Simplicity, because we can focus on a single 2D, and not worry about the 3D geometry of the object. (the object is just a revolution of this 2D slice).
-
-The translational symmetry along the edge normal allows us to re-use the same displacement magnitudes all around the bezel.
-The only constraint being that the displacement vector will be oriented along the normal at the border.
+The actual number of samples we need to do on a radius is of 127 ray simulations, and is determined by the constraints of the SVG Displacement Map resolution. (See next section.)
 
 <DisplacementVectorField />
 
-In this
-
-### Steps
-
-- Simulate rays at different distances from the border on a single 2D slice of the object.
-- Flatten these rays into a 1D array of displacement magnitudes. (Projection)
-- Reduce these displacement magnitudes to be a ratio of the maximum possible displacement. (Normalization)
-  This allows us to see all arrows with no overlap, to get a better visualisation. We also keep the color of the arrows to help visualise the magnitude.
-
-```ts
-displacementVector = {
-  angle: normalAtBorder,
-  magnitude: displacementMagnitude, // Calculated based on the angle of incidence and refractive index
-};
-```
-
 ## Normalizing vectors
 
+In the above diagram, the arrows are all scaled down for visibility, so they do not overlap. This is normalization, and is also useful for the next steps to store
+
 To use these vectors in a displacement map, we need to normalize them. Normalization means scaling the vectors so that their maximum magnitude is 1, which allows us to represent them in a fixed range.
+
+So we calculate the maximum displacement magnitude in our pre-calculated array:
+
+```ts
+const maximumDisplacement = Math.max(...displacementMagnitudes);
+```
+
+And we divide each vector's magnitude by this maximum:
 
 ```ts
 displacementVector_normalized = {
@@ -277,13 +244,13 @@ displacementVector_normalized = {
 };
 ```
 
+We store `maximumDisplacement` as we will need it to re-scale the displacement map back to the actual magnitudes.
+
 # SVG Displacement Map
 
-Now we need to translate our mathematical refraction calculations into something the browser can actually render. We'll use [**SVG displacement maps**](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap)—a technique that shifts pixels based on color values in an image.
+Now we need to translate our mathematical refraction calculations into something the browser can actually render. We'll use [**SVG displacement maps**](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap).
 
-## What is a Displacement Map?
-
-A **displacement map** is simply an image where each pixel's color tells the browser how to move the corresponding pixel in another image. Think of it like a field of arrows, where each arrow (encoded as colors) points in the direction a pixel should be moved.
+A displacement map is simply an image where each pixel's color tells the browser how far it should find the actual pixel value from its current position.
 
 SVG's `<feDisplacementMap />` encodes these pixels in a 32 bit RGBA image, where each channel represents a different axis of displacement.
 
@@ -387,35 +354,33 @@ This playground applies the SVG displacement filter to a simple scene and lets y
 
 <Playground />
 
-# Adding the Finishing Touch: Specular Highlights
+# Specular Highlight
 
 The final piece of our Liquid Glass effect is the **specular highlight**—those bright, shiny edges you see on real glass objects when light hits them at certain angles.
 
-## What Creates Specular Highlights?
-
-In the real world, specular highlights occur when light reflects directly off a smooth surface toward your eye.
-
-This specular highlight simulates the way light reflects off curved surfaces, creating bright edges where the surface normal aligns with a specified light direction. The effect is most prominent along the bezel edges where the surface curves meet the viewing angle, giving objects that characteristic glassy, three-dimensional appearance.
-
-The calculation involves taking the dot product between the surface normal at each point along the border and a directional vector (typically representing the light source direction). This dot product gives us a measure of how aligned these vectors are—when they're perfectly aligned, we get maximum specular intensity, and when they're perpendicular, we get no specular reflection.
-
-In our implementation, we apply this specular calculation only to the bezel region, creating a subtle rim lighting effect that enhances the perception of depth and material properties of the glass surface.
+To achieve it, we define an arbitrary angle, and we adjust opacity of pixels of the border around the shape, based on how aligned are the this arbitrary angle, and the normal at the border.
 
 <SpecularPreview />
 
-# Compositing the Filter
+# Combining Refraction and Specular Highlight
 
-To combine the refraction displacement map and the specular highlight, we can use SVG's `<feImage />` to overlay the specular image on top of the displacement map. This way, we can apply both effects in a single filter.
+In the final SVG filter, we combine both the displacement map for refraction and the specular highlight effect.
+
+Both are loaded as separate `<feImage />` elements, and then combined using `<feBlend />` to overlay the highlight on top of the refracted image.
+
+But this part is actually the most "creative" part of the effect, and it's just by tweaking the number of filters, and their parameters, that you can get a variety of different looks.
 
 ## SVG Filter as `backdrop-filter`
 
-To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
+This is the part where cross-browser compatibility ends. Only Chrome currently supports using SVG filters as `backdrop-filter`, which is essential for applying the Liquid Glass effect to UI components:
 
 ```css
 .glass-panel {
   backdrop-filter: url(#liquidGlassFilterId);
 }
 ```
+
+> Note: The backdrop-filter dimensions does not adjust automatically to the element size, so you need to ensure that your filter images fit the size of your elements.
 
 Now that we have all the pieces in place, we can create components that use this effect.
 
@@ -459,6 +424,10 @@ The goal won't be to create real components for production, but just to get a ta
 
 ## Magnifying Glass
 
+This component actually uses two displacement maps: one for the refraction on the sides, and one for the zooming, which has a stronger refraction effect.
+
+It also plays with shadows and scaling to create a more dynamic, interactive effect.
+
 <MagnifyingGlass />
 
 ## Searchbox
@@ -467,53 +436,28 @@ The goal won't be to create real components for production, but just to get a ta
 
 ## Switch
 
-Switch uses a lipped bezel, which is a bit more complex than the simple convex bezel we used for the glass panel.
-
-The lip makes the surface convex on the outside and concave in the middle, which make the center slider zoomed out, while the edges refract the inside.
+This uses a lip bezel, which makes the surface convex on the outside and concave in the middle. This makes the center slider zoomed out, while the edges refract the inside.
 
 <Switch />
 
 ## Slider
 
-Slider re-uses the same logic as the Switch, and lets user see the current value of the slider behind the thumb glass.
+Slider allows you to see the current level through the glass, while the sides refract the background. It uses a convex bezel.
 
 <Slider />
 
-## Mixed UI
+## Music Player
 
-A composite UI showcasing a glass search field over a live album grid. The grid is 4×5 and uses public iTunes Search API data (no auth) for album images and titles.
+This fake music player UI tries to mimic the look of Apple Music’s Liquid Glass panels, using a convex bezel and a subtle specular highlight.
+
+It relies on the iTunes Search API to fetch album art and song details.
 
 <MixedUI />
 
 # Conclusion
 
-This proof‑of‑concept reconstructs the core of Apple’s Liquid Glass look by focusing on refraction and a displacement workflow using pure CSS + SVG. While it already yields a convincing, extensible effect, today it’s Chrome‑only because Chrome uniquely lets SVG filters act as backdrop-filter.
+This proof‑of‑concept recreates the essence of Apple’s Liquid Glass through refraction (with a simple highlight). It’s convincing and extensible, but currently Chrome‑only because Chrome is the only browser that allows SVG filters as `backdrop-filter`—there’s no practical cross‑browser fallback yet.
 
-The approach is intentionally minimal, to make it easy to understand and extend. The core steps are:
+Treat it as an experiment rather than production code. It needs performance work, and dynamic sizes/shapes are expensive because any change (except the filter `scale`) currently requires regenerating the displacement map.
 
-$$
-surface → normals → refraction → vector field → displacement map
-$$
-
-Each step is swappable (better height functions, different optical models, added highlights).
-
-### When to Use
-
-- Polished glassy panels, HUD cards, controls needing subtle depth.
-- Interfaces where motion + distortion can guide attention.
-- Electron applications, or every runtime that can afford Chrome‑only features.
-
-### Fallbacks for Non-Chrome Browsers
-
-Provide a graceful static blur / translucency for browsers without SVG backdrop support.
-
-### Next Steps
-
-- Add squircle / organic bezel profiles.
-- Optimize: replace base64 intermediates with SVG filter stages.
-- Expand component set (Switch, Slider) with parameter presets.
-- Support arbitrary shapes.
-
-### Performance Notes
-
-- Stay convex when possible; concave geometries increase overdraw and cost.
+The code isn’t published yet. If you’re interested, leave a comment and I’ll consider open‑sourcing it.
