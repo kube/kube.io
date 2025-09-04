@@ -1,18 +1,20 @@
 import type { ImageData as CanvasImageData } from "canvas";
-import { motion, useMotionValue, useTransform } from "motion/react";
-import { useId } from "react";
+import { motion, useInView, useMotionValue, useTransform } from "motion/react";
+import { useEffect, useId, useRef } from "react";
 import { SurfaceEquationSelector } from "../components/SurfaceEquationSelector";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
 } from "../lib/displacementMap";
-import { imageDataToUrl } from "../lib/imageDataToUrl";
 import { getRayColor } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 
 export const Playground: React.FC = () => {
   const filterId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.05 });
 
   const width = 400;
   const height = 300;
@@ -52,23 +54,55 @@ export const Playground: React.FC = () => {
     return Math.max(...arr.map(Math.abs));
   });
 
-  const imageData = useTransform(
-    () =>
-      calculateDisplacementMap2(
-        width,
-        height,
-        objectWidth,
-        objectHeight,
-        radius,
-        bezelWidth.get(),
-        (maximumDisplacement.get() as unknown as number) || 1,
-        (precomputedDisplacementMap.get() as unknown as number[]) || []
-      ) as CanvasImageData
-  );
+  const imageData = useTransform(() => {
+    if (!isInView) return null;
+    return calculateDisplacementMap2(
+      width,
+      height,
+      objectWidth,
+      objectHeight,
+      radius,
+      bezelWidth.get(),
+      (maximumDisplacement.get() as unknown as number) || 1,
+      (precomputedDisplacementMap.get() as unknown as number[]) || []
+    ) as CanvasImageData;
+  });
 
-  const displacementMapUrl = useTransform(() =>
-    imageDataToUrl(imageData.get() as unknown as CanvasImageData)
-  );
+  // Update canvas when image data changes
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const unsubscribe = imageData.on("change", (canvasImageData) => {
+      if (!canvasImageData) return;
+      // Convert canvas ImageData to browser ImageData
+      canvas.width = canvasImageData.width;
+      canvas.height = canvasImageData.height;
+      const browserImageData = new ImageData(
+        new Uint8ClampedArray(canvasImageData.data),
+        canvasImageData.width,
+        canvasImageData.height
+      );
+      ctx.putImageData(browserImageData, 0, 0);
+    });
+
+    // Initialize with current value
+    const initialCanvasImageData = imageData.get();
+    if (!initialCanvasImageData) return;
+    canvas.width = initialCanvasImageData.width;
+    canvas.height = initialCanvasImageData.height;
+    const initialBrowserImageData = new ImageData(
+      new Uint8ClampedArray(initialCanvasImageData.data),
+      initialCanvasImageData.width,
+      initialCanvasImageData.height
+    );
+    ctx.putImageData(initialBrowserImageData, 0, 0);
+
+    return () => unsubscribe();
+  }, [isInView, imageData]);
 
   const pathData = useTransform(() => {
     const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
@@ -83,11 +117,25 @@ export const Playground: React.FC = () => {
       .join(" ");
   });
 
-  // Derived MotionValues for UI bindings
-  const backgroundImageCss = useTransform(
-    displacementMapUrl,
-    (u) => `url(${u})`
-  );
+  // Create a data URL from canvas for SVG filter
+  const displacementMapUrl = useTransform(imageData, (canvasImageData) => {
+    if (!canvasImageData) return null;
+    // Create a temporary canvas to convert ImageData to data URL
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = canvasImageData.width;
+    tempCanvas.height = canvasImageData.height;
+    const tempCtx = tempCanvas.getContext("2d");
+    if (!tempCtx) return "";
+
+    const browserImageData = new ImageData(
+      new Uint8ClampedArray(canvasImageData.data),
+      canvasImageData.width,
+      canvasImageData.height
+    );
+    tempCtx.putImageData(browserImageData, 0, 0);
+    return tempCanvas.toDataURL();
+  });
+
   const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
   const y2Motion = useTransform(() => {
     const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
@@ -124,7 +172,10 @@ export const Playground: React.FC = () => {
     "uppercase tracking-[0.15em] text-[10px] leading-none text-neutral-500 dark:text-neutral-400";
 
   return (
-    <div className="grid grid-cols-2 gap-2 text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)]">
+    <div
+      ref={containerRef}
+      className="grid grid-cols-2 gap-2 text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)]"
+    >
       <div className={`flex flex-col ${panel}`}>
         <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
         <div className="p-4 flex items-center justify-center gap-4 grow">
@@ -204,18 +255,7 @@ export const Playground: React.FC = () => {
         >
           Displacement Map
         </h4>
-        <motion.div
-          className="text-sm select-none"
-          aria-label="Displacement Map"
-          style={{
-            width: "100%",
-            aspectRatio: "4 / 3",
-            backgroundImage: backgroundImageCss,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
+        <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
       </div>
 
       <div className={`${panel}`}>
@@ -364,6 +404,7 @@ export const Playground: React.FC = () => {
                 yChannelSelector="G"
               />
             </filter>
+
             <pattern
               id="grid"
               x={-25}
@@ -372,29 +413,34 @@ export const Playground: React.FC = () => {
               height="50"
               patternUnits="userSpaceOnUse"
             >
-              {/* Safari workaround: animate x/y instead of patternTransform */}
-              <animate
-                attributeName="x"
-                from="-25"
-                to="25"
-                dur="2s"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="y"
-                from="-25"
-                to="25"
-                dur="2s"
-                repeatCount="indefinite"
-              />
-              <path
-                d="M 50 0 L 0 0 0 50"
-                fill="none"
-                stroke="#D7E8E6"
-                strokeWidth="3"
-                opacity={0.8}
-              />
+              {isInView && (
+                <>
+                  {/* Safari workaround: animate x/y instead of patternTransform */}
+                  <animate
+                    attributeName="x"
+                    from="-25"
+                    to="25"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="y"
+                    from="-25"
+                    to="25"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                  <path
+                    d="M 50 0 L 0 0 0 50"
+                    fill="none"
+                    stroke="#D7E8E6"
+                    strokeWidth="3"
+                    opacity={0.8}
+                  />
+                </>
+              )}
             </pattern>
+
             <linearGradient
               id="doubleGradient"
               x1="0%"

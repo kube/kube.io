@@ -35,6 +35,7 @@ export const SpecularPreview: React.FC = () => {
 
   // Use useTransform for reactive specular image data
   const specularImage = useTransform(specularAngle, (angle) => {
+    if (!isInView) return null;
     return calculateRefractionSpecular(
       objectWidth,
       objectHeight,
@@ -47,8 +48,6 @@ export const SpecularPreview: React.FC = () => {
 
   // Update canvas when image data changes
   useEffect(() => {
-    if (!isInView) return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -56,6 +55,7 @@ export const SpecularPreview: React.FC = () => {
     if (!ctx) return;
 
     const unsubscribe = specularImage.on("change", (canvasImageData) => {
+      if (!canvasImageData) return;
       // Convert canvas ImageData to browser ImageData
       const browserImageData = new ImageData(
         new Uint8ClampedArray(canvasImageData.data),
@@ -67,6 +67,7 @@ export const SpecularPreview: React.FC = () => {
 
     // Initialize with current value
     const initialCanvasImageData = specularImage.get();
+    if (!initialCanvasImageData) return;
     const initialBrowserImageData = new ImageData(
       new Uint8ClampedArray(initialCanvasImageData.data),
       initialCanvasImageData.width,
