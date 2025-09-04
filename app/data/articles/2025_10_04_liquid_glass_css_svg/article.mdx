@@ -27,11 +27,11 @@ import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
 
 # Introduction
 
-Apple [introduced the Liquid Glass effect during WWDC 2025](https://www.youtube.com/watch?v=jGztGfRujSE) in June. This piece is a hands‑on exploration of how to recreate a similar, physics‑inspired UI effect on the web using CSS, SVG displacement maps, and refraction math. Over a decade ago I wrote a tiny [raytracer](https://www.youtube.com/watch?v=1JoTZg4Ulo0) at school; it only did reflections, but it planted the seed for my curiosity about how light bends.
+Apple [introduced the Liquid Glass effect during WWDC 2025](https://www.youtube.com/watch?v=jGztGfRujSE) in June—a stunning UI effect that makes interface elements appear to be made of curved, refractive glass. This article is a hands‑on exploration of how to recreate a similar effect on the web using CSS, SVG displacement maps, and physics-based refraction calculations.
 
 Instead of chasing pixel‑perfect parity, we’ll approximate Liquid Glass, recreating the core refraction and a specular highlight, as a focused proof‑of‑concept you can extend.
 
-We’ll now build up the effect from first principles—starting with how light bends.
+We'll build up the effect from first principles, starting with how light bends when passing through different materials.
 
 <div className="relative my-16">
   {/* Glow frame */}
@@ -61,8 +61,9 @@ We’ll now build up the effect from first principles—starting with how light 
 
 # Understanding Refraction
 
-Refraction is the change in direction (bending) of a wave (in our case a light wave) as it passes between media with different refractive indices, caused by a change in propagation speed.
-The relationship between the incident and refracted angles is given by Snell's Law:
+**Refraction** is what happens when light changes direction as it passes from one material to another (like from air into glass). This bending occurs because light travels at different speeds through different materials.
+
+The relationship between the incoming and outgoing light angles is described by [**Snell's Law**](https://en.wikipedia.org/wiki/Snell%27s_law):
 
 <div className="pt-6 w-full flex justify-center">
   $$ n_1 \sin(\theta_1) = n_2 \sin(\theta_2) $$
@@ -93,7 +94,9 @@ Under these assumptions every ray we care about has a well-defined refracted dir
 
 > If you want to understand a it more about why refraction works like this, check out this [video by Veritasium about Infinite Paths](https://www.youtube.com/watch?v=qJZ1Ez28C-A). Though what we'll do here is simply applying Snell's Law to calculate the refraction angle based on the incident angle and the refractive index of the glass.
 
-## What are Ray Lights here?
+## What are Light Rays in this context?
+
+In our simulation, we're modeling how light travels from your screen to your eyes. Each "ray" represents the path a photon takes as it bounces off screen pixels, passes through our virtual glass surface, and reaches your retina.
 
 <ScreenLightToEyeDiagram />
 
@@ -105,9 +108,13 @@ We will also simplify the geometry of any refracting object:
 - There is no physical gap between the object and the background plane (they are in contact).
 - Two parameters can vary: its bezel (edge transition) and its thickness (peak height above the background).
 
-# Surface Function
+# Creating the Glass Surface
 
-Surface height across the bezel is described by a single, continuous, differentiable function f over the normalized interval [0,1]. Because incoming rays are orthogonal to the background, the height at a point depends only on its normalized inward distance from the object's outer border. We call this distanceFromSide, defined as the ratio between the start of the bezel (0 at the outer border) and the end of the bezel (1 where the bezel transitions to the flat interior).
+To create our glass effect, we need to define the shape of our virtual glass surface. Think of this like describing the cross-section of a lens or curved glass panel.
+
+## Surface Function
+
+Our glass surface is described by a mathematical function that defines how thick the glass is at any point from its edge to its center. This **surface function** takes a value between 0 (at the outer edge) and 1 (at the center) and returns the height of the glass at that point.
 
 ```ts
 const height = f(distanceFromSide);
@@ -230,9 +237,11 @@ displacementVector_normalized = {
 
 # SVG Displacement Map
 
-A displacement map is an image that defines how pixels in a target image should be displaced. In our case, we will use a displacement map to create the distortion effect of the Liquid Glass.
+Now we need to translate our mathematical refraction calculations into something the browser can actually render. We'll use [**SVG displacement maps**](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feDisplacementMap)—a technique that shifts pixels based on color values in an image.
 
-Displacement maps are typically images with each pixel encoding a vector in multiple channels (e.g., RGB).
+## What is a Displacement Map?
+
+A **displacement map** is simply an image where each pixel's color tells the browser how to move the corresponding pixel in another image. Think of it like a field of arrows, where each arrow (encoded as colors) points in the direction a pixel should be moved.
 
 SVG's `<feDisplacementMap />` encodes these pixels in a 32 bit RGBA image, where each channel represents a different axis of displacement.
 
@@ -336,9 +345,13 @@ This playground applies the SVG displacement filter to a simple scene and lets y
 
 <Playground />
 
-# Specular
+# Adding the Finishing Touch: Specular Highlights
 
-What Apple seems to call "specular" in Liquid Glass is a border around the object, which opacity is defined by the dot product (or alignment) of the normal to border and an arbitrary vector.
+The final piece of our Liquid Glass effect is the **specular highlight**—those bright, shiny edges you see on real glass objects when light hits them at certain angles.
+
+## What Creates Specular Highlights?
+
+In the real world, specular highlights occur when light reflects directly off a smooth surface toward your eye.
 
 This specular highlight simulates the way light reflects off curved surfaces, creating bright edges where the surface normal aligns with a specified light direction. The effect is most prominent along the bezel edges where the surface curves meet the viewing angle, giving objects that characteristic glassy, three-dimensional appearance.
 
@@ -352,11 +365,9 @@ In our implementation, we apply this specular calculation only to the bezel regi
 
 To combine the refraction displacement map and the specular highlight, we can use SVG's `<feImage />` to overlay the specular image on top of the displacement map. This way, we can apply both effects in a single filter.
 
-# Demo
+# Bringing It All Together: Real UI Components
 
-With the refraction math and displacement map in place, the next step is packaging them into real-world UI components.
-
-## SVG Filter as `backdrop-filter`
+With our refraction math and displacement maps working, let's see how this translates to actual UI components you might use in an application.
 
 <div className="relative my-8">
   {/* Glow frame */}
@@ -369,7 +380,7 @@ With the refraction math and displacement map in place, the next step is packagi
       </div>
       <div className="text-sm leading-6">
         <p className="font-semibold tracking-wide text-base">
-          Chrome‑specific feature
+          Chrome‑specific demo
         </p>
         <p className="opacity-80">
           Chrome allows using SVG filters as <code>backdrop-filter</code>, which
@@ -387,6 +398,8 @@ With the refraction math and displacement map in place, the next step is packagi
     </div>
   </div>
 </div>
+
+## SVG Filter as `backdrop-filter`
 
 To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
 

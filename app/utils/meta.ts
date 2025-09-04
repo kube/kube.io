@@ -30,10 +30,10 @@ export function createMetaTags(config: MetaConfig) {
   const tags = [
     { title },
     { name: "description", content: description },
-    
+
     // Canonical URL
     { tagName: "link", rel: "canonical", href: url },
-    
+
     // OpenGraph
     { property: "og:title", content: title },
     { property: "og:description", content: description },
@@ -45,7 +45,7 @@ export function createMetaTags(config: MetaConfig) {
     { property: "og:image:height", content: "630" },
     { property: "og:image:alt", content: title },
     { property: "og:locale", content: DEFAULT_META.locale },
-    
+
     // Twitter Card
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:site", content: DEFAULT_META.twitterHandle },
@@ -54,7 +54,7 @@ export function createMetaTags(config: MetaConfig) {
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: image },
     { name: "twitter:image:alt", content: title },
-    
+
     // Additional meta
     { name: "author", content: DEFAULT_META.author },
     { name: "robots", content: "index, follow" },
@@ -65,11 +65,14 @@ export function createMetaTags(config: MetaConfig) {
   if (type === "article" && publishDate) {
     tags.push(
       { property: "article:published_time", content: publishDate },
-      { property: "article:author", content: `https://${DEFAULT_META.siteName}` },
+      {
+        property: "article:author",
+        content: `https://${DEFAULT_META.siteName}`,
+      },
       { property: "article:section", content: "Technology" },
       { property: "article:tag", content: "Web Development" }
     );
-    
+
     if (modifiedDate) {
       tags.push({ property: "article:modified_time", content: modifiedDate });
     }
@@ -88,10 +91,10 @@ export function createBlogPostMeta(post: {
   const url = `https://${DEFAULT_META.siteName}/blog/${post.slug}`;
   const publishDate = new Date(post.date).toISOString();
   const title = `${post.title} — ${DEFAULT_META.siteName}`;
-  
+
   // Generate OG image URL for blog posts
   const ogImageUrl = `https://${DEFAULT_META.siteName}/blog/${post.slug}/og-image.png`;
-  
+
   return createMetaTags({
     title,
     description: post.description,
@@ -112,7 +115,7 @@ export function createStructuredData(post: {
 }) {
   // Generate OG image URL for blog posts
   const ogImageUrl = `https://${DEFAULT_META.siteName}/blog/${post.slug}/og-image.png`;
-  
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
