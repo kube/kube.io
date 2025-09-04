@@ -6,7 +6,7 @@ import {
   SurfaceEquationSelector,
   SurfaceType,
 } from "../components/SurfaceEquationSelector";
-import { getRayColor } from "../lib/rayColor";
+import { getRayColorDimmed } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 /**
@@ -296,7 +296,10 @@ export const RayRefractionSimulation: React.FC = () => {
     return ratio;
   });
 
-  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const displacementColor = useTransform(
+    displacementIntensity,
+    getRayColorDimmed
+  );
   const displacementThickness = useTransform(
     displacementIntensity,
     (intensity) => 0.3 + intensity * 4
@@ -423,7 +426,7 @@ export const RayRefractionSimulation: React.FC = () => {
           y1={0}
           x2={currentX}
           y2={incidentY2}
-          stroke={getRayColor(0)}
+          stroke={getRayColorDimmed(0)}
           strokeWidth="3"
         />
 
@@ -434,7 +437,7 @@ export const RayRefractionSimulation: React.FC = () => {
           y1={refractY1}
           x2={refractX2}
           y2={refractY2}
-          stroke={getRayColor(0.3)}
+          stroke={getRayColorDimmed(0.3)}
           strokeWidth="3"
         />
 
@@ -444,7 +447,7 @@ export const RayRefractionSimulation: React.FC = () => {
           y1={incidentY2}
           x2={currentX}
           y2={viewHeight - backgroundHeight}
-          stroke={getRayColor(0)}
+          stroke={getRayColorDimmed(0)}
           strokeWidth="1"
           strokeDasharray="3"
           strokeOpacity="0.5"

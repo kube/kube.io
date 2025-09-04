@@ -6,7 +6,7 @@ import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
 } from "../lib/displacementMap";
-import { getRayColor } from "../lib/rayColor";
+import { getRayColorDimmed } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 import { RayRefractionSimulationMini } from "./RayRefractionSimulationMini";
 
@@ -160,7 +160,10 @@ export const Playground: React.FC = () => {
     const max = (maximumDisplacement.get() as unknown as number) || 1;
     return d / max;
   });
-  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const displacementColor = useTransform(
+    displacementIntensity,
+    getRayColorDimmed
+  );
   const showIndicator = useTransform(currentX, (v) =>
     v == null || v < 0 || v > 1 ? "none" : "block"
   );
