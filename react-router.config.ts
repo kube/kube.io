@@ -25,6 +25,9 @@ export default {
       ...POSTS.filter((_) => _.published !== false).map(
         (post) => `/blog/${post.slug}`
       ),
+      ...POSTS.filter((_) => _.published !== false).map(
+        (post) => `/blog/${post.slug}/og-image.png`
+      ),
 
       "/rss.xml",
       "/atom.xml",

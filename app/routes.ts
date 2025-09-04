@@ -8,6 +8,7 @@ export default [
   route("cv.pdf", "./routes/cv/pdf.tsx"),
   route("blog", "./routes/blog/index.tsx"),
   route("blog/:slug", "./routes/blog/post.tsx"),
+  route("blog/:slug/og-image.png", "./routes/blog/og-image.png.tsx"),
   route("rss.xml", "./routes/rss.xml.tsx"),
   route("atom.xml", "./routes/atom.xml.tsx"),
   route("feed.json", "./routes/feed.json.tsx"),

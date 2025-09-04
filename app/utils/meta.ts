@@ -89,11 +89,14 @@ export function createBlogPostMeta(post: {
   const publishDate = new Date(post.date).toISOString();
   const title = `${post.title} — ${DEFAULT_META.siteName}`;
   
+  // Generate OG image URL for blog posts
+  const ogImageUrl = `https://${DEFAULT_META.siteName}/blog/${post.slug}/og-image.png`;
+  
   return createMetaTags({
     title,
     description: post.description,
     url,
-    image: post.image,
+    image: post.image || ogImageUrl,
     type: "article",
     publishDate,
     modifiedDate: publishDate,
@@ -107,12 +110,15 @@ export function createStructuredData(post: {
   date: string;
   image?: string;
 }) {
+  // Generate OG image URL for blog posts
+  const ogImageUrl = `https://${DEFAULT_META.siteName}/blog/${post.slug}/og-image.png`;
+  
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
-    image: post.image || DEFAULT_META.defaultImage,
+    image: post.image || ogImageUrl,
     author: {
       "@type": "Person",
       name: DEFAULT_META.author,
