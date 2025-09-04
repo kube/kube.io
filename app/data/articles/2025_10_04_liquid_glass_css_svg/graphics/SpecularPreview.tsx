@@ -68,6 +68,8 @@ export const SpecularPreview: React.FC = () => {
     // Initialize with current value
     const initialCanvasImageData = specularImage.get();
     if (!initialCanvasImageData) return;
+    canvas.width = initialCanvasImageData.width;
+    canvas.height = initialCanvasImageData.height;
     const initialBrowserImageData = new ImageData(
       new Uint8ClampedArray(initialCanvasImageData.data),
       initialCanvasImageData.width,
@@ -91,12 +93,7 @@ export const SpecularPreview: React.FC = () => {
       <div className="flex flex-col items-center gap-6">
         {/* Specular preview */}
         <div className="w-full bg-black rounded-xl px-8 py-16 flex items-center justify-center border border-neutral-200/50 dark:border-neutral-700/60">
-          <canvas
-            ref={canvasRef}
-            width={objectWidth}
-            height={objectHeight}
-            className="rounded-lg"
-          />
+          <canvas ref={canvasRef} className="rounded-lg max-w-full h-auto" />
         </div>
 
         {/* Slider control */}
