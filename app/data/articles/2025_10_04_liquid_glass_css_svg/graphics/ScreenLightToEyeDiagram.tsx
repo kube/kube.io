@@ -1,9 +1,11 @@
 export function ScreenLightToEyeDiagram() {
+  // 8 parallel rays, evenly spaced and centered vertically around y=80
+  const rayYs = Array.from({ length: 8 }, (_, i) => 80 + (i - 3.5) * 14);
   return (
     <div className="w-full max-w-2xl mx-auto mb-8 select-none">
       <svg viewBox="0 0 555 180" className="w-full h-auto bg-transparent">
         {/* Viewer (eye) - profile view */}
-        <g transform="translate(80, 80)">
+        <g transform="translate(74, 80)">
           {/* Eye shape - almond/oval from profile */}
           <ellipse
             cx="0"
@@ -48,25 +50,28 @@ export function ScreenLightToEyeDiagram() {
           </marker>
         </defs>
 
-        {/* Light ray line */}
-        <line
-          x1="105"
-          y1="80"
-          x2="470"
-          y2="80"
-          stroke="currentColor"
-          strokeWidth="2"
-          markerEnd="url(#arrowhead)"
-        />
+        {/* Light rays */}
+        {rayYs.map((y, i) => (
+          <line
+            key={i}
+            x1={105}
+            y1={y}
+            x2={470}
+            y2={y}
+            stroke="currentColor"
+            strokeWidth={2}
+            markerEnd="url(#arrowhead)"
+          />
+        ))}
 
-        {/* Light ray label */}
+        {/* Light rays label */}
         <text
           x="270"
-          y="70"
+          y="18"
           textAnchor="middle"
           className="text-sm font-medium fill-current"
         >
-          light ray
+          parallel virtual light rays
         </text>
 
         {/* Screen */}

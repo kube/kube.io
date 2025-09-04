@@ -124,7 +124,7 @@ export const Filter: React.FC<FilterProps> = ({
   );
 
   const content = (
-    <filter id={id} filterRes="128">
+    <filter id={id}>
       {magnifyingScale && (
         <>
           <motion.feImage

@@ -17,7 +17,7 @@ export function generateFunctionPath(
     const y = Math.max(0, Math.min(1, fn(x))); // clamp to [0,1]
     const px = pad + x * (w - pad * 2);
     const py = h - (pad + y * (h - pad * 2));
-    d += `${i === 0 ? "M" : " L"} ${px} ${py}`;
+    d += `${i === 0 ? "M" : " L"} ${px.toFixed(2)} ${py.toFixed(2)}`;
   }
   return d;
 }

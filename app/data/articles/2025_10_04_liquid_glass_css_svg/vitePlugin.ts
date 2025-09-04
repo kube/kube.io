@@ -400,7 +400,7 @@ export const Filter = ({
     return value.toString();
   });
 
-  const content = React.createElement("filter", { id: id, filterRes: "128" },
+  const content = React.createElement("filter", { id: id },
     ${
       params.magnify
         ? `

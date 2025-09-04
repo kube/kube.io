@@ -43,17 +43,17 @@ We'll build up the effect from first principles, starting with how light bends w
         <SiGooglechrome className="h-6 w-6" />
       </div>
       <div className="text-sm leading-6">
-        <p className="font-semibold tracking-wide text-base">
+        <div className="font-semibold tracking-wide text-base">
           Chrome‑only demo
-        </p>
-        <p className="opacity-80">
+        </div>
+        <div className="opacity-80">
           The interactive demo at the end currently works in Chrome only (due to
           SVG filters as backdrop‑filter).
-        </p>
-        <p className="opacity-80">
+        </div>
+        <div className="opacity-80">
           You can still read the article and interact with the inline
           simulations in other browsers.
-        </p>
+        </div>
       </div>
     </div>
   </div>
@@ -94,16 +94,12 @@ $$\theta_2 = \text{angle of refraction}$$
 
 <RefractionAnglesExplanation />
 
-When light travels from a higher refractive index medium into a lower one, Snell's Law eventually has no real solution beyond a critical angle: the wave undergoes [Total Internal Reflection](https://en.wikipedia.org/wiki/Total_internal_reflection) instead of refracting out. To keep things focused we avoid that branch of behavior by constraining the scenario. We will:
+In the above interactive diagram, you can see that:
 
-- Treat the ambient medium as air with index 1.
-- Use materials with refractive index > 1 (so rays always enter the higher index first).
-- Consider only a single refraction event (ignore any later exit / second refraction).
-- Assume incident rays start orthogonal to the background plane.
-
-Under these assumptions every ray we care about has a well-defined refracted direction via Snell's Law, and we can postpone handling internal reflection or multi-interface paths.
-
-> If you want to understand a it more about why refraction works like this, check out this [video by Veritasium about Infinite Paths](https://www.youtube.com/watch?v=qJZ1Ez28C-A). Though what we'll do here is simply applying Snell's Law to calculate the refraction angle based on the incident angle and the refractive index of the glass.
+- When n2 = n1, the light ray passes straight through without bending.
+- When n2 > n1, the ray bends toward the normal (the imaginary line perpendicular to the surface).
+- When n2 < n1, the ray bends away from the normal, and depending on the angle of incidence, it may bend so much that it reflects back into the original medium instead of passing through. This is called [Total Internal Reflection](https://en.wikipedia.org/wiki/Total_internal_reflection)
+- When incident ray is orthogonal to the surface, it passes straight through regardless of refractive indices.
 
 ## What are Light Rays in this context?
 
@@ -111,13 +107,24 @@ In our simulation, we're modeling how light travels from your screen to your eye
 
 <ScreenLightToEyeDiagram />
 
+There is one big thing to understand though. These rays are not the actual light rays going from your screen to your eyes. Because they are all orthogonal to the screen. They are just a simulation in the device, where there is There is no perspective. But this will allow us to simplify the math a lot, and we would not know anyway the actual position of your eyes.
+
+This is a point that allows a big simplification of the math and code.
+
 ## Limitations in this project
 
-We will also simplify the geometry of any refracting object:
+To keep things focused we avoid complex branches of behavior by constraining the scenario:
 
-- Objects are defined by a 2D footprint (plan shape) that lies in a plane strictly parallel to the background. (No 3D shapes, no perspective).
-- There is no physical gap between the object and the background plane (they are in contact).
-- Two parameters can vary: its bezel (edge transition) and its thickness (peak height above the background).
+- Ambient medium has refractive index of 1 (air).
+- Use materials with refractive index > 1, and prefer 1.5 (glass).
+- Only one refraction event (ignore any later exit / second refraction).
+- Incident rays are always orthogonal to the background plane.
+- Objects are 2D shapes parallel to the background (no 3D, no perspective).
+- No gap: objects touch the background plane.
+- Two controls: bezel (edge transition) and thickness (height under bezel).
+- Circle shapes only in this article. The same ideas extend to other shapes with a bit more preliminary geometry. Circles also let us form rounded rectangles by stretching the middle along the x or y axis.
+
+Under these assumptions every ray we manipulate has a well-defined refracted direction via Snell's Law, and we simplify a lot our calculations.
 
 # Creating the Glass Surface
 
@@ -125,7 +132,7 @@ To create our glass effect, we need to define the shape of our virtual glass sur
 
 ## Surface Function
 
-Our glass surface is described by a mathematical function that defines how thick the glass is at any point from its edge to its center. This **surface function** takes a value between 0 (at the outer edge) and 1 (at the center) and returns the height of the glass at that point.
+Our glass surface is described by a mathematical function that defines how thick the glass is at any point from its edge to the end of the bezel. This **surface function** takes a value between 0 (at the outer edge) and 1 (end of bezel, start of flat surface) and returns the height of the glass at that point.
 
 ```ts
 const height = f(distanceFromSide);
@@ -215,7 +222,11 @@ Now let's see these surface functions in action through interactive ray tracing 
 
 You can see in the above simulations that in concave surfaces, the light ray can go outside of the glass, while in convex surfaces it always stays inside.
 
-Displacing the ray OUTSIDE of the object is less performant, and Apple seems to only do convex surfaces (with the exception of the Switch and Slider components, which we will cover later). It is important then to understand that the final displacement will be less performant if we try to simulate concave surfaces.
+Displacing the ray outside of the object is a behavior we want to avoid, as it requires to access the background outside of the object. Apple seems to only use convex surfaces in Liquid Glass (with the exception of the Switch components, which we will cover later). It is important then to understand that the final displacement will be less performant if we try to simulate concave surfaces.
+
+- The background arrow shows displacement: how far a ray lands vs. without glass. Its color encodes magnitude (longer → more purple) and is reused in the visualization below.
+
+- Symmetry: rays at the same border distance have the same incidence and displacement magnitude. Compute once and reuse around the bezel or object.
 
 # Displacement Vector Field
 
@@ -223,10 +234,30 @@ Now that we know how to calculate the displacement at a distance from border, le
 
 The vector field here just describes at every position on the glass surface how much the light ray is displaced from its original position. This displacement is a vector calculated based on the angle of incidence and the refractive index of the glass.
 
+## Pre-calculating the displacement magnitude
+
+Because we saw that this displacement magnitude is symmetric around the bezel, we can pre-calculate it for a range of distances from the border, on a single radius.
+
+This allows us to calculate everything in two dimensions once (x and z axis), on one "half-slice" of the object, and we will the rotate these pre-calculated vectors around the z-axis, which will move these vectors in the y-axis.
+
+We do that for two reasons:
+
+- Performance, even if this is not a big optimisation, given the fact that the main bottleneck here is the fact that everything will be done in the JS main thread.
+- Simplicity, because we can focus on a single 2D, and not worry about the 3D geometry of the object. (the object is just a revolution of this 2D slice).
+
 The translational symmetry along the edge normal allows us to re-use the same displacement magnitudes all around the bezel.
 The only constraint being that the displacement vector will be oriented along the normal at the border.
 
 <DisplacementVectorField />
+
+In this
+
+### Steps
+
+- Simulate rays at different distances from the border on a single 2D slice of the object.
+- Flatten these rays into a 1D array of displacement magnitudes. (Projection)
+- Reduce these displacement magnitudes to be a ratio of the maximum possible displacement. (Normalization)
+  This allows us to see all arrows with no overlap, to get a better visualisation. We also keep the color of the arrows to help visualise the magnitude.
 
 ```ts
 displacementVector = {
@@ -404,21 +435,21 @@ With our refraction math and displacement maps working, let's see how this trans
         <SiGooglechrome className="h-6 w-6" />
       </div>
       <div className="text-sm leading-6">
-        <p className="font-semibold tracking-wide text-base">
+        <div className="font-semibold tracking-wide text-base">
           Chrome‑specific demo
-        </p>
-        <p className="opacity-80">
+        </div>
+        <div className="opacity-80">
           Chrome allows using SVG filters as <code>backdrop-filter</code>, which
           isn’t part of the CSS spec.
-        </p>
-        <p className="opacity-80">
+        </div>
+        <div className="opacity-80">
           Above, we used regular <code>filter</code> so it’s viewable in
           Safari/Firefox.
-        </p>
-        <p className="opacity-80">
+        </div>
+        <div className="opacity-80">
           The next components use <code>backdrop-filter</code>, so they’re
           Chrome‑only.
-        </p>
+        </div>
       </div>
     </div>
   </div>
