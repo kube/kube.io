@@ -15,7 +15,7 @@ export const ParallaxImageHero: React.FC = () => {
   const { scrollY } = useScroll();
   const backgroundParallaxOffset = useTransform(
     scrollY,
-    (v) => v * parallaxSpeed
+    (v) => Math.min(800, v) * parallaxSpeed
   );
 
   // Glass preset
