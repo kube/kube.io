@@ -559,15 +559,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
               defaultValue={n2.get()}
               onChange={(e) => n2.set(parseFloat(e.target.value))}
               aria-label="Second medium refractive index"
-              className="w-96 h-[4px] bg-slate-400/80 dark:bg-slate-600 rounded appearance-none cursor-pointer
-                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
-                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-900 [&::-webkit-slider-thumb]:dark:bg-slate-100
-                [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:cursor-pointer
-                [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-150
-                [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:active:scale-95
-                [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 
-                [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-900 [&::-moz-range-thumb]:dark:bg-slate-100
-                [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+              className="w-96 h-[3px] rounded appearance-none cursor-pointer bg-slate-400/80 dark:bg-slate-600 accent-slate-500 dark:accent-slate-500"
             />
 
             {/* Range indicators */}
