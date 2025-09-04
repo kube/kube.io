@@ -16,7 +16,10 @@ export const meta: Route.MetaFunction = ({ params }) => {
     // Fallback if article not found
     return [
       { title: "Article not found — kube.io" },
-      { name: "description", content: "The requested article could not be found." },
+      {
+        name: "description",
+        content: "The requested article could not be found.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ];
   }
@@ -64,7 +67,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
           __html: JSON.stringify(structuredData),
         }}
       />
-      
+
       <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -108,12 +111,12 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
           <Article
             components={{
               h1: ({ children }) => (
-                <h1 className="text-[36px] sm:text-[40px] leading-[38px] mt-[160px] font-bold font-sans">
+                <h1 className="text-[36px] sm:text-[40px] leading-[38px] mt-[180px] font-bold font-sans">
                   {children}
                 </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-[27px] leading-[28px] mt-[110px] font-bold font-sans">
+                <h2 className="text-[27px] leading-[28px] mt-[100px] font-bold font-sans">
                   {children}
                 </h2>
               ),

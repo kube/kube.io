@@ -59,6 +59,17 @@ We'll build up the effect from first principles, starting with how light bends w
   </div>
 </div>
 
+<blockquote className="mt-8 text-[15px] leading-7 border-l-2 pl-4 border-zinc-300/70 dark:border-white/15 text-zinc-800/90 dark:text-zinc-100/90">
+  <span className="font-semibold tracking-[0.2em] uppercase">TL;DR</span>
+  <span className="mx-2 text-zinc-400/80">—</span>
+  <a
+    href="#demo"
+    className="font-medium underline decoration-dotted underline-offset-4 hover:decoration-2"
+  >
+    Jump to the demo →
+  </a>
+</blockquote>
+
 # Understanding Refraction
 
 **Refraction** is what happens when light changes direction as it passes from one material to another (like from air into glass). This bending occurs because light travels at different speeds through different materials.
@@ -365,6 +376,20 @@ In our implementation, we apply this specular calculation only to the bezel regi
 
 To combine the refraction displacement map and the specular highlight, we can use SVG's `<feImage />` to overlay the specular image on top of the displacement map. This way, we can apply both effects in a single filter.
 
+## SVG Filter as `backdrop-filter`
+
+To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
+
+```css
+.glass-panel {
+  backdrop-filter: url(#liquidGlassFilterId);
+}
+```
+
+Now that we have all the pieces in place, we can create components that use this effect.
+
+<a id="demo" />
+
 # Bringing It All Together: Real UI Components
 
 With our refraction math and displacement maps working, let's see how this translates to actual UI components you might use in an application.
@@ -398,18 +423,6 @@ With our refraction math and displacement maps working, let's see how this trans
     </div>
   </div>
 </div>
-
-## SVG Filter as `backdrop-filter`
-
-To apply the Liquid Glass effect to a component, we can use the SVG filter as a `backdrop-filter`. This allows us to apply the displacement effect to any element that has a background.
-
-```css
-.glass-panel {
-  backdrop-filter: url(#liquidGlassFilterId);
-}
-```
-
-Now that we have all the pieces in place, we can create components that use this effect.
 
 The goal won't be to create real components for production, but just to get a taste of how the effect looks in different UI elements.
 
