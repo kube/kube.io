@@ -11,5 +11,6 @@ export default [
   route("rss.xml", "./routes/rss.xml.tsx"),
   route("atom.xml", "./routes/atom.xml.tsx"),
   route("feed.json", "./routes/feed.json.tsx"),
+  route("og-image.png", "./routes/og-image.png.tsx"),
   ...(FLAGS.WORKSHOP ? [route("workshop", "./routes/workshop/page.tsx")] : []),
 ] satisfies RouteConfig;

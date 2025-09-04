@@ -34,6 +34,10 @@ type LogoProps = {
   gradientTo?: string;
 };
 
+const cube = createCube(BASE_CUBE_TRANSFORMS);
+
+export const cubeStaticPath = (cube as any).map(facePath).join(" ");
+
 export const LogoStatic: React.FC<LogoProps> = ({
   className,
   style,
@@ -43,7 +47,6 @@ export const LogoStatic: React.FC<LogoProps> = ({
   gradientTo = "var(--palette-purple)",
 }) => {
   const shadowId = useId();
-  const cube = createCube(BASE_CUBE_TRANSFORMS);
   return (
     <motion.svg ref={ref} style={style} className={className} viewBox={VIEWBOX}>
       <defs>
@@ -72,7 +75,7 @@ export const LogoStatic: React.FC<LogoProps> = ({
       </defs>
       <motion.path
         filter={`url(#${shadowId})`}
-        d={(cube as any).map(facePath).join(" ")}
+        d={cubeStaticPath}
         fill={gradientId ? `url(#${gradientId})` : gradientFrom}
       />
     </motion.svg>

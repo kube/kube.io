@@ -4,15 +4,16 @@ import { Link } from "react-router";
 import { cv } from "../../data/cv";
 
 import { H1, H2 } from "../../components/Typography";
-import { Timeline } from "./Timeline";
 import { createMetaTags } from "../../utils/meta";
+import { Timeline } from "./Timeline";
 
 export const meta = () => {
   const tags = createMetaTags({
     title: "Curriculum Vitae — kube.io",
-    description: "Professional experience and background of kube, a freelance software engineer specializing in frontend development and UI/UX design.",
+    description:
+      "Professional experience and background of kube, a freelance software engineer specializing in frontend development and UI/UX design.",
     url: "https://kube.io/cv",
-    image: "https://kube.io/og-image-cv.png",
+    image: "https://kube.io/og-image.png",
     type: "profile",
   });
 

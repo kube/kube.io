@@ -30,6 +30,8 @@ export default {
       "/atom.xml",
       "/feed.json",
 
+      "/og-image.png",
+
       ...(FLAGS.WORKSHOP ? ["/workshop"] : []),
     ];
   },
