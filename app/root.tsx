@@ -12,9 +12,14 @@ import { GlobalInitialRenderContext } from "./contexts/GlobalInitialRenderContex
 import "./global.css";
 import { useIsInitialRender } from "./hooks/useIsInitialRender";
 import * as styles from "./root.css";
+import { createMetaTags } from "./utils/meta";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "KUBE : Software & Design" }];
+  return createMetaTags({
+    title: "KUBE — Software & Design",
+    description: "Freelance Software Engineer specializing in frontend development, UI/UX design, and web technologies. Building modern, user-centered digital experiences.",
+    url: "https://kube.io",
+  });
 };
 
 export function HydrateFallback() {

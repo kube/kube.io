@@ -6,6 +6,21 @@ import type { MDXProvider } from "@mdx-js/react";
 import { Link } from "react-router";
 import { TimelineDateSquare } from "../../components/DateSquare";
 import { getPost } from "../../data/blog";
+import { createBlogPostMeta, createStructuredData } from "../../utils/meta";
+
+export const meta: Route.MetaFunction = ({ params }) => {
+  try {
+    const article = getPost(params.slug);
+    return createBlogPostMeta(article);
+  } catch (error) {
+    // Fallback if article not found
+    return [
+      { title: "Article not found — kube.io" },
+      { name: "description", content: "The requested article could not be found." },
+      { name: "robots", content: "noindex, nofollow" },
+    ];
+  }
+};
 
 export default function BlogIndex({ params }: Route.ComponentProps) {
   const article = getPost(params.slug);
@@ -32,6 +47,9 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
       ? `${40 / titleLongestWord.length}rem`
       : "4rem";
 
+  // Structured data for the article
+  const structuredData = createStructuredData(article);
+
   return (
     <div
       style={
@@ -40,6 +58,13 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
         } as React.CSSProperties
       }
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+      
       <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"

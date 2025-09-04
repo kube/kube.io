@@ -4,6 +4,16 @@ import { H1 } from "../../components/Typography";
 
 import { TimelineDateSquare } from "../../components/DateSquare";
 import { type Post, getAllPosts } from "../../data/blog";
+import { createMetaTags } from "../../utils/meta";
+
+export const meta = () => {
+  return createMetaTags({
+    title: "Articles — kube.io",
+    description: "Articles about web development, design, and technology",
+    url: "https://kube.io/blog",
+    image: "https://kube.io/og-image-blog.png",
+  });
+};
 
 const PostItem: React.FC<{ post: Post }> = ({ post }) => {
   const { slug } = post;

@@ -5,6 +5,7 @@ export type Post = {
   description: string;
   content: any;
   published?: boolean;
+  image?: string; // OpenGraph image URL
 };
 
 let posts: Post[] = [];
