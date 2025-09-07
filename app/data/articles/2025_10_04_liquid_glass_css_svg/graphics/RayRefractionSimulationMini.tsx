@@ -1,5 +1,5 @@
 import { motion, type MotionValue, useTransform } from "motion/react";
-import { getRayColor } from "../lib/rayColor";
+import { getRayColor, getRayColorDimmed } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 const AIR_REFRACTIVE_INDEX = 1;
@@ -54,7 +54,7 @@ function buildGlassOutlinePath(
       glassY + (1 - y) * bezelWidth
     }`;
   }).join(" ");
-  const tail = `L ${glassX + glassWidth} ${glassY + glassHeight} Z`;
+  const tail = `L ${glassX + glassWidth} ${glassY + glassHeight}`;
   return [head, leftBezel, bottomJoin, rightBezel, tail].join("\n");
 }
 
@@ -261,23 +261,31 @@ export const RayRefractionSimulationMini: React.FC<
           className="select-none fill-slate-400/30 dark:fill-slate-400/20 stroke-slate-600/20 dark:stroke-slate-400/20"
           strokeWidth="1.5"
         />
-
         <rect
           width={backgroundWidth}
           height={backgroundHeight}
           x={0}
           y={viewHeight - backgroundHeight}
           rx={2}
-          fill="rgba(100, 100, 110, 0.1)"
+          fill="rgba(100, 100, 110, 0.03)"
+        />
+        <line
+          x1={0}
+          y1={viewHeight - backgroundHeight}
+          x2={viewWidth}
+          y2={viewHeight - backgroundHeight}
+          className="stroke-gray-400/30 dark:stroke-gray-500/30"
+          strokeWidth="1"
         />
         {/* Incident Ray */}
         <motion.line
           x1={incidentX}
-          y1={0}
+          y1={22}
           x2={incidentX}
           y2={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
           stroke={getRayColor(0)}
-          strokeWidth="3"
+          strokeWidth="2.5"
+          strokeLinecap="round"
         />
 
         {/* Refracted Ray */}
@@ -292,16 +300,17 @@ export const RayRefractionSimulationMini: React.FC<
           x2={useTransform(ray, (r: any) => r?.refracted?.x2 ?? 0)}
           y2={useTransform(ray, (r: any) => r?.refracted?.y2 ?? 0)}
           stroke={getRayColor(0.3)}
-          strokeWidth="3"
+          strokeWidth="2.5"
+          strokeLinecap="round"
         />
 
-        {/* Incident Ray Projection to background */}
+        {/* Incident Ray Projection */}
         <motion.line
           x1={incidentX}
           y1={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
           x2={incidentX}
           y2={viewHeight - backgroundHeight}
-          stroke={getRayColor(0)}
+          stroke={getRayColorDimmed(0)}
           strokeWidth="1"
           strokeDasharray="3"
           strokeOpacity="0.5"
@@ -333,6 +342,7 @@ export const RayRefractionSimulationMini: React.FC<
           y2={viewHeight - backgroundHeight}
           stroke={displacementColor as unknown as string}
           strokeWidth={displacementThickness as unknown as number}
+          strokeLinecap="round"
           markerEnd="url(#arrow-displacement-vector-mini)"
         />
       </motion.svg>

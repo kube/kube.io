@@ -170,298 +170,305 @@ export const Playground: React.FC = () => {
 
   // Swiss-style panel + heading helpers
   const panel =
-    "relative rounded-lg border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden";
+    "relative rounded-md border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden";
   const heading =
-    "uppercase tracking-[0.15em] text-[10px] leading-none text-neutral-500 dark:text-neutral-400";
+    "uppercase tracking-[0.15em] text-[9px] sm:[11px] leading-none text-neutral-500 dark:text-neutral-400";
 
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-2 gap-2 text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)]"
+      className="-ml-[18px] w-[calc(100%+36px)] text-neutral-900 dark:text-neutral-100 select-none touch-pan-y"
     >
-      <div className={`flex flex-col ${panel}`}>
-        <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
-        <div className="p-4 flex items-center justify-center gap-4 grow">
-          <SurfaceEquationSelector surface={surface} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
+        <div className={`flex flex-col ${panel}`}>
+          <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
+          <div className="p-4 flex items-center justify-center gap-4 grow">
+            <SurfaceEquationSelector surface={surface} />
+          </div>
+        </div>
+
+        <div className={`${panel}`}>
+          <h4 className={`${heading} px-2 pt-2 z-40`}>Controls</h4>
+          <div className="text-xs grid grid-cols-[25%_1fr] gap-x-4 gap-y-3 p-3 pt-4 items-center">
+            <label className="text-right">Bezel Width</label>
+            <motion.input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              defaultValue={bezelWidth.get()}
+              onChange={(e) => bezelWidth.set(Number(e.target.value))}
+              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              style={{
+                height: "3px",
+                background: "rgb(163 163 163 / 0.5)",
+                outline: "none",
+                WebkitAppearance: "none",
+              }}
+            />
+            <label className="text-right">Glass Thickness</label>
+            <motion.input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              defaultValue={glassThickness.get()}
+              onChange={(e) => glassThickness.set(Number(e.target.value))}
+              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              style={{
+                height: "3px",
+                background: "rgb(163 163 163 / 0.5)",
+                outline: "none",
+                WebkitAppearance: "none",
+              }}
+            />
+            <label className="text-right">Scale Ratio</label>
+            <motion.input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              defaultValue={scaleRatio.get()}
+              onChange={(e) => scaleRatio.set(Number(e.target.value))}
+              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              style={{
+                height: "3px",
+                background: "rgb(163 163 163 / 0.5)",
+                outline: "none",
+                WebkitAppearance: "none",
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      <div className={`${panel}`}>
-        <h4 className={`${heading} px-2 pt-2 z-40`}>Controls</h4>
-        <div className="text-xs grid grid-cols-[25%_1fr] gap-x-4 gap-y-3 p-3 pt-4 items-center">
-          <label className="text-right">Bezel Width</label>
-          <motion.input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            defaultValue={bezelWidth.get()}
-            onChange={(e) => bezelWidth.set(Number(e.target.value))}
-            className="w-full accent-neutral-900 dark:accent-neutral-100"
-            style={{
-              height: "3px",
-              background: "rgb(163 163 163 / 0.5)",
-              outline: "none",
-              WebkitAppearance: "none",
-            }}
-          />
-          <label className="text-right">Glass Thickness</label>
-          <motion.input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            defaultValue={glassThickness.get()}
-            onChange={(e) => glassThickness.set(Number(e.target.value))}
-            className="w-full accent-neutral-900 dark:accent-neutral-100"
-            style={{
-              height: "3px",
-              background: "rgb(163 163 163 / 0.5)",
-              outline: "none",
-              WebkitAppearance: "none",
-            }}
-          />
-          <label className="text-right">Scale Ratio</label>
-          <motion.input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            defaultValue={scaleRatio.get()}
-            onChange={(e) => scaleRatio.set(Number(e.target.value))}
-            className="w-full accent-neutral-900 dark:accent-neutral-100"
-            style={{
-              height: "3px",
-              background: "rgb(163 163 163 / 0.5)",
-              outline: "none",
-              WebkitAppearance: "none",
-            }}
-          />
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
+        <div className={`${panel}`}>
+          <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>
+            Radius Simulation
+          </h4>
+          <div className="text-sm">
+            <RayRefractionSimulationMini
+              surface={surface}
+              bezelWidth={bezelWidth}
+              glassThickness={glassThickness}
+              refractionIndex={refractiveIndex}
+              currentX={currentX}
+            />
+          </div>
         </div>
-      </div>
-      <div className={`${panel}`}>
-        <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>Ray Simulation</h4>
-        <div className="text-sm">
-          <RayRefractionSimulationMini
-            surface={surface}
-            bezelWidth={bezelWidth}
-            glassThickness={glassThickness}
-            refractionIndex={refractiveIndex}
-            currentX={currentX}
-          />
+
+        <div className={`${panel}`}>
+          <h4
+            className={`absolute ${heading} px-2 pt-2 z-40 text-white/70 dark:text-white/70`}
+          >
+            Displacement Map
+          </h4>
+          <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
         </div>
-      </div>
 
-      <div className={`${panel}`}>
-        <h4
-          className={`absolute ${heading} px-2 pt-2 z-40 text-white/70 dark:text-white/70`}
-        >
-          Displacement Map
-        </h4>
-        <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
-      </div>
+        <div className={`${panel}`}>
+          <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>
+            Radius Displacements
+          </h4>
+          <div className="text-sm">
+            <motion.svg
+              viewBox="-30 -30 460 360"
+              className="text-neutral-900 dark:text-neutral-100"
+              width="100%"
+              onPointerDown={(e) => {
+                const { left, width } = e.currentTarget.getBoundingClientRect();
+                const xRatio = (e.clientX - left) / width;
+                currentX.set(Math.max(0, Math.min(1, xRatio)));
+                try {
+                  (
+                    e.currentTarget as Element & { setPointerCapture: any }
+                  ).setPointerCapture((e as any).pointerId);
+                } catch {}
+              }}
+              onPointerMove={(e) => {
+                if (!(e.buttons & 1)) return;
+                const { left, width } = e.currentTarget.getBoundingClientRect();
+                const xRatio = (e.clientX - left) / width;
+                currentX.set(Math.max(0, Math.min(1, xRatio)));
+              }}
+            >
+              <defs>
+                <marker
+                  id="axisArrow"
+                  viewBox="0 0 10 10"
+                  refX="6"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path
+                    d="M 0 0 L 10 5 L 0 10 z"
+                    fill="currentColor"
+                    opacity="0.3"
+                  />
+                </marker>
+              </defs>
+              <motion.path
+                d={pathData}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeOpacity="0.7"
+                strokeLinecap="round"
+              />
+              <line
+                y1={height / 2}
+                y2={height / 2}
+                x1={0}
+                x2={width}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeOpacity="0.34"
+              />
+              <line
+                x1={-1}
+                x2={-1}
+                y1={height}
+                y2={0}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeOpacity="0.34"
+                markerEnd="url(#axisArrow)"
+              />
+              <text
+                x={-10}
+                y={-12}
+                alignmentBaseline="middle"
+                textAnchor="end"
+                transform="rotate(-90 0 0)"
+                fill="currentColor"
+                opacity="0.6"
+              >
+                Displacement on background
+              </text>
+              <line
+                x1={0}
+                x2={width}
+                y1={height}
+                y2={height}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeOpacity="0.28"
+                markerEnd="url(#axisArrow)"
+              />
+              <text
+                x={width - 10}
+                y={height + 12}
+                alignmentBaseline="middle"
+                textAnchor="end"
+                fill="currentColor"
+                opacity="0.5"
+              >
+                Distance to border
+              </text>
+              <motion.line
+                style={{ display: showIndicator }}
+                x1={currentXPos}
+                y1={height / 2}
+                x2={currentXPos}
+                y2={y2Motion}
+                stroke={displacementColor}
+                strokeWidth="2.5"
+                strokeDasharray="3"
+              />
+            </motion.svg>
+          </div>
+        </div>
 
-      <div className={`${panel}`}>
-        <h4 className={`absolute ${heading} px-2 pt-2 z-40`}>
-          Calculated Displacements
-        </h4>
-        <div className="text-sm">
+        <div className={`${panel}`}>
+          <h4
+            className={`absolute ${heading} px-2 pt-2 z-40 text-white dark:text-white`}
+          >
+            Preview
+          </h4>
           <motion.svg
-            viewBox="-30 -30 460 360"
-            className="text-neutral-900 dark:text-neutral-100"
-            width="100%"
-            onPointerDown={(e) => {
-              const { left, width } = e.currentTarget.getBoundingClientRect();
-              const xRatio = (e.clientX - left) / width;
-              currentX.set(Math.max(0, Math.min(1, xRatio)));
-              try {
-                (
-                  e.currentTarget as Element & { setPointerCapture: any }
-                ).setPointerCapture((e as any).pointerId);
-              } catch {}
-            }}
-            onPointerMove={(e) => {
-              if (!(e.buttons & 1)) return;
-              const { left, width } = e.currentTarget.getBoundingClientRect();
-              const xRatio = (e.clientX - left) / width;
-              currentX.set(Math.max(0, Math.min(1, xRatio)));
-            }}
+            className="object-cover"
+            viewBox="0 0 400 300"
+            height="100%"
+            colorInterpolationFilters="sRGB"
           >
             <defs>
-              <marker
-                id="axisArrow"
-                viewBox="0 0 10 10"
-                refX="6"
-                refY="5"
-                markerWidth="6"
-                markerHeight="6"
-                orient="auto"
-                markerUnits="strokeWidth"
-              >
-                <path
-                  d="M 0 0 L 10 5 L 0 10 z"
-                  fill="currentColor"
-                  opacity="0.3"
+              <filter id={filterId} colorInterpolationFilters="sRGB">
+                <motion.feImage
+                  href={displacementMapUrl as unknown as string}
+                  x={0}
+                  y={0}
+                  width={width}
+                  height={height}
+                  result="displacement_map"
                 />
-              </marker>
+                <motion.feDisplacementMap
+                  in="SourceGraphic"
+                  in2="displacement_map"
+                  scale={scaleMotion}
+                  xChannelSelector="R"
+                  yChannelSelector="G"
+                />
+              </filter>
+
+              <pattern
+                id="grid"
+                x={-25}
+                y={-25}
+                width="50"
+                height="50"
+                patternUnits="userSpaceOnUse"
+              >
+                {isInView && (
+                  <>
+                    {/* Safari workaround: animate x/y instead of patternTransform */}
+                    <animate
+                      attributeName="x"
+                      from="-25"
+                      to="25"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="y"
+                      from="-25"
+                      to="25"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                    <path
+                      d="M 50 0 L 0 0 0 50"
+                      fill="none"
+                      stroke="#D7E8E6"
+                      strokeWidth="3"
+                      opacity={0.8}
+                    />
+                  </>
+                )}
+              </pattern>
+
+              <linearGradient
+                id="doubleGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="#4FBDBB" /> {/* Top-left */}
+                <stop offset="50%" stopColor="#AFBDBB" /> {/* Center */}
+                <stop offset="100%" stopColor="#DFBDBB" /> {/* Bottom-right */}
+              </linearGradient>
             </defs>
-            <motion.path
-              d={pathData}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeOpacity="0.7"
-              strokeLinecap="round"
-            />
-            <line
-              y1={height / 2}
-              y2={height / 2}
-              x1={0}
-              x2={width}
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeOpacity="0.34"
-            />
-            <line
-              x1={-1}
-              x2={-1}
-              y1={height}
-              y2={0}
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeOpacity="0.34"
-              markerEnd="url(#axisArrow)"
-            />
-            <text
-              x={-10}
-              y={-12}
-              alignmentBaseline="middle"
-              textAnchor="end"
-              transform="rotate(-90 0 0)"
-              fill="currentColor"
-              opacity="0.6"
-            >
-              Displacement on background
-            </text>
-            <line
-              x1={0}
-              x2={width}
-              y1={height}
-              y2={height}
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeOpacity="0.28"
-              markerEnd="url(#axisArrow)"
-            />
-            <text
-              x={width - 10}
-              y={height + 12}
-              alignmentBaseline="middle"
-              textAnchor="end"
-              fill="currentColor"
-              opacity="0.5"
-            >
-              Distance to border
-            </text>
-            <motion.line
-              style={{ display: showIndicator }}
-              x1={currentXPos}
-              y1={height / 2}
-              x2={currentXPos}
-              y2={y2Motion}
-              stroke={displacementColor}
-              strokeWidth="2.5"
-              strokeDasharray="3"
-            />
+
+            <g filter={`url(#${filterId})`}>
+              <rect width="400" height="300" fill="url(#doubleGradient)" />
+              <rect width="400" height="300" fill="url(#grid)" />
+            </g>
           </motion.svg>
         </div>
-      </div>
-
-      <div className={`${panel}`}>
-        <h4
-          className={`absolute ${heading} px-2 pt-2 z-40 text-white dark:text-white`}
-        >
-          Preview
-        </h4>
-        <motion.svg
-          className="object-cover"
-          viewBox="0 0 400 300"
-          height="100%"
-          colorInterpolationFilters="sRGB"
-        >
-          <defs>
-            <filter id={filterId} colorInterpolationFilters="sRGB">
-              <motion.feImage
-                href={displacementMapUrl as unknown as string}
-                x={0}
-                y={0}
-                width={width}
-                height={height}
-                result="displacement_map"
-              />
-              <motion.feDisplacementMap
-                in="SourceGraphic"
-                in2="displacement_map"
-                scale={scaleMotion}
-                xChannelSelector="R"
-                yChannelSelector="G"
-              />
-            </filter>
-
-            <pattern
-              id="grid"
-              x={-25}
-              y={-25}
-              width="50"
-              height="50"
-              patternUnits="userSpaceOnUse"
-            >
-              {isInView && (
-                <>
-                  {/* Safari workaround: animate x/y instead of patternTransform */}
-                  <animate
-                    attributeName="x"
-                    from="-25"
-                    to="25"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="y"
-                    from="-25"
-                    to="25"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <path
-                    d="M 50 0 L 0 0 0 50"
-                    fill="none"
-                    stroke="#D7E8E6"
-                    strokeWidth="3"
-                    opacity={0.8}
-                  />
-                </>
-              )}
-            </pattern>
-
-            <linearGradient
-              id="doubleGradient"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" stopColor="#4FBDBB" /> {/* Top-left */}
-              <stop offset="50%" stopColor="#AFBDBB" /> {/* Center */}
-              <stop offset="100%" stopColor="#DFBDBB" /> {/* Bottom-right */}
-            </linearGradient>
-          </defs>
-
-          <g filter={`url(#${filterId})`}>
-            <rect width="400" height="300" fill="url(#doubleGradient)" />
-            <rect width="400" height="300" fill="url(#grid)" />
-          </g>
-        </motion.svg>
       </div>
     </div>
   );
