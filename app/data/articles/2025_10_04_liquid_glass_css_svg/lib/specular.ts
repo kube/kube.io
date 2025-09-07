@@ -72,7 +72,7 @@ export function calculateRefractionSpecular(
 
         // Viewed from top
         const cos = x / distanceFromCenter;
-        const sin = y / distanceFromCenter;
+        const sin = -y / distanceFromCenter;
 
         // Dot product of orientation
         const dotProduct = Math.abs(
