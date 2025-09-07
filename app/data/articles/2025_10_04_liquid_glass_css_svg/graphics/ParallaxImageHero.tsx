@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "motion/react";
 
-import { Filter } from "virtual:refractionFilter?width=150&height=150&radius=75&bezelWidth=40&glassThickness=120&refractiveIndex=1.5&specularOpacity=0.3";
+import { Filter } from "virtual:refractionFilter?width=150&height=150&radius=75&bezelWidth=40&glassThickness=120&refractiveIndex=1.5";
 
 const imageUrl =
   "https://images.unsplash.com/photo-1688494930098-e88c53c26e3a?auto=format&q=80&fit=crop&w=1400&h=1600&crop=focalpoint&fp-x=0.3&fp-y=0.5&fp-z=1";
@@ -19,8 +19,8 @@ export const ParallaxImageHero: React.FC = () => {
   );
 
   // Glass preset
-  const specularOpacity = 0.3;
-  const specularSaturation = 7;
+  const specularOpacity = 0.2;
+  const specularSaturation = 6;
 
   return (
     <div>
