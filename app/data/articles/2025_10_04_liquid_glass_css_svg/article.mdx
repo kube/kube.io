@@ -364,7 +364,7 @@ This playground applies the SVG displacement filter to a simple scene and lets y
 
 The final piece of our Liquid Glass effect is the **specular highlight**—those bright, shiny edges you see on real glass objects when light hits them at certain angles.
 
-To achieve it, we define an arbitrary angle, and we adjust opacity of pixels of the border around the shape, based on how aligned are the this arbitrary angle, and the normal at the border.
+The way Apple implements it seems to be a simple rim light effect, where the highlight appears around the edges of the glass object, and its intensity varies based on the angle of the surface normal relative to a fixed light direction.
 
 <SpecularPreview />
 
