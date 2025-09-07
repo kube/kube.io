@@ -217,8 +217,6 @@ export const RayRefractionSimulationMini: React.FC<
     (intensity) => 0.3 + intensity * 4
   );
 
-  // samples handled inside buildGlassOutlinePath
-
   return (
     <>
       <motion.svg
