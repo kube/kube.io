@@ -4,12 +4,12 @@ export function calculateDisplacementMap(
   glassThickness: number = 200,
   bezelWidth: number = 50,
   bezelHeightFn: (x: number) => number = (x) => x,
-  refractiveIndex: number = 1.5
+  refractiveIndex: number = 1.5,
+  samples: number = 128
 ): number[] {
   // Pre-calculate the distance the ray will be deviated
   // given the distance to border (ratio of bezel)
   // and height of the glass
-  const NUMBER_OF_VALUES = 128;
   const eta = 1 / refractiveIndex;
 
   // Simplified refraction, which only handles fully vertical incident ray [0, 1]
@@ -27,8 +27,8 @@ export function calculateDisplacementMap(
     ];
   }
 
-  return Array.from({ length: NUMBER_OF_VALUES }, (_, i) => {
-    const x = i / NUMBER_OF_VALUES;
+  return Array.from({ length: samples }, (_, i) => {
+    const x = i / samples;
     const y = bezelHeightFn(x);
 
     // Calculate derivative in x
@@ -130,7 +130,8 @@ export function calculateDisplacementMap2(
         const cos = x / distanceFromCenter;
         const sin = y / distanceFromCenter;
 
-        const bezelIndex = ((distanceFromSide / bezel) * 128) | 0;
+        const bezelIndex =
+          ((distanceFromSide / bezel) * precomputedDisplacementMap.length) | 0;
         const distance = precomputedDisplacementMap[bezelIndex] ?? 0;
 
         const dX = (-cos * distance) / maximumDisplacement;

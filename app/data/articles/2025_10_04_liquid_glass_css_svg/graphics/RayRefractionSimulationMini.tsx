@@ -254,7 +254,7 @@ export const RayRefractionSimulationMini: React.FC<
                 glassHeight.get(),
                 bezelWidth.get(),
                 bezelFn,
-                64
+                128
               )
             ) as unknown as string
           }
@@ -280,7 +280,7 @@ export const RayRefractionSimulationMini: React.FC<
         {/* Incident Ray */}
         <motion.line
           x1={incidentX}
-          y1={22}
+          y1={25}
           x2={incidentX}
           y2={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
           stroke={getRayColor(0)}

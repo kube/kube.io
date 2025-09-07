@@ -24,9 +24,9 @@ export const Playground: React.FC = () => {
   const glassThickness = useMotionValue(50);
   const bezelWidth = useMotionValue(60);
   const refractiveIndex = 1.5;
-  const objectWidth = 200;
-  const objectHeight = 200;
-  const radius = 100;
+  const objectWidth = 220;
+  const objectHeight = 220;
+  const radius = 110;
   const scaleRatio = useMotionValue(1);
   // Surface selection (pure Motion)
   const surface = useMotionValue<
@@ -45,7 +45,8 @@ export const Playground: React.FC = () => {
         : surface.get() === "concave"
         ? CONCAVE.fn
         : LIP.fn,
-      refractiveIndex
+      refractiveIndex,
+      512
     )
   );
 
@@ -111,7 +112,7 @@ export const Playground: React.FC = () => {
       .map((d, i) => {
         const x = (i / arr.length) * width;
         return `${i === 0 ? "M" : "L"} ${x} ${
-          height / 2 - ((d / max) * height) / 2
+          height / 2 - ((d / max) * height * 0.9) / 2
         }`;
       })
       .join(" ");
@@ -143,7 +144,7 @@ export const Playground: React.FC = () => {
     const max = (maximumDisplacement.get() as unknown as number) || 1;
     const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
     const d = arr[idx] ?? 0;
-    return height / 2 - (d / max) * (height / 2);
+    return height / 2 - (d / max) * (height / 2) * 0.9;
   });
   const scaleMotion = useTransform(
     scaleRatio,
@@ -170,7 +171,7 @@ export const Playground: React.FC = () => {
 
   // Swiss-style panel + heading helpers
   const panel =
-    "relative rounded-md border border-neutral-900/20 dark:border-white/15 bg-white dark:bg-zinc-900/60 overflow-hidden";
+    "relative rounded-md border border-neutral-900/15 dark:border-white/15 bg-white dark:bg-zinc-900/60 overflow-hidden";
   const heading =
     "uppercase tracking-[0.15em] text-[9px] sm:[11px] leading-none text-neutral-500 dark:text-neutral-400";
 
@@ -273,7 +274,7 @@ export const Playground: React.FC = () => {
           </h4>
           <div className="text-sm">
             <motion.svg
-              viewBox="-30 -30 460 360"
+              viewBox="-30 -40 450 370"
               className="text-neutral-900 dark:text-neutral-100"
               width="100%"
               onPointerDown={(e) => {
@@ -299,25 +300,20 @@ export const Playground: React.FC = () => {
                   viewBox="0 0 10 10"
                   refX="6"
                   refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
+                  markerWidth="9"
+                  markerHeight="9"
                   orient="auto"
                   markerUnits="strokeWidth"
                 >
-                  <path
-                    d="M 0 0 L 10 5 L 0 10 z"
-                    fill="currentColor"
-                    opacity="0.3"
-                  />
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
                 </marker>
               </defs>
               <motion.path
                 d={pathData}
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
-                strokeOpacity="0.7"
-                strokeLinecap="round"
+                strokeWidth="2"
+                strokeOpacity="0.6"
               />
               <line
                 y1={height / 2}
@@ -325,29 +321,30 @@ export const Playground: React.FC = () => {
                 x1={0}
                 x2={width}
                 stroke="currentColor"
-                strokeWidth="1"
-                strokeOpacity="0.34"
+                strokeWidth={1}
+                opacity={0.25}
+                strokeDasharray="4 1"
               />
               <line
-                x1={-1}
-                x2={-1}
+                x1={0}
+                x2={0}
                 y1={height}
                 y2={0}
                 stroke="currentColor"
-                strokeWidth="1"
-                strokeOpacity="0.34"
+                opacity={0.25}
+                strokeWidth={1}
                 markerEnd="url(#axisArrow)"
               />
               <text
-                x={-10}
-                y={-12}
+                x={-15}
+                y={-14}
                 alignmentBaseline="middle"
                 textAnchor="end"
                 transform="rotate(-90 0 0)"
                 fill="currentColor"
-                opacity="0.6"
+                opacity="0.5"
               >
-                Displacement on background
+                Displacement
               </text>
               <line
                 x1={0}
@@ -356,12 +353,12 @@ export const Playground: React.FC = () => {
                 y2={height}
                 stroke="currentColor"
                 strokeWidth="1"
-                strokeOpacity="0.28"
+                opacity="0.28"
                 markerEnd="url(#axisArrow)"
               />
               <text
                 x={width - 10}
-                y={height + 12}
+                y={height + 13}
                 alignmentBaseline="middle"
                 textAnchor="end"
                 fill="currentColor"
@@ -376,8 +373,7 @@ export const Playground: React.FC = () => {
                 x2={currentXPos}
                 y2={y2Motion}
                 stroke={displacementColor}
-                strokeWidth="2.5"
-                strokeDasharray="3"
+                strokeWidth="2"
               />
             </motion.svg>
           </div>
@@ -416,10 +412,10 @@ export const Playground: React.FC = () => {
 
               <pattern
                 id="grid"
-                x={-25}
-                y={-25}
-                width="50"
-                height="50"
+                x={-15}
+                y={-15}
+                width="30"
+                height="30"
                 patternUnits="userSpaceOnUse"
               >
                 {isInView && (
@@ -427,15 +423,15 @@ export const Playground: React.FC = () => {
                     {/* Safari workaround: animate x/y instead of patternTransform */}
                     <animate
                       attributeName="x"
-                      from="-25"
-                      to="25"
+                      from="-15"
+                      to="15"
                       dur="2s"
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="y"
-                      from="-25"
-                      to="25"
+                      from="-15"
+                      to="15"
                       dur="2s"
                       repeatCount="indefinite"
                     />
