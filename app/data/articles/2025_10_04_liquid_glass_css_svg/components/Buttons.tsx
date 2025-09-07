@@ -45,7 +45,6 @@ export const ReplayButton: React.FC<
         setPlaying(false);
         return;
       }
-      console.log("anim", anim);
       setPlaying(anim.state === "running");
       await anim.finished;
       setPlaying(false);

@@ -143,8 +143,8 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const preventScroll = useRef(false);
 
   return (
-    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20">
-      <div className="relative select-none touch-pan-y">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20 touch-pan-y">
+      <div className="relative select-none">
         <motion.svg
           ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}

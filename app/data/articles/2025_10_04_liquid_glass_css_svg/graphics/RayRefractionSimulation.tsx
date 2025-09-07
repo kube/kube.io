@@ -6,7 +6,7 @@ import {
   useMotionValue,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ReplayButton } from "../components/Buttons";
 import {
   SurfaceEquationSelector,
@@ -173,10 +173,10 @@ export const RayRefractionSimulation: React.FC = () => {
   // Viewport & geometry (px)
   const glassWidth = 400;
   const glassHeight = 200;
-  const viewWidth = 600;
+  const viewWidth = 540;
   const viewHeight = 300;
 
-  const bezelWidth = useMotionValue(100);
+  const bezelWidth = useMotionValue(120);
 
   // Bezel Height Function (interpolated with animation on change)
   // We morph between functions by animating a progress value and blending
@@ -212,7 +212,7 @@ export const RayRefractionSimulation: React.FC = () => {
   const backgroundWidth = viewWidth;
   const backgroundHeight = 40;
 
-  const glassX = 100;
+  const glassX = 70;
   const glassY = viewHeight - backgroundHeight - glassHeight;
 
   const calculateRefraction = (rayX: number, n: number) =>
@@ -227,16 +227,6 @@ export const RayRefractionSimulation: React.FC = () => {
       bezelWidth.get(),
       bezelHeightFn.get()
     );
-
-  // Pointer handling
-  const [isPanning, setIsPanning] = useState(false);
-  useEffect(() => {
-    if (!isPanning) return;
-    // Add event listener for mouse up to stop panning
-    const handleMouseUp = () => setIsPanning(false);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => window.removeEventListener("mouseup", handleMouseUp);
-  }, [isPanning]);
 
   const ray = useTransform(() =>
     calculateRefraction(currentX.get(), refractionIndex.get())
@@ -358,20 +348,48 @@ export const RayRefractionSimulation: React.FC = () => {
     ],
   ];
 
+  // Pointer handling
+  const isPanning = useMotionValue(false);
+
+  useEffect(() => {
+    // Add event listener for mouse up to stop panning
+    const handleMouseUp = () => isPanning.set(false);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => window.removeEventListener("mouseup", handleMouseUp);
+  }, []);
+
   return (
-    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none touch-pan-y">
       <motion.svg
         ref={svgRef}
         viewBox={`0 0 ${viewWidth} ${viewHeight}`}
         xmlns="http://www.w3.org/2000/svg"
-        onClick={(e) =>
-          handlePointer(e.clientX, e.currentTarget.getBoundingClientRect())
-        }
-        onMouseDown={() => setIsPanning(true)}
-        onMouseUp={() => setIsPanning(false)}
         onMouseMove={(e) => {
-          if (!isPanning) return;
-          handlePointer(e.clientX, e.currentTarget.getBoundingClientRect());
+          if (isPanning.get()) {
+            handlePointer(e.clientX, svgRef.current!.getBoundingClientRect());
+          }
+        }}
+        onTouchMove={(e) => {
+          if (isPanning.get()) {
+            e.stopPropagation();
+            handlePointer(
+              e.touches[0].clientX,
+              svgRef.current!.getBoundingClientRect()
+            );
+          }
+        }}
+        onPan={(e, info) => {
+          if (animation.get().state === "running") {
+            animation.get().complete();
+          }
+          if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+            isPanning.set(true);
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+        onTouchEnd={() => {
+          isPanning.set(false);
         }}
       >
         <defs>
@@ -396,10 +414,9 @@ export const RayRefractionSimulation: React.FC = () => {
         />
 
         <motion.text
-          className="select-none opacity-50 fill-black dark:fill-white"
+          className="select-none opacity-50 fill-black dark:fill-white text-[19px] sm:text-[13px]"
           x={glassX + glassWidth / 2}
           y={yGlassLabel}
-          fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
         >
@@ -425,10 +442,9 @@ export const RayRefractionSimulation: React.FC = () => {
         />
 
         <text
-          className="select-none opacity-30 fill-black dark:fill-white"
+          className="select-none opacity-30 fill-black dark:fill-white text-[19px] sm:text-[13px]"
           x={backgroundWidth / 2}
           y={viewHeight - backgroundHeight / 2}
-          fontSize="16"
           textAnchor="middle"
           dominantBaseline="middle"
         >
