@@ -170,7 +170,7 @@ export const Playground: React.FC = () => {
 
   // Swiss-style panel + heading helpers
   const panel =
-    "relative rounded-md border border-neutral-900/10 dark:border-white/10 bg-white dark:bg-zinc-900/60 overflow-hidden";
+    "relative rounded-md border border-neutral-900/20 dark:border-white/15 bg-white dark:bg-zinc-900/60 overflow-hidden";
   const heading =
     "uppercase tracking-[0.15em] text-[9px] sm:[11px] leading-none text-neutral-500 dark:text-neutral-400";
 
