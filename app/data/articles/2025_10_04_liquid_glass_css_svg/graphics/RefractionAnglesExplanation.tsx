@@ -1,7 +1,13 @@
-import { RotateCcwIcon } from "lucide-react";
-import { animate } from "motion";
-import { motion, useInView, useMotionValue, useTransform } from "motion/react";
+import { animate, AnimationSequence } from "motion";
+import {
+  AnimationPlaybackControlsWithThen,
+  motion,
+  useInView,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { useEffect, useRef } from "react";
+import { ReplayButton } from "../components/Buttons";
 import { getRayColorDimmed } from "../lib/rayColor";
 
 function calculateRefractionAngle(
@@ -86,46 +92,53 @@ export const RefractionAnglesExplanation: React.FC = () => {
     );
   });
 
-  const currentAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  // Animation
 
   function startAnimation() {
-    currentAnimation.current?.stop();
-
-    n2.set(1.5);
-    incidentRayProgress.set(0);
-    refractedRayProgress.set(0);
-    arcAngleProgress.set(0);
-    incidentRayAngle.set(INITIAL_RAY_ANGLE);
-
-    currentAnimation.current = animate([
-      [incidentRayProgress, 1, { duration: 0.8, type: "tween" }],
-      [refractedRayProgress, 1, { duration: 0.9, type: "tween" }],
-      [arcAngleProgress, 1, { duration: 0.5, type: "tween" }],
-      [
-        incidentRayAngle,
-        TARGET_RAY_ANGLE,
-        { type: "tween", ease: "easeInOut", duration: 1 },
-      ],
-      [
-        incidentRayAngle,
-        INITIAL_RAY_ANGLE,
-        { type: "tween", ease: "easeInOut", duration: 1 },
-      ],
-      [n2, 1.0, { type: "tween", ease: "easeInOut", duration: 1 }],
-      [n2, 0.7, { type: "tween", ease: "easeInOut", duration: 2, delay: 1 }],
-      [
-        incidentRayAngle,
-        Math.PI / 2,
-        { type: "tween", ease: "easeInOut", duration: 2 },
-      ],
-      [
-        incidentRayAngle,
-        INITIAL_RAY_ANGLE,
-        { type: "tween", ease: "easeInOut", duration: 2 },
-      ],
-      [n2, 1.5, { type: "tween", ease: "easeInOut", duration: 2 }],
-    ]);
+    animation.get()?.stop();
+    animation.set(animate(animationSequence));
   }
+
+  const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
+    null
+  );
+
+  const animationSequence: AnimationSequence = [
+    // Initial State
+    [n2, 1.5, { duration: 0.01 }],
+    [incidentRayProgress, 0, { duration: 0.01 }],
+    [refractedRayProgress, 0, { duration: 0.01 }],
+    [arcAngleProgress, 0, { duration: 0.01 }],
+    [incidentRayAngle, INITIAL_RAY_ANGLE, { duration: 0.01 }],
+
+    // Full sequence
+    [incidentRayProgress, 1, { duration: 0.8, type: "tween" }],
+    [refractedRayProgress, 1, { duration: 0.9, type: "tween" }],
+    [arcAngleProgress, 1, { duration: 0.5, type: "tween" }],
+    [
+      incidentRayAngle,
+      TARGET_RAY_ANGLE,
+      { type: "tween", ease: "easeInOut", duration: 1 },
+    ],
+    [
+      incidentRayAngle,
+      INITIAL_RAY_ANGLE,
+      { type: "tween", ease: "easeInOut", duration: 1 },
+    ],
+    [n2, 1.0, { type: "tween", ease: "easeInOut", duration: 1 }],
+    [n2, 0.7, { type: "tween", ease: "easeInOut", duration: 2, delay: 1 }],
+    [
+      incidentRayAngle,
+      Math.PI / 2,
+      { type: "tween", ease: "easeInOut", duration: 2 },
+    ],
+    [
+      incidentRayAngle,
+      INITIAL_RAY_ANGLE,
+      { type: "tween", ease: "easeInOut", duration: 2 },
+    ],
+    [n2, 1.5, { type: "tween", ease: "easeInOut", duration: 2 }],
+  ];
 
   return (
     <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20">
@@ -563,15 +576,11 @@ export const RefractionAnglesExplanation: React.FC = () => {
 
         {/* right-aligned replay button */}
         <div className="flex-1 flex justify-end mb-3">
-          <button
-            className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors mr-3"
-            onClick={startAnimation}
-          >
-            <RotateCcwIcon
-              size={20}
-              className="group-hover:scale-110 group-active:scale-90 transition-transform"
-            />
-          </button>
+          <ReplayButton
+            className="mr-3"
+            animation={animation}
+            sequence={animationSequence}
+          />
         </div>
       </div>
     </div>

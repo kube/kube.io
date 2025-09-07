@@ -1,12 +1,14 @@
-import { RotateCcwIcon } from "lucide-react";
+import { AnimationSequence } from "motion";
 import {
   animate,
+  AnimationPlaybackControlsWithThen,
   motion,
   useInView,
   useMotionValue,
   useTransform,
 } from "motion/react";
 import * as React from "react";
+import { ReplayButton } from "../components/Buttons";
 
 export const VectorToRedGreen: React.FC = () => {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -47,6 +49,7 @@ export const VectorToRedGreen: React.FC = () => {
   const onPointerDown: React.PointerEventHandler<SVGSVGElement> = (e) => {
     (e.target as SVGSVGElement).setPointerCapture?.(e.pointerId);
     setDragging(true);
+    animation.get()?.complete();
     updateFromPointer(e.clientX, e.clientY, e.currentTarget);
   };
   const onPointerMove: React.PointerEventHandler<SVGSVGElement> = (e) => {
@@ -109,37 +112,38 @@ export const VectorToRedGreen: React.FC = () => {
     () => 1.5 + (magnitude.get() / radius) * 4
   );
 
-  const currentAnimation = React.useRef<ReturnType<typeof animate> | null>(
+  // Animation
+
+  const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
     null
   );
 
   function startAnimation() {
-    currentAnimation.current?.stop();
-
-    currentAnimation.current = animate([
-      "Rotate around",
-      [magnitude, radius, { duration: 0.4, ease: "easeInOut" }],
-      [angle, Math.PI / 2, { duration: 1.6, ease: "easeInOut" }],
-      "Animate Y axis",
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 1.5, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 2.5, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      "Center",
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      "Animate X axis",
-      [angle, Math.PI * 2, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeInOut" }],
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 1, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-      [magnitude, 0, { duration: 0.4, ease: "easeIn" }],
-      [angle, Math.PI * 2, { duration: 0.01 }],
-      [magnitude, radius, { duration: 0.4, ease: "easeOut" }],
-    ]);
+    animation.get()?.stop();
+    animation.set(animate(animationSequence));
   }
+
+  const animationSequence: AnimationSequence = [
+    "Rotate around",
+    [magnitude, radius, { duration: 0.3, ease: "easeInOut" }],
+    [angle, Math.PI / 2, { duration: 1, ease: "easeInOut" }],
+    "Animate Y axis",
+    [magnitude, 0, { duration: 0.3, ease: "easeIn" }],
+    [angle, Math.PI * 1.5, { duration: 0.01 }],
+    [magnitude, radius, { duration: 0.3, ease: "easeOut" }],
+    [magnitude, 0, { duration: 0.3, ease: "easeIn" }],
+    [angle, Math.PI * 2.5, { duration: 0.01 }],
+    [magnitude, radius, { duration: 0.3, ease: "easeOut" }],
+    "Animate X axis",
+    [angle, Math.PI * 2, { duration: 0.4, ease: "easeInOut" }],
+    [magnitude, radius, { duration: 0.3, ease: "easeInOut" }],
+    [magnitude, 0, { duration: 0.3, ease: "easeIn" }],
+    [angle, Math.PI * 1, { duration: 0.01 }],
+    [magnitude, radius, { duration: 0.3, ease: "easeOut" }],
+    [magnitude, 0, { duration: 0.3, ease: "easeIn" }],
+    [angle, Math.PI * 2, { duration: 0.01 }],
+    [magnitude, radius, { duration: 0.3, ease: "easeOut" }],
+  ];
 
   return (
     <>
@@ -269,15 +273,7 @@ export const VectorToRedGreen: React.FC = () => {
         </div>
       </div>
       <div className="flex justify-end">
-        <button
-          className="group bg-slate-500/70 text-white/80 p-3 rounded-full hover:bg-slate-600/80 active:bg-slate-700/90 transition-colors"
-          onClick={startAnimation}
-        >
-          <RotateCcwIcon
-            size={20}
-            className="group-hover:scale-110 group-active:scale-90 transition-transform"
-          />
-        </button>
+        <ReplayButton animation={animation} sequence={animationSequence} />
       </div>
     </>
   );

@@ -1,6 +1,13 @@
 import { RotateCcwIcon } from "lucide-react";
-import { motion, type MotionValue, useTransform } from "motion/react";
-import * as React from "react";
+import { animate, AnimationSequence } from "motion";
+import {
+  AnimationPlaybackControlsWithThen,
+  motion,
+  type MotionValue,
+  useTransform,
+} from "motion/react";
+import { useEffect, useState } from "react";
+import { IoSquare } from "react-icons/io5";
 import {
   ConcavePath24,
   ConvexCirclePath24,
@@ -24,31 +31,58 @@ function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
 }
 
-export const ReplayButton: React.FC<ButtonProps> = ({
-  onClick,
-  title = "Replay",
-  active,
-  className,
-}) => {
-  const activeBool = typeof active === "boolean" ? active : false;
+export const ReplayButton: React.FC<
+  ButtonProps & {
+    animation: MotionValue<AnimationPlaybackControlsWithThen | null>;
+    sequence: AnimationSequence;
+  }
+> = ({ className, animation, sequence }) => {
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    return animation.on("change", async (anim) => {
+      if (!anim) {
+        setPlaying(false);
+        return;
+      }
+      console.log("anim", anim);
+      setPlaying(anim.state === "running");
+      await anim.finished;
+      setPlaying(false);
+    });
+  }, [animation]);
+
+  const label = playing ? "Pause" : "Replay";
+
   return (
-    <button
+    <motion.button
       type="button"
-      onClick={onClick}
-      aria-label={title}
-      title={title}
-      className={cx(
-        baseBtn,
-        activeBool && "ring-2 ring-blue-400/70",
-        className
-      )}
+      onClick={() => {
+        if (playing) {
+          animation.get().complete();
+          setPlaying(false);
+        } else {
+          animation.set(animate(sequence));
+          animation.get().play();
+          setPlaying(true);
+        }
+      }}
+      aria-label={label}
+      title={label}
+      className={cx(baseBtn, className)}
     >
-      {/* Static icon; no active overlay needed here */}
-      <RotateCcwIcon
-        size={20}
-        className="group-hover:scale-110 group-active:scale-90 transition-transform"
-      />
-    </button>
+      {playing ? (
+        <IoSquare
+          size={20}
+          className="group-hover:scale-110 group-active:scale-90 transition-transform"
+        />
+      ) : (
+        <RotateCcwIcon
+          size={20}
+          className="group-hover:scale-110 group-active:scale-90 transition-transform"
+        />
+      )}
+    </motion.button>
   );
 };
 

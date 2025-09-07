@@ -1,5 +1,11 @@
-import { animate } from "motion";
-import { motion, useInView, useMotionValue, useTransform } from "motion/react";
+import { animate, AnimationSequence } from "motion";
+import {
+  AnimationPlaybackControlsWithThen,
+  motion,
+  useInView,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { ReplayButton } from "../components/Buttons";
 import {
@@ -164,43 +170,6 @@ export const RayRefractionSimulation: React.FC = () => {
     if (isInView) startAnimation();
   }, [isInView]);
 
-  function startAnimation() {
-    animate([
-      [
-        currentX,
-        viewWidth / 2,
-        {
-          duration: 0.5,
-          ease: "easeInOut",
-        },
-      ],
-      [
-        currentX,
-        (viewWidth - glassWidth) / 2,
-        {
-          duration: 1,
-          ease: "easeInOut",
-        },
-      ],
-      [
-        currentX,
-        (viewWidth - glassWidth) / 2 + glassWidth,
-        {
-          duration: 2,
-          ease: "easeInOut",
-        },
-      ],
-      [
-        currentX,
-        viewWidth / 2,
-        {
-          duration: 1,
-          ease: "easeInOut",
-        },
-      ],
-    ]);
-  }
-
   // Viewport & geometry (px)
   const glassWidth = 400;
   const glassHeight = 200;
@@ -342,6 +311,52 @@ export const RayRefractionSimulation: React.FC = () => {
     const xRatio = (clientX - bounds.left) / bounds.width;
     currentX.set(clamp(xRatio * viewWidth, 0, viewWidth));
   };
+
+  // Animation
+
+  function startAnimation() {
+    animation.get()?.stop();
+    animation.set(animate(animationSequence));
+  }
+
+  const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
+    null
+  );
+
+  const animationSequence: AnimationSequence = [
+    [
+      currentX,
+      viewWidth / 2,
+      {
+        duration: 0.5,
+        ease: "easeInOut",
+      },
+    ],
+    [
+      currentX,
+      (viewWidth - glassWidth) / 2,
+      {
+        duration: 1,
+        ease: "easeInOut",
+      },
+    ],
+    [
+      currentX,
+      (viewWidth - glassWidth) / 2 + glassWidth,
+      {
+        duration: 2,
+        ease: "easeInOut",
+      },
+    ],
+    [
+      currentX,
+      viewWidth / 2,
+      {
+        duration: 1,
+        ease: "easeInOut",
+      },
+    ],
+  ];
 
   return (
     <div className="relative h-full -ml-[15px] w-[calc(100%+30px)]">
@@ -490,7 +505,7 @@ export const RayRefractionSimulation: React.FC = () => {
           }}
         />
         <div className="flex-1 flex justify-end">
-          <ReplayButton onClick={startAnimation} />
+          <ReplayButton animation={animation} sequence={animationSequence} />
         </div>
       </div>
     </div>

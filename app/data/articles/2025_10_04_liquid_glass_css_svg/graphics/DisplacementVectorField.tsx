@@ -1,4 +1,4 @@
-import { animate } from "motion";
+import { animate, AnimationSequence } from "motion";
 import {
   AnimationPlaybackControlsWithThen,
   clamp,
@@ -104,30 +104,37 @@ export const DisplacementVectorField: React.FC = () => {
       Z`;
   });
 
-  const currentAnimation = useRef<AnimationPlaybackControlsWithThen>(null);
+  // Animation
+
+  const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
+    null
+  );
 
   function startAnimation() {
-    currentAnimation.current?.stop();
-
-    revolutionProgress.set(0);
-    radiusProgress.set(0);
-    projectRayOnSurfaceProgress.set(0);
-    normalisationProgress.set(0);
-
-    currentAnimation.current = animate([
-      [xAxisRotation, 90, { type: "spring", duration: 1, bounce: 0.13 }],
-      [radiusProgress, 1, { duration: 2, ease: "linear", at: "-0.6" }],
-      [projectRayOnSurfaceProgress, 1, { duration: 0.6, ease: "easeInOut" }],
-      [normalisationProgress, 1, { duration: 0.8, ease: "easeInOut" }],
-      [xAxisRotation, 65, { type: "spring", duration: 1, bounce: 0.13 }],
-      [revolutionProgress, 1, { duration: 2, ease: "easeInOut", at: "-0.6" }],
-      [
-        xAxisRotation,
-        0,
-        { type: "spring", duration: 2, bounce: 0.13, at: "-0.8" },
-      ],
-    ]);
+    animation.get()?.stop();
+    animation.set(animate(animationSequence));
   }
+
+  const animationSequence: AnimationSequence = [
+    // Initial State
+    [revolutionProgress, 0, { duration: 0.01 }],
+    [radiusProgress, 0, { duration: 0.01 }],
+    [projectRayOnSurfaceProgress, 0, { duration: 0.01 }],
+    [normalisationProgress, 0, { duration: 0.01 }],
+
+    // Animation Steps
+    [xAxisRotation, 90, { type: "spring", duration: 1, bounce: 0.13 }],
+    [radiusProgress, 1, { duration: 2, ease: "linear", at: "-0.6" }],
+    [projectRayOnSurfaceProgress, 1, { duration: 0.6, ease: "easeInOut" }],
+    [normalisationProgress, 1, { duration: 0.8, ease: "easeInOut" }],
+    [xAxisRotation, 65, { type: "spring", duration: 1, bounce: 0.13 }],
+    [revolutionProgress, 1, { duration: 2, ease: "easeInOut", at: "-0.6" }],
+    [
+      xAxisRotation,
+      0,
+      { type: "spring", duration: 2, bounce: 0.13, at: "-0.8" },
+    ],
+  ];
 
   const borderX = centerX - radius;
   const borderY = centerY;
@@ -421,7 +428,11 @@ export const DisplacementVectorField: React.FC = () => {
           }}
         />
         <div className="flex-1 flex justify-end">
-          <ReplayButton onClick={startAnimation} />
+          <ReplayButton
+            className="mr-3"
+            animation={animation}
+            sequence={animationSequence}
+          />
         </div>
       </div>
     </div>
