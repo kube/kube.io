@@ -25,7 +25,7 @@ export function calculateRefractionSpecular(
   new Uint32Array(imageData.data.buffer).fill(neutral);
 
   const radiusSquared = radius_ ** 2;
-  const radiusPlusOneSquared = (radius_ + 1) ** 2;
+  const radiusPlusOneSquared = (radius_ + devicePixelRatio) ** 2;
   const radiusMinusBezelSquared = (radius_ - bezel_) ** 2;
 
   const widthBetweenRadiuses = bufferWidth - radius_ * 2;
@@ -80,7 +80,8 @@ export function calculateRefractionSpecular(
         );
 
         const coefficient =
-          dotProduct * Math.sqrt(1 - (1 - distanceFromSide / 1.6) ** 2);
+          dotProduct *
+          Math.sqrt(1 - (1 - distanceFromSide / (1.3 * devicePixelRatio)) ** 2);
 
         const color = 255 * coefficient;
         const finalOpacity = color * coefficient * opacity;
