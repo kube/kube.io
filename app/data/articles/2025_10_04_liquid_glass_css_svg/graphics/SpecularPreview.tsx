@@ -42,7 +42,7 @@ export const SpecularPreview: React.FC = () => {
       radius,
       bezelWidth,
       angle,
-      1 // device pixel ratio
+      2 // device pixel ratio
     );
   });
 
@@ -88,27 +88,26 @@ export const SpecularPreview: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)]"
+      className="text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)] flex flex-col items-center gap-6"
     >
-      <div className="flex flex-col items-center gap-6">
-        {/* Specular preview */}
-        <div className="w-full bg-black rounded-xl px-8 py-16 flex items-center justify-center border border-neutral-200/50 dark:border-neutral-700/60">
-          <canvas ref={canvasRef} className="rounded-lg max-w-full h-auto" />
-        </div>
+      {/* Specular preview */}
+      <div className="w-full bg-black h-105 overflow-hidden rounded-xl px-8 py-16 flex items-center justify-center border border-neutral-200/50 dark:border-neutral-700/60">
+        <canvas ref={canvasRef} className="rounded-lg max-w-full h-80" />
+      </div>
 
-        {/* Slider control */}
-        <div className="flex flex-col items-center gap-3">
-          <label className="text-sm font-medium">
-            Specular Angle: <motion.span>{angleDegrees.get()}</motion.span>°
-          </label>
-          <input
-            type="range"
-            min="0"
-            max={Math.PI}
-            step={Math.PI / 180} // 1 degree steps
-            defaultValue={specularAngle.get()}
-            onChange={(e) => specularAngle.set(parseFloat(e.target.value))}
-            className="w-64 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 
+      {/* Slider control */}
+      <div className="flex flex-col items-center gap-3">
+        <label className="text-sm font-medium">
+          Specular Angle: <motion.span>{angleDegrees.get()}</motion.span>°
+        </label>
+        <input
+          type="range"
+          min="0"
+          max={Math.PI}
+          step={Math.PI / 180} // 1 degree steps
+          defaultValue={specularAngle.get()}
+          onChange={(e) => specularAngle.set(parseFloat(e.target.value))}
+          className="w-64 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 
                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 
                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 
                      [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-2 
@@ -116,12 +115,11 @@ export const SpecularPreview: React.FC = () => {
                      [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full 
                      [&::-moz-range-thumb]:bg-blue-500 [&::-moz-range-thumb]:cursor-pointer 
                      [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
-          />
-          <div className="flex justify-between w-64 text-xs text-gray-500 dark:text-gray-400">
-            <span>0°</span>
-            <span>90°</span>
-            <span>180°</span>
-          </div>
+        />
+        <div className="flex justify-between w-64 text-xs text-gray-500 dark:text-gray-400">
+          <span>0°</span>
+          <span>90°</span>
+          <span>180°</span>
         </div>
       </div>
     </div>
