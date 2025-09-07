@@ -140,14 +140,39 @@ export const RefractionAnglesExplanation: React.FC = () => {
     [n2, 1.5, { type: "tween", ease: "easeInOut", duration: 2 }],
   ];
 
+  const preventScroll = useRef(false);
+
   return (
     <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20">
-      <div className="relative">
+      <div className="relative select-none touch-pan-y">
         <motion.svg
           ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}
           className="select-none"
-          onPan={(e) => {
+          onTouchStart={() => {
+            preventScroll.current = false;
+          }}
+          onTouchMove={(e) => {
+            if (preventScroll.current) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
+          onPan={(e, info) => {
+            if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+              preventScroll.current = true;
+              if (animation.get().state === "running") {
+                animation.get().complete();
+              }
+              e.preventDefault();
+              e.stopPropagation();
+            }
+
+            if (!preventScroll.current) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
             const svg = svgRef.current;
             if (!svg) return;
 
@@ -168,6 +193,9 @@ export const RefractionAnglesExplanation: React.FC = () => {
 
             const angle = Math.atan2(y, x);
             incidentRayAngle.set(angle);
+          }}
+          onPanEnd={() => {
+            preventScroll.current = false;
           }}
         >
           <defs>
