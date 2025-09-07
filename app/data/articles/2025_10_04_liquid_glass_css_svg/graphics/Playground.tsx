@@ -16,8 +16,11 @@ export const Playground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isInView = useInView(containerRef, { amount: 0.05 });
 
+  const padding = 30;
   const width = 400;
   const height = 300;
+  const usableWidth = width - padding * 2;
+  const usableHeight = height - padding * 2;
 
   // Inputs as MotionValues to avoid React re-renders
   const currentX = useMotionValue<number | null>(null);
@@ -110,9 +113,9 @@ export const Playground: React.FC = () => {
     const max = (maximumDisplacement.get() as unknown as number) || 1;
     return arr
       .map((d, i) => {
-        const x = (i / arr.length) * width;
+        const x = (i / arr.length) * usableWidth + padding;
         return `${i === 0 ? "M" : "L"} ${x} ${
-          height / 2 - ((d / max) * height * 0.9) / 2
+          usableHeight / 2 - ((d / max) * usableHeight * 0.8) / 2 + padding
         }`;
       })
       .join(" ");
@@ -137,14 +140,14 @@ export const Playground: React.FC = () => {
     return tempCanvas.toDataURL();
   });
 
-  const currentXPos = useTransform(currentX, (v) => (v ?? 0) * width);
+  const currentXPos = useTransform(currentX, (v) => (v ?? 0) * usableWidth);
   const y2Motion = useTransform(() => {
     const arr = (precomputedDisplacementMap.get() as unknown as number[]) || [];
     const v = currentX.get() ?? 0;
     const max = (maximumDisplacement.get() as unknown as number) || 1;
     const idx = Math.min(arr.length - 1, Math.max(0, (v * arr.length) | 0));
     const d = arr[idx] ?? 0;
-    return height / 2 - (d / max) * (height / 2) * 0.9;
+    return usableHeight / 2 - (d / max) * (usableHeight / 2) * 0.8;
   });
   const scaleMotion = useTransform(
     scaleRatio,
@@ -274,13 +277,14 @@ export const Playground: React.FC = () => {
           </h4>
           <div className="text-sm">
             <motion.svg
-              viewBox="-30 -40 450 370"
+              viewBox="0 0 400 300"
               className="text-neutral-900 dark:text-neutral-100"
               width="100%"
               onPointerDown={(e) => {
-                const { left, width } = e.currentTarget.getBoundingClientRect();
-                const xRatio = (e.clientX - left) / width;
-                currentX.set(Math.max(0, Math.min(1, xRatio)));
+                const { left } = e.currentTarget.getBoundingClientRect();
+                const xRatio = (e.clientX - left - padding) / usableWidth;
+                const chartXRatio = Math.max(0, Math.min(1, xRatio));
+                currentX.set(chartXRatio);
                 try {
                   (
                     e.currentTarget as Element & { setPointerCapture: any }
@@ -289,9 +293,10 @@ export const Playground: React.FC = () => {
               }}
               onPointerMove={(e) => {
                 if (!(e.buttons & 1)) return;
-                const { left, width } = e.currentTarget.getBoundingClientRect();
-                const xRatio = (e.clientX - left) / width;
-                currentX.set(Math.max(0, Math.min(1, xRatio)));
+                const { left } = e.currentTarget.getBoundingClientRect();
+                const xRatio = (e.clientX - left - padding) / usableWidth;
+                const chartXRatio = Math.max(0, Math.min(1, xRatio));
+                currentX.set(chartXRatio);
               }}
             >
               <defs>
@@ -308,57 +313,70 @@ export const Playground: React.FC = () => {
                   <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
                 </marker>
               </defs>
+
+              <motion.line
+                style={{ display: showIndicator }}
+                x1={useTransform(currentXPos, (x) => x + padding)}
+                y1={usableHeight / 2 + padding}
+                x2={useTransform(currentXPos, (x) => x + padding)}
+                y2={useTransform(y2Motion, (y) => y + padding)}
+                stroke={displacementColor}
+                strokeWidth={2}
+              />
+
               <motion.path
                 d={pathData}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeOpacity="0.6"
+                strokeLinecap="round"
               />
+
               <line
-                y1={height / 2}
-                y2={height / 2}
-                x1={0}
-                x2={width}
+                y1={usableHeight / 2 + padding}
+                y2={usableHeight / 2 + padding}
+                x1={padding}
+                x2={padding + usableWidth}
                 stroke="currentColor"
                 strokeWidth={1}
                 opacity={0.25}
                 strokeDasharray="4 1"
               />
               <line
-                x1={0}
-                x2={0}
-                y1={height}
-                y2={0}
+                x1={padding}
+                x2={padding}
+                y1={usableHeight + padding}
+                y2={padding}
                 stroke="currentColor"
                 opacity={0.25}
                 strokeWidth={1}
                 markerEnd="url(#axisArrow)"
               />
               <text
-                x={-15}
-                y={-14}
+                x={6}
+                y={7}
                 alignmentBaseline="middle"
                 textAnchor="end"
-                transform="rotate(-90 0 0)"
+                transform="rotate(-90 30 20)"
                 fill="currentColor"
                 opacity="0.5"
               >
                 Displacement
               </text>
               <line
-                x1={0}
-                x2={width}
-                y1={height}
-                y2={height}
+                x1={padding}
+                x2={usableWidth + padding}
+                y1={usableHeight + padding}
+                y2={usableHeight + padding}
                 stroke="currentColor"
                 strokeWidth="1"
                 opacity="0.28"
                 markerEnd="url(#axisArrow)"
               />
               <text
-                x={width - 10}
-                y={height + 13}
+                x={usableWidth + padding - 10}
+                y={usableHeight + padding + 15}
                 alignmentBaseline="middle"
                 textAnchor="end"
                 fill="currentColor"
@@ -366,15 +384,6 @@ export const Playground: React.FC = () => {
               >
                 Distance to border
               </text>
-              <motion.line
-                style={{ display: showIndicator }}
-                x1={currentXPos}
-                y1={height / 2}
-                x2={currentXPos}
-                y2={y2Motion}
-                stroke={displacementColor}
-                strokeWidth="2"
-              />
             </motion.svg>
           </div>
         </div>

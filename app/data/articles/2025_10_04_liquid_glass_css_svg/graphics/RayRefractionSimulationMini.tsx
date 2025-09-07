@@ -1,5 +1,5 @@
 import { motion, type MotionValue, useTransform } from "motion/react";
-import { getRayColor, getRayColorDimmed } from "../lib/rayColor";
+import { getRayColorDimmed } from "../lib/rayColor";
 import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 
 const AIR_REFRACTIVE_INDEX = 1;
@@ -78,8 +78,8 @@ export const RayRefractionSimulationMini: React.FC<
   refractionIndex = GLASS_REFRACTIVE_INDEX,
   currentX,
 }) => {
-  const viewWidth = 320;
-  const viewHeight = 240;
+  const viewWidth = 400;
+  const viewHeight = 300;
 
   const backgroundWidth = viewWidth;
   const backgroundHeight = 10;
@@ -208,7 +208,10 @@ export const RayRefractionSimulationMini: React.FC<
     return disp / max;
   });
 
-  const displacementColor = useTransform(displacementIntensity, getRayColor);
+  const displacementColor = useTransform(
+    displacementIntensity,
+    getRayColorDimmed
+  );
   const displacementThickness = useTransform(
     displacementIntensity,
     (intensity) => 0.3 + intensity * 4
@@ -283,7 +286,7 @@ export const RayRefractionSimulationMini: React.FC<
           y1={25}
           x2={incidentX}
           y2={useTransform(ray, (r: any) => (r ? r.hitPoint[1] : 0))}
-          stroke={getRayColor(0)}
+          stroke={getRayColorDimmed(0)}
           strokeWidth="2.5"
           strokeLinecap="round"
         />
@@ -299,7 +302,7 @@ export const RayRefractionSimulationMini: React.FC<
           y1={useTransform(ray, (r: any) => r?.refracted?.y1 ?? 0)}
           x2={useTransform(ray, (r: any) => r?.refracted?.x2 ?? 0)}
           y2={useTransform(ray, (r: any) => r?.refracted?.y2 ?? 0)}
-          stroke={getRayColor(0.3)}
+          stroke={getRayColorDimmed(0.3)}
           strokeWidth="2.5"
           strokeLinecap="round"
         />
