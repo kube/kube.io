@@ -125,13 +125,13 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
                   {children}
                 </h3>
               ),
-              p: ({ children }) => <p className="text-justify">{children}</p>,
+              p: ({ children }) => (
+                <p className="text-left sm:text-justify">{children}</p>
+              ),
               ul: ({ children }) => (
-                <ul className="list-disc pl-6 space-y-2">{children}</ul>
+                <ul className="list-disc pl-6 space-y-3">{children}</ul>
               ),
-              li: ({ children }) => (
-                <li className="text-justify">{children}</li>
-              ),
+              li: ({ children }) => <li className="text-left">{children}</li>,
               pre: ({ children }) => {
                 const isCodeBlock = children.type === "code";
 
