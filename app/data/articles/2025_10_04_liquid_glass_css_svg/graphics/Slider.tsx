@@ -8,7 +8,7 @@ export const Slider: React.FC = () => {
   const value = useMotionValue(10);
 
   const sliderHeight = 14;
-  const sliderWidth = 360;
+  const sliderWidth = 330;
 
   // Use numeric MotionValue (0/1) instead of boolean for compatibility with transforms
   const pointerDown = useMotionValue(0);
