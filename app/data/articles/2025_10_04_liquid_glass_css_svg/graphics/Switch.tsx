@@ -3,35 +3,38 @@ import React, { useEffect } from "react";
 import { Filter } from "virtual:refractionFilter?width=146&height=92&radius=46&bezelWidth=27&glassThickness=58&bezelType=lip&refractiveIndex=1.5";
 
 export const Switch: React.FC = () => {
-  // —————————————————————————————————————————————
+  //
   // CONSTANTS (layout + optics)
+  //
   const sliderHeight = 67;
   const sliderWidth = 160;
   const thumbWidth = 146;
   const thumbHeight = 92;
   const thumbRadius = thumbHeight / 2;
-  const blur = useMotionValue(0.2); // 0..40
-  const specularOpacity = useMotionValue(0.5); // 0..1
-  const specularSaturation = useMotionValue(6); // 0..50
-  const refractionBase = useMotionValue(1); // 0..1
+  const blur = useMotionValue(0.2);
+  const specularOpacity = useMotionValue(0.5);
+  const specularSaturation = useMotionValue(6);
+  const refractionBase = useMotionValue(1);
 
-  // —————————————————————————————————————————————
-  // SOURCES OF TRUTH (Motion)
-  const checkedMV = useMotionValue<number>(1); // 0->off, 1->on
-  const pointerDownMV = useMotionValue<number>(0); // 0->idle, 1->pressed
+  //
+  // MOTION SOURCES
+  //
+  const checked = useMotionValue(1);
+  const pointerDown = useMotionValue(0);
   const forceActive = useMotionValue(false);
-
-  const isUp = useTransform((): number =>
-    forceActive.get() || pointerDownMV.get() > 0.5 ? 1 : 0
+  const active = useTransform(() =>
+    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0
   );
 
-  const toggleChecked = () => {
-    checkedMV.set(checkedMV.get() ? 0 : 1);
-  };
+  function toggleChecked() {
+    checked.set(checked.get() ? 0 : 1);
+  }
 
-  // End press when releasing outside the element
+  //
+  // GLOBAL POINTER-UP LISTENER
+  //
   useEffect(() => {
-    const onPointerUp = () => pointerDownMV.set(0);
+    const onPointerUp = () => pointerDown.set(0);
     window.addEventListener("pointerup", onPointerUp);
     window.addEventListener("mouseup", onPointerUp);
     window.addEventListener("touchend", onPointerUp);
@@ -40,54 +43,26 @@ export const Switch: React.FC = () => {
       window.removeEventListener("mouseup", onPointerUp);
       window.removeEventListener("touchend", onPointerUp);
     };
-  }, [pointerDownMV]);
+  }, [pointerDown]);
 
-  // —————————————————————————————————————————————
-  // DERIVED TRANSFORMS (pure)
-  const trackBg = useTransform(checkedMV, [0, 1], ["#94949F77", "#3BBF4EEE"]);
-  // Keep relative positions equivalent after halving sizes
-  const buttonXTarget = useTransform(checkedMV, [0, 1], [-69.5, -30.5]); // in % (unchanged)
-  const backgroundOpacityTarget = useTransform(isUp, [0, 1], [1, 0.1]);
-  const thumbScaleTarget = useTransform(isUp, [0, 1], [0.65, 1]);
-  const pressMultiplier = useTransform(isUp, [0, 1], [0.4, 0.9]);
-  const scaleRatioTarget = useTransform(
-    [pressMultiplier, refractionBase],
-    ([m, base]) => (Number(m) || 0) * (Number(base) || 0)
-  );
-
-  // —————————————————————————————————————————————
-  // SPRINGS (animated derivatives)
-  const buttonX = useSpring(buttonXTarget, { damping: 60, stiffness: 800 });
-  const backgroundOpacity = useSpring(backgroundOpacityTarget, {
-    damping: 80,
-    stiffness: 2000,
+  //
+  // SPRINGS
+  //
+  const buttonX = useSpring(useTransform(checked, [0, 1], [-69.5, -30.5]), {
+    damping: 60,
+    stiffness: 800,
   });
-  const thumbScale = useSpring(thumbScaleTarget, {
-    damping: 80,
-    stiffness: 2000,
-  });
-  const scaleRatio = useSpring(scaleRatioTarget, {
-    damping: 80,
-    stiffness: 2000,
-  });
-
-  // —————————————————————————————————————————————
-  // STYLE TRANSFORMS (stringified values for JSX styles)
-  const thumbXPercent = useTransform(buttonX, (v) => `${v}%`);
-  const thumbBgColor = useTransform(
-    backgroundOpacity,
-    (op) => `rgba(255, 255, 255, ${op})`
+  const backgroundOpacity = useSpring(
+    useTransform(active, (v) => 1 - 0.9 * v),
+    { damping: 80, stiffness: 2000 }
   );
-
-  // Readouts for the controls UI
-  const specularOpacityText = useTransform(specularOpacity, (v) =>
-    v.toFixed(2)
+  const thumbScale = useSpring(
+    useTransform(active, (v) => 0.65 + 0.35 * v),
+    { damping: 80, stiffness: 2000 }
   );
-  const specularSaturationText = useTransform(specularSaturation, (v) =>
-    Math.round(v).toString()
+  const scaleRatio = useSpring(
+    useTransform(() => (0.4 + 0.5 * active.get()) * refractionBase.get())
   );
-  const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
-  const blurText = useTransform(blur, (v) => v.toFixed(1));
 
   return (
     <>
@@ -99,7 +74,6 @@ export const Switch: React.FC = () => {
             "linear-gradient(to bottom, currentColor 1px, transparent 1px)," +
             "radial-gradient(120% 100% at 10% 0%, var(--bg1), var(--bg2))",
           backgroundSize: "24px 24px, 24px 24px, 100% 100%",
-          // Offset the grid so it doesn't align with the top/left border
           backgroundPosition: "12px 12px, 12px 12px, 0 0",
         }}
       >
@@ -108,16 +82,19 @@ export const Switch: React.FC = () => {
             display: "inline-block",
             width: sliderWidth,
             height: sliderHeight,
-            backgroundColor: trackBg,
+            backgroundColor: useTransform(
+              checked,
+              [0, 1],
+              ["#94949F77", "#3BBF4EEE"]
+            ),
             borderRadius: sliderHeight / 2,
             position: "relative",
             cursor: "pointer",
           }}
           onClick={toggleChecked}
-          onMouseDown={() => pointerDownMV.set(1)}
-          onMouseUp={() => pointerDownMV.set(0)}
+          onMouseDown={() => pointerDown.set(1)}
+          onMouseUp={() => pointerDown.set(0)}
         >
-          {/* Virtual Filter with inlined parameters */}
           <Filter
             id="thumb-filter"
             blur={blur}
@@ -125,22 +102,24 @@ export const Switch: React.FC = () => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
           />
-
           <motion.div
             className="absolute"
             style={{
               height: thumbHeight,
               width: thumbWidth,
-              x: thumbXPercent,
+              x: useTransform(buttonX, (v) => `${v}%`),
               y: "-50%",
               borderRadius: thumbRadius,
               top: sliderHeight / 2,
               left: sliderWidth / 2,
               backdropFilter: `url(#thumb-filter)`,
               scale: thumbScale,
-              backgroundColor: thumbBgColor,
+              backgroundColor: useTransform(
+                backgroundOpacity,
+                (op) => `rgba(255, 255, 255, ${op})`
+              ),
               boxShadow: useTransform(() => {
-                const isPressed = pointerDownMV.get() > 0.5;
+                const isPressed = pointerDown.get() > 0.5;
                 return (
                   "0 4px 22px rgba(0,0,0,0.1)" +
                   (isPressed
@@ -151,8 +130,6 @@ export const Switch: React.FC = () => {
             }}
           />
         </motion.div>
-
-        {/* Toggle control */}
         <label className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-white/10 dark:bg-black/10 backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80">
           <input
             type="checkbox"
@@ -164,7 +141,6 @@ export const Switch: React.FC = () => {
         </label>
       </div>
 
-      {/* Parameters controls (MotionValue-driven; no React state) */}
       <div className="mt-8 space-y-3 text-black/80 dark:text-white/80">
         <div className="flex items-center gap-4">
           <div className="uppercase tracking-[0.14em] text-[10px] opacity-70 select-none">
@@ -173,13 +149,12 @@ export const Switch: React.FC = () => {
           <div className="h-[1px] flex-1 bg-black/10 dark:bg-white/10" />
         </div>
 
-        {/* Specular Opacity */}
         <div className="flex items-center gap-4">
           <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
             Specular Opacity
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {specularOpacityText}
+            {useTransform(specularOpacity, (v) => v.toFixed(2))}
           </motion.span>
           <input
             type="range"
@@ -195,13 +170,12 @@ export const Switch: React.FC = () => {
           />
         </div>
 
-        {/* Specular Saturation */}
         <div className="flex items-center gap-4">
           <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
             Specular Saturation
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {specularSaturationText}
+            {useTransform(specularSaturation, (v) => Math.round(v).toString())}
           </motion.span>
           <input
             type="range"
@@ -217,13 +191,12 @@ export const Switch: React.FC = () => {
           />
         </div>
 
-        {/* Refraction Level */}
         <div className="flex items-center gap-4">
           <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
             Refraction Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {refractionLevelText}
+            {useTransform(refractionBase, (v) => v.toFixed(2))}
           </motion.span>
           <input
             type="range"
@@ -239,13 +212,12 @@ export const Switch: React.FC = () => {
           />
         </div>
 
-        {/* Blur Level */}
         <div className="flex items-center gap-4">
           <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
             Blur Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
-            {blurText}
+            {useTransform(blur, (v) => v.toFixed(1))}
           </motion.span>
           <input
             type="range"
