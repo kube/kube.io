@@ -138,18 +138,16 @@ const normal = { x: -derivative, y: 1 }; // Derivative, rotated by -90 degrees
 
 For this article, we will use four different height functions to demonstrate the effect of the surface shape on the refraction:
 
-<div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-8 items-start w-full">
+<div className="grid grid-cols-[auto_1fr] gap-x-4 sm:gap-x-6 gap-y-8 items-start w-full mb-12">
 
 <FunctionPlot fn={CONVEX_CIRCLE.fn} />
 <div className="min-w-0 h-full flex flex-col justify-center">
   <div className="font-semibold">Convex Circle</div>
   <div className="mt-2 text-base my-1">$y = \sqrt{(1 - (1 - x)) ^ 2}$</div>
   <div className="text-sm opacity-80 mt-1">
-    This convex circle surface uses a simple circular arc equation, creating a
-    perfectly spherical dome shape. While simpler than the squircle approach,
-    this creates more abrupt transitions between the curved bezel and flat
-    surface, resulting in sharper refraction boundaries that can be more
-    noticeable when stretched into non-circular shapes.
+    Simple circular arc → a spherical dome. Easier than the squircle, but the
+    transition to the flat interior is harsher, producing sharper refraction
+    edges—more noticeable when the shape is stretched away from a true circle.
   </div>
 </div>
 
@@ -158,14 +156,11 @@ For this article, we will use four different height functions to demonstrate the
   <div className="font-semibold">Convex Squircle</div>
   <div className="mt-2 text-base my-1">$y = \sqrt[4]{(1 - (1 - x)) ^ 4}$</div>
   <div className="text-sm opacity-80 mt-1">
-    This convex surface uses a
-    [Squircle](https://en.wikipedia.org/wiki/Squircle) equation, that Apple
-    commonly employs, which provides better smoothing between flat and curved
-    surface transitions for more natural refraction effects. This approach
-    allows objects to be stretched into rectangular shapes without creating
-    harsh boundaries at the flat surface areas.
-
-    It makes the bezel optical size appear tinyer than its physical size, as the flatter areas near the edges contribute less to refraction.
+  Uses the [Squircle](https://en.wikipedia.org/wiki/Squircle) Apple favors: a
+  softer flat→curve transition that keeps refraction gradients smooth even
+  when stretched into rectangles—no harsh interior edges. It also makes the
+  bezel appear optically thinner than its physical size because the flatter
+  outer zones bend light less.
 
   </div>
 </div>
@@ -175,11 +170,9 @@ For this article, we will use four different height functions to demonstrate the
   <div className="font-semibold">Concave</div>
   <div className="mt-2 text-base my-1">$y = 1 - \text{Convex}(x)$</div>
   <div className="text-sm opacity-80 mt-1">
-    The concave surface is the horizontal symmetry of the convex function,
-    creating a bowl-like depression. This surface causes light rays to diverge
-    outward, potentially displacing them beyond the glass boundaries, which can
-    impact performance but creates interesting magnification effects at the
-    edges.
+    The concave surface is the complement of the convex function, creating a
+    bowl-like depression. This surface causes light rays to diverge outward,
+    displacing them beyond the glass boundaries.
   </div>
 </div>
 
@@ -190,9 +183,7 @@ For this article, we will use four different height functions to demonstrate the
     $y = \text{mix}(\text{Convex}(x), \text{Concave}(x + 0.5), \text{Smootherstep}(x))$
   </div>
   <div className="text-sm opacity-80 mt-1">
-    The lip bezel combines both convex and concave characteristics, interpolated using [Smootherstep](https://en.wikipedia.org/wiki/Smoothstep). This creates a raised edge that transitions to a slight depression in the center.
-
-    The $+ 0.5$ offset in the concave function is just to reduce the depth of the concave part, therefore reducing refraction outwards.
+  Blends convex and concave via [Smootherstep](https://en.wikipedia.org/wiki/Smoothstep): raised rim, shallow center dip. The $+0.5$ concave offset reduces depth, limiting outward refraction.
 
   </div>
 </div>
@@ -234,7 +225,7 @@ The actual number of samples we need to do on a radius is of 127 ray simulations
 
 In the above diagram, the arrows are all scaled down for visibility, so they do not overlap. This is normalization, and is also useful from a technical standpoint.
 
-To use these vectors in a displacement map, we need to normalize them. Normalization means scaling the vectors so that their maximum magnitude is 1, which allows us to represent them in a fixed range.
+To use these vectors in a displacement map, we need to normalize them. Normalization means scaling the vectors so that their maximum magnitude is $1$, which allows us to represent them in a fixed range.
 
 So we calculate the maximum displacement magnitude in our pre-calculated array:
 
@@ -247,7 +238,7 @@ And we divide each vector's magnitude by this maximum:
 ```ts
 displacementVector_normalized = {
   angle: normalAtBorder,
-  magnitude: displacementMagnitude / maximumDisplacement, // Normalize the magnitude to be between 0 and 1
+  magnitude: magnitude / maximumDisplacement,
 };
 ```
 

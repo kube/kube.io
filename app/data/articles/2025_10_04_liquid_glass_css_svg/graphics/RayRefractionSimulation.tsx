@@ -520,7 +520,7 @@ export const RayRefractionSimulation: React.FC = () => {
             }
           }}
         />
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end pr-3">
           <ReplayButton animation={animation} sequence={animationSequence} />
         </div>
       </div>

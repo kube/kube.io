@@ -55,7 +55,7 @@ export const FunctionPlot: React.FC<{
   );
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-28 h-28 sm:w-32 sm:h-32">
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-24 h-24 sm:w-32 sm:h-32">
       <rect
         x={0.5}
         y={0.5}
