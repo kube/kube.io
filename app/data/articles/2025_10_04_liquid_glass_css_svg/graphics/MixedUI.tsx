@@ -26,6 +26,7 @@ import {
   IoVolumeHighOutline,
 } from "react-icons/io5";
 import { Filter as SearchboxFilter } from "virtual:refractionFilter?width=320&height=42&radius=21&bezelWidth=18&glassThickness=100&refractiveIndex=1.3&bezelType=convex_squircle";
+import { Filter as PlayerFilterMobile } from "virtual:refractionFilter?width=320&height=54&radius=27&bezelWidth=29&glassThickness=90&refractiveIndex=1.3&bezelType=convex_squircle";
 import { Filter as PlayerFilter } from "virtual:refractionFilter?width=640&height=63&radius=31&bezelWidth=29&glassThickness=90&refractiveIndex=1.3&bezelType=convex_squircle";
 import { LogoStatic } from "../../../../components/Logo";
 
@@ -41,9 +42,21 @@ function upscaleArtwork(url: string, size = 600) {
   return url.replace(/\/[0-9]+x[0-9]+bb\.(jpg|png)$/i, `/${size}x${size}bb.$1`);
 }
 
+function useIsMobileView() {
+  const [isMobile, setIsMobile] = useState(false);
+  useLayoutEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 700);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 export const MixedUI: React.FC = ({}) => {
   const [query, setQuery] = useState("Jimi Hendrix");
   const [isPlaying, setIsPlaying] = useState(true);
+  const isMobile = useIsMobileView();
 
   // Interactive controls (MotionValues only)
   const specularSaturation = useMotionValue(6); // 0..50
@@ -51,7 +64,7 @@ export const MixedUI: React.FC = ({}) => {
   const refractionLevel = useMotionValue(1); // 0..1
   const blur = useMotionValue(1); // 0..40
   const progressiveBlurStrength = useMotionValue(1); // how much to ease the blur in the top overlay
-  const glassBackgroundOpacity = useMotionValue(0.5); // 0..1
+  const glassBackgroundOpacity = useMotionValue(0.6); // 0..1
   // Tracks preferred color scheme as a MotionValue: 'light' | 'dark'
   const colorScheme = useMotionValue<"light" | "dark">("light");
   // Track scroll position for bottom gradient fade
@@ -143,13 +156,17 @@ export const MixedUI: React.FC = ({}) => {
   }, [colorScheme]);
 
   // Floating player dimensions (used to pad the scroll area bottom)
-  const playerHeight = 63; // must match the player container height
-  const playerWidth = 640;
+  const playerWidthDesktop = 640;
+  const playerHeightDesktop = 63;
+  const playerWidthMobile = 320;
+  const playerHeightMobile = 54;
+  const playerWidth = isMobile ? playerWidthMobile : playerWidthDesktop;
+  const playerHeight = isMobile ? playerHeightMobile : playerHeightDesktop;
   const playerBottomOffset = 24; // Tailwind bottom-6 = 1.5rem = 24px
   const playerExtraBreathingRoom = 24; // small gap so the last row isn't glued to the player
 
   const listBottomPadding =
-    playerHeight + playerBottomOffset + playerExtraBreathingRoom; // 68 + 24 + 24 = 116
+    playerHeightDesktop + playerBottomOffset + playerExtraBreathingRoom; // 68 + 24 + 24 = 116
 
   // UI scale: 0.9 idle → 1 when focused
   const uiScale = useSpring(useTransform(focused, [0, 1], [0.9, 1]), {
@@ -160,7 +177,7 @@ export const MixedUI: React.FC = ({}) => {
   return (
     <div>
       <motion.div
-        className="relative h-[640px] max-h-[70vh] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#222222]"
+        className="relative h-[640px] max-h-[70vh] rounded-xl -ml-[19px] w-[calc(100%+38px)] border border-black/15 dark:border-white/15 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#222222]"
         style={
           {
             "--glass-bg-alpha": useTransform(
@@ -318,11 +335,20 @@ export const MixedUI: React.FC = ({}) => {
             specularOpacity={specularOpacity}
             specularSaturation={specularSaturation}
           />
+          <PlayerFilterMobile
+            id="mixed-ui-player-filter-mobile"
+            blur={blur}
+            scaleRatio={refractionLevel}
+            specularOpacity={specularOpacity}
+            specularSaturation={specularSaturation}
+          />
           <motion.div
             className="absolute inset-0 bg-[var(--glass-rgb)]/[var(--glass-bg-alpha)]"
             style={{
               borderRadius: 34,
-              backdropFilter: `url(#mixed-ui-player-filter)`,
+              backdropFilter: isMobile
+                ? `url(#mixed-ui-player-filter-mobile)`
+                : `url(#mixed-ui-player-filter)`,
               boxShadow: useTransform(
                 () =>
                   `0 4px 19px rgba(0, 0, 0, ${0.4 * playerShadowOpacity.get()})`
@@ -337,49 +363,60 @@ export const MixedUI: React.FC = ({}) => {
           >
             {/* Left controls */}
             <div className="flex items-center gap-3 text-black/80 dark:text-white/80">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Shuffle"
-              >
-                <IoShuffleOutline size={18} className="opacity-70" />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Previous"
-              >
-                <IoPlayBack size={20} />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-2 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                onClick={() => setIsPlaying((v) => !v)}
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <IoPause size={29} /> : <IoPlay size={29} />}
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Next"
-              >
-                <IoPlayForward size={20} />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Repeat"
-              >
-                <IoRepeatOutline size={18} className="opacity-70" />
-              </button>
+              {!isMobile && (
+                <>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                    aria-label="Shuffle"
+                  >
+                    <IoShuffleOutline size={18} className="opacity-70" />
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                    aria-label="Previous"
+                  >
+                    <IoPlayBack size={20} />
+                  </button>
+                </>
+              )}
+              {(!!currentAlbum || !isMobile) && (
+                <>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full p-2 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                    onClick={() => setIsPlaying((v) => !v)}
+                    aria-label={isPlaying ? "Pause" : "Play"}
+                  >
+                    {isPlaying ? <IoPause size={29} /> : <IoPlay size={29} />}
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                    aria-label="Next"
+                  >
+                    <IoPlayForward size={20} />
+                  </button>
+                </>
+              )}
+
+              {!isMobile && (
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                  aria-label="Repeat"
+                >
+                  <IoRepeatOutline size={18} className="opacity-70" />
+                </button>
+              )}
             </div>
 
             {/* Now playing (show cube when nothing selected or not yet loaded; else artwork + text) */}
             {!currentAlbum ? (
               <div className="flex items-center justify-center flex-1 min-w-0">
                 <LogoStatic
-                  className="w-11 text-slate-800/60 dark:text-slate-200/60"
+                  className="w-10 sm:w-11 text-slate-800/60 dark:text-slate-200/60"
                   gradientFrom="currentColor"
                 />
               </div>
@@ -412,36 +449,38 @@ export const MixedUI: React.FC = ({}) => {
             )}
 
             {/* Right actions */}
-            <div className="flex items-center gap-4 text-black/80 dark:text-white/80">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="More Options"
-              >
-                <IoEllipsisHorizontal size={20} className="opacity-80" />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="List"
-              >
-                <IoListOutline size={18} className="opacity-70" />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Radio"
-              >
-                <IoRadioOutline size={18} />
-              </button>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
-                aria-label="Volume"
-              >
-                <IoVolumeHighOutline size={22} />
-              </button>
-            </div>
+            {!isMobile && (
+              <div className="flex items-center gap-4 text-black/80 dark:text-white/80">
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                  aria-label="More Options"
+                >
+                  <IoEllipsisHorizontal size={20} className="opacity-80" />
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                  aria-label="List"
+                >
+                  <IoListOutline size={18} className="opacity-70" />
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                  aria-label="Radio"
+                >
+                  <IoRadioOutline size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 transition-transform duration-150 ease-out hover:scale-110 active:scale-90 focus:outline-none cursor-pointer"
+                  aria-label="Volume"
+                >
+                  <IoVolumeHighOutline size={22} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -645,7 +684,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
   }, [albums, onLoaded]);
 
   return (
-    <div className="grid grid-cols-4 gap-6">
+    <div className="grid grid-cols-3 sm:grid-cols-4 gap-6">
       {albums.map((item) => {
         const title = item.collectionName;
         return (

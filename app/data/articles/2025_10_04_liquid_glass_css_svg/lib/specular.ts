@@ -81,7 +81,7 @@ export function calculateRefractionSpecular(
 
         const coefficient =
           dotProduct *
-          Math.sqrt(1 - (1 - distanceFromSide / (1.3 * devicePixelRatio)) ** 2);
+          Math.sqrt(1 - (1 - distanceFromSide / (1 * devicePixelRatio)) ** 2);
 
         const color = 255 * coefficient;
         const finalOpacity = color * coefficient * opacity;
