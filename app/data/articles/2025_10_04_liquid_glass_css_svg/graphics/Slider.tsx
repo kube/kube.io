@@ -223,7 +223,7 @@ export const Slider: React.FC = () => {
 
         {/* Specular Opacity */}
         <div className="flex items-center gap-4">
-          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none [line-height:1.2]">
             Specular Opacity
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
@@ -245,7 +245,7 @@ export const Slider: React.FC = () => {
 
         {/* Specular Saturation */}
         <div className="flex items-center gap-4">
-          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none [line-height:1.2]">
             Specular Saturation
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
@@ -267,7 +267,7 @@ export const Slider: React.FC = () => {
 
         {/* Refraction Level */}
         <div className="flex items-center gap-4">
-          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none [line-height:1.2]">
             Refraction Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
@@ -289,7 +289,7 @@ export const Slider: React.FC = () => {
 
         {/* Blur Level */}
         <div className="flex items-center gap-4">
-          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none">
+          <label className="w-56 uppercase tracking-[0.08em] text-[11px] opacity-80 select-none [line-height:1.2]">
             Blur Level
           </label>
           <motion.span className="w-14 text-right font-mono tabular-nums text-[11px] text-black/60 dark:text-white/60">
