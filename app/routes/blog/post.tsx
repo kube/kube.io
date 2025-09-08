@@ -100,49 +100,108 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
         </div>
 
         <div className="space-y-6 text-[16px] leading-[22px]">
+          {/**
+           * Auto‑slug + id for level-1 headings so they can be linked via #fragment.
+           * Keeps track of used ids to ensure uniqueness when duplicate titles appear.
+           */}
           <Article
-            components={{
-              h1: ({ children }) => (
-                <h1 className="text-[36px] sm:text-[40px] leading-[38px] mt-[180px] font-bold font-sans">
-                  {children}
-                </h1>
-              ),
-              h2: ({ children }) => (
-                <h2 className="text-[27px] leading-[28px] mt-[100px] font-bold font-sans">
-                  {children}
-                </h2>
-              ),
-              h3: ({ children }) => (
-                <h3 className="text-[24px] leading-[26px] mt-[40px] font-semibold font-sans">
-                  {children}
-                </h3>
-              ),
-              p: ({ children }) => (
-                <p className="text-left sm:text-justify">{children}</p>
-              ),
-              ul: ({ children }) => (
-                <ul className="list-disc pl-6 space-y-3">{children}</ul>
-              ),
-              li: ({ children }) => <li className="text-left">{children}</li>,
-              pre: ({ children }) => {
-                const isCodeBlock = children.type === "code";
-
-                if (isCodeBlock) {
-                  return (
-                    <pre className="bg-gray-900/85 dark:bg-gray-800/70 rounded-md py-4 px-5 overflow-x-auto font-mono text-[13px]">
-                      {children}
-                    </pre>
-                  );
+            components={(() => {
+              const usedIds = new Set<string>();
+              const slugify = (text: string) =>
+                text
+                  .toLowerCase()
+                  .trim()
+                  .replace(/[^a-z0-9\s-]/g, "")
+                  .replace(/\s+/g, "-")
+                  .replace(/-+/g, "-");
+              const extractText = (node: any): string => {
+                if (node == null) return "";
+                if (typeof node === "string" || typeof node === "number")
+                  return String(node);
+                if (Array.isArray(node)) return node.map(extractText).join("");
+                if (node.props && node.props.children)
+                  return extractText(node.props.children);
+                return "";
+              };
+              const withId = (children: any) => {
+                const base = slugify(extractText(children));
+                let id = base || "section";
+                let i = 2;
+                while (usedIds.has(id)) {
+                  id = `${base || "section"}-${i++}`;
                 }
-
-                return <pre>{children}</pre>;
-              },
-              blockquote: ({ children }) => (
-                <blockquote className="border-l-4 py-4 border-gray-300 dark:border-gray-600 pl-5 italic text-gray-700 dark:text-gray-300">
-                  {children}
-                </blockquote>
-              ),
-            }}
+                usedIds.add(id);
+                return id;
+              };
+              return {
+                h1: ({ children }: { children: any }) => {
+                  const id = withId(children);
+                  return (
+                    <h1
+                      id={id}
+                      className="group scroll-mt-36 relative text-[36px] sm:text-[40px] leading-[38px] mt-[180px] font-bold font-sans"
+                    >
+                      <a
+                        href={`#${id}`}
+                        className="absolute -left-8 top-0 opacity-0 group-hover:opacity-70 transition focus:opacity-100"
+                        aria-label="Permalink"
+                      >
+                        #
+                      </a>
+                      {children}
+                    </h1>
+                  );
+                },
+                h2: ({ children }: { children: any }) => {
+                  const id = withId(children);
+                  return (
+                    <h2
+                      id={id}
+                      className="group scroll-mt-30 relative text-[27px] leading-[28px] mt-[100px] font-bold font-sans"
+                    >
+                      <a
+                        href={`#${id}`}
+                        className="absolute -left-7 top-0 opacity-0 group-hover:opacity-70 transition focus:opacity-100"
+                        aria-label="Permalink"
+                      >
+                        #
+                      </a>
+                      {children}
+                    </h2>
+                  );
+                },
+                h3: ({ children }: { children: any }) => (
+                  <h3 className="text-[24px] leading-[26px] mt-[40px] font-semibold font-sans">
+                    {children}
+                  </h3>
+                ),
+                p: ({ children }: { children: any }) => (
+                  <p className="text-left sm:text-justify">{children}</p>
+                ),
+                ul: ({ children }: { children: any }) => (
+                  <ul className="list-disc pl-6 space-y-3">{children}</ul>
+                ),
+                li: ({ children }: { children: any }) => (
+                  <li className="text-left">{children}</li>
+                ),
+                pre: ({ children }: { children: any }) => {
+                  const isCodeBlock = (children as any).type === "code";
+                  if (isCodeBlock) {
+                    return (
+                      <pre className="bg-gray-900/85 dark:bg-gray-800/70 rounded-md py-4 px-5 overflow-x-auto font-mono text-[13px]">
+                        {children}
+                      </pre>
+                    );
+                  }
+                  return <pre>{children}</pre>;
+                },
+                blockquote: ({ children }: { children: any }) => (
+                  <blockquote className="border-l-4 py-4 border-gray-300 dark:border-gray-600 pl-5 italic text-gray-700 dark:text-gray-300">
+                    {children}
+                  </blockquote>
+                ),
+              };
+            })()}
           />
         </div>
 
