@@ -137,7 +137,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
                 if (isCodeBlock) {
                   return (
-                    <pre className="bg-gray-800/90 dark:bg-gray-800/50 rounded-md p-4 overflow-x-auto font-mono text-[13px]">
+                    <pre className="bg-gray-900/85 dark:bg-gray-800/70 rounded-md py-4 px-5 overflow-x-auto font-mono text-[13px]">
                       {children}
                     </pre>
                   );
