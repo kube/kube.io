@@ -106,7 +106,6 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
            */}
           <Article
             components={(() => {
-              const usedIds = new Set<string>();
               const slugify = (text: string) =>
                 text
                   .toLowerCase()
@@ -114,6 +113,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
                   .replace(/[^a-z0-9\s-]/g, "")
                   .replace(/\s+/g, "-")
                   .replace(/-+/g, "-");
+
               const extractText = (node: any): string => {
                 if (node == null) return "";
                 if (typeof node === "string" || typeof node === "number")
@@ -123,16 +123,9 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
                   return extractText(node.props.children);
                 return "";
               };
-              const withId = (children: any) => {
-                const base = slugify(extractText(children));
-                let id = base || "section";
-                let i = 2;
-                while (usedIds.has(id)) {
-                  id = `${base || "section"}-${i++}`;
-                }
-                usedIds.add(id);
-                return id;
-              };
+
+              const withId = (children: any) => slugify(extractText(children));
+
               return {
                 h1: ({ children }: { children: any }) => {
                   const id = withId(children);
