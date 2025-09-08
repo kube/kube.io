@@ -185,7 +185,9 @@ export const Playground: React.FC = () => {
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
         <div className={`flex flex-col ${panel}`}>
-          <h4 className={`${heading} px-2 pt-2 z-40 grow-0`}>Surface</h4>
+          <h4 className={`absolute ${heading} px-2 pt-2 z-40 grow-0`}>
+            Surface
+          </h4>
           <div className="p-4 flex items-center justify-center gap-4 grow">
             <SurfaceEquationSelector surface={surface} />
           </div>
@@ -193,8 +195,8 @@ export const Playground: React.FC = () => {
 
         <div className={`${panel}`}>
           <h4 className={`${heading} px-2 pt-2 z-40`}>Controls</h4>
-          <div className="text-xs grid grid-cols-[25%_1fr] gap-x-4 gap-y-3 p-3 pt-4 items-center">
-            <label className="text-right">Bezel Width</label>
+          <div className="text-xs grid grid-cols-[25%_1fr] gap-x-4 gap-y-3.5 p-5 pt-4 pr-6 items-center">
+            <label className="text-right opacity-80">Bezel Width</label>
             <motion.input
               type="range"
               min="0"
@@ -202,15 +204,13 @@ export const Playground: React.FC = () => {
               step="1"
               defaultValue={bezelWidth.get()}
               onChange={(e) => bezelWidth.set(Number(e.target.value))}
-              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              className="w-full accent-sky-700 dark:accent-slate-500"
               style={{
-                height: "3px",
-                background: "rgb(163 163 163 / 0.5)",
-                outline: "none",
-                WebkitAppearance: "none",
+                height: "2px",
+                background: "rgb(163 163 163 / 0.1)",
               }}
             />
-            <label className="text-right">Glass Thickness</label>
+            <label className="text-right opacity-80">Glass Thickness</label>
             <motion.input
               type="range"
               min="0"
@@ -218,15 +218,13 @@ export const Playground: React.FC = () => {
               step="1"
               defaultValue={glassThickness.get()}
               onChange={(e) => glassThickness.set(Number(e.target.value))}
-              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              className="w-full accent-sky-700 dark:accent-slate-500"
               style={{
-                height: "3px",
+                height: "2px",
                 background: "rgb(163 163 163 / 0.5)",
-                outline: "none",
-                WebkitAppearance: "none",
               }}
             />
-            <label className="text-right">Scale Ratio</label>
+            <label className="text-right opacity-80">Scale Ratio</label>
             <motion.input
               type="range"
               min="0"
@@ -234,12 +232,10 @@ export const Playground: React.FC = () => {
               step="0.01"
               defaultValue={scaleRatio.get()}
               onChange={(e) => scaleRatio.set(Number(e.target.value))}
-              className="w-full accent-neutral-900 dark:accent-neutral-100"
+              className="w-full accent-sky-700 dark:accent-slate-500"
               style={{
-                height: "3px",
+                height: "2px",
                 background: "rgb(163 163 163 / 0.5)",
-                outline: "none",
-                WebkitAppearance: "none",
               }}
             />
           </div>
