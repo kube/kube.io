@@ -22,7 +22,7 @@ export const LIP: SurfaceFnDef = {
   title: "Lip",
   fn: (x) => {
     const convex = CONVEX.fn(x * 2);
-    const concave = CONCAVE.fn(x) + 0.5;
+    const concave = CONCAVE.fn(x) + 0.1;
     const smootherstep = 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
     return convex * (1 - smootherstep) + concave * smootherstep;
   },
