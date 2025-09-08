@@ -12,10 +12,10 @@ const kubeBackground = createBackground(110, 6, 0.1, 0.7);
 const CARD_WIDTH = 1200;
 const CARD_HEIGHT = 630;
 const HEADER_HEIGHT = 220;
-const PADDING_LEFT = 80;
-const PADDING_Y = 60;
-const LOGO_SIZE = 100;
-const PADDING_INTERNAL = 24;
+const PADDING_LEFT = 85;
+const PADDING_Y = 58;
+const LOGO_SIZE = 85;
+const PADDING_INTERNAL = 27;
 
 // React component for the OG card SVG with blog post data
 const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
@@ -77,7 +77,7 @@ const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
         x2={CARD_WIDTH}
         y2={HEADER_HEIGHT + PADDING_Y}
         stroke="#ffffff"
-        opacity={0.07}
+        opacity={0.05}
         strokeWidth="2"
       />
 
@@ -95,7 +95,7 @@ const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
           HEADER_HEIGHT / 2 + PADDING_Y
         }) scale(1.58) translate(0, -${LOGO_SIZE / 2})`}
       >
-        <svg viewBox="-50 -50 100 100" width="100" height="100">
+        <svg viewBox="-50 -50 100 100" width={LOGO_SIZE} height={LOGO_SIZE}>
           <defs>
             <filter
               id="logoShadow"
@@ -135,18 +135,18 @@ const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
         }
         textAnchor="left"
         fontSize={title.length > 30 ? 72 : 97}
-        fontFamily="Arial, sans-serif"
-        fontWeight="bold"
+        fontFamily="Inter"
+        fontWeight={700}
         fill="#ffffff"
         filter="url(#textShadow)"
       >
         {/* Split title into multiple lines if needed */}
         {title.length > 30 ? (
           <>
-            <tspan x="80" dy="0">
+            <tspan x={PADDING_LEFT} dy="0" fontWeight={700}>
               {title.slice(0, Math.floor(title.length / 2)).trim()}
             </tspan>
-            <tspan x="80" dy="1.2em">
+            <tspan x={PADDING_LEFT} dy="1.2em" fontWeight={400}>
               {title.slice(Math.floor(title.length / 2)).trim()}
             </tspan>
           </>
@@ -172,16 +172,21 @@ export async function loader({ params }: LoaderFunctionArgs) {
     // Load the blog post
     const post = getPost(slug);
 
-    // Render the React SVG component to string with blog post title
+    // Render the React SVG component to string with blog post title and embedded font
     const svgString = renderToStaticMarkup(<OGCard {...post} />);
 
-    // Convert SVG to PNG using ReSVG
+    // Local Inter font files (ensure `pnpm fonts:inter` has been run)
+    const interFontFiles = [100, 200, 300, 400, 500, 600, 700, 800, 900].map(
+      (w) => `public/fonts/inter/Inter-${w}.ttf`
+    );
+
+    // Convert SVG to PNG using ReSVG (font embedded via @font-face + fontFiles for shaping)
     const resvg = new Resvg(svgString, {
-      background: "rgba(255, 255, 255, 0)", // Transparent background
-      fitTo: {
-        mode: "width",
-        value: 1200,
+      font: {
+        loadSystemFonts: false,
+        fontFiles: interFontFiles,
       },
+      background: "rgba(255, 255, 255, 0)",
     });
 
     // Render to PNG buffer

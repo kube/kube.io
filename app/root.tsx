@@ -17,7 +17,8 @@ import { createMetaTags } from "./utils/meta";
 export const meta: MetaFunction = () => {
   return createMetaTags({
     title: "KUBE — Software & Design",
-    description: "Freelance Software Engineer specializing in frontend development, UI/UX design, and web technologies. Building modern, user-centered digital experiences.",
+    description:
+      "Freelance Software Engineer specializing in frontend development, UI/UX design, and web technologies. Building modern, user-centered digital experiences.",
     url: "https://kube.io",
   });
 };
