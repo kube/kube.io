@@ -2,19 +2,28 @@ import { Resvg } from "@resvg/resvg-js";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { LoaderFunctionArgs } from "react-router";
+import { createBackground } from "../../components/Logo/createBackground.tsx";
 import { cubeStaticPath } from "../../components/Logo/index.tsx";
-import { getPost } from "../../data/blog.ts";
+import { getPost, Post } from "../../data/blog.ts";
+
+// Precompute kube background pattern (same params as root.css.ts)
+const kubeBackground = createBackground(110, 6, 0.1, 0.7);
+
+const CARD_WIDTH = 1200;
+const CARD_HEIGHT = 630;
+const HEADER_HEIGHT = 220;
+const PADDING_LEFT = 80;
+const PADDING_Y = 60;
+const LOGO_SIZE = 100;
+const PADDING_INTERNAL = 24;
 
 // React component for the OG card SVG with blog post data
-const OGCard: React.FC<{ title: string }> = ({ title }) => {
-  const width = 1200;
-  const height = 630;
-
+const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
   return (
     <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
+      width={CARD_WIDTH}
+      height={CARD_HEIGHT}
+      viewBox={`0 0 ${CARD_WIDTH} ${CARD_HEIGHT}`}
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Gradient definition */}
@@ -24,14 +33,15 @@ const OGCard: React.FC<{ title: string }> = ({ title }) => {
           <stop offset="100%" stopColor="#1a1a2e" />
         </linearGradient>
 
-        {/* Grid pattern */}
-        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path
-            d="M 40 0 L 0 0 0 40"
-            fill="none"
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth="1"
-          />
+        {/* Kube cube pattern */}
+        <pattern
+          id="kubePattern"
+          width={kubeBackground.width * 2}
+          height={kubeBackground.height * 2}
+          patternUnits="userSpaceOnUse"
+          viewBox={kubeBackground.viewBox}
+        >
+          <path d={kubeBackground.pathD} fill="rgba(255,255,255,0.025)" />
         </pattern>
 
         {/* Text shadow filter */}
@@ -40,7 +50,7 @@ const OGCard: React.FC<{ title: string }> = ({ title }) => {
             dx="4"
             dy="4"
             stdDeviation="8"
-            floodColor="rgba(0,0,0,0.3)"
+            floodColor="rgba(0,0,0,0.2)"
           />
         </filter>
 
@@ -54,11 +64,37 @@ const OGCard: React.FC<{ title: string }> = ({ title }) => {
       {/* Background with gradient */}
       <rect width="100%" height="100%" fill="url(#bgGradient)" />
 
-      {/* Subtle grid pattern */}
-      <rect width="100%" height="100%" fill="url(#grid)" />
+      <rect
+        width="100%"
+        height={HEADER_HEIGHT + PADDING_Y}
+        fill="#000000"
+        opacity={0.25}
+      />
+
+      <line
+        x1="0"
+        y1={HEADER_HEIGHT + PADDING_Y}
+        x2={CARD_WIDTH}
+        y2={HEADER_HEIGHT + PADDING_Y}
+        stroke="#ffffff"
+        opacity={0.07}
+        strokeWidth="2"
+      />
+
+      {/* Subtle kube pattern overlay */}
+      <rect
+        width="100%"
+        height="100%"
+        fill="url(#kubePattern)"
+        opacity="0.85"
+      />
 
       {/* Logo on the top left */}
-      <g transform={`translate(160, 160) scale(1.67) translate(-50, -50)`}>
+      <g
+        transform={`translate(${PADDING_LEFT}, ${
+          HEADER_HEIGHT / 2 + PADDING_Y
+        }) scale(1.58) translate(0, -${LOGO_SIZE / 2})`}
+      >
         <svg viewBox="-50 -50 100 100" width="100" height="100">
           <defs>
             <filter
@@ -89,10 +125,15 @@ const OGCard: React.FC<{ title: string }> = ({ title }) => {
 
       {/* Blog post title beneath the logo */}
       <text
-        x="80"
-        y="300"
+        x={PADDING_LEFT}
+        y={
+          HEADER_HEIGHT +
+          (CARD_HEIGHT - HEADER_HEIGHT) / 2 +
+          (cardTitleOffsetY ?? 0) -
+          PADDING_Y +
+          PADDING_INTERNAL
+        }
         textAnchor="left"
-        dominantBaseline="hanging"
         fontSize={title.length > 30 ? 72 : 97}
         fontFamily="Arial, sans-serif"
         fontWeight="bold"
@@ -132,7 +173,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     const post = getPost(slug);
 
     // Render the React SVG component to string with blog post title
-    const svgString = renderToStaticMarkup(<OGCard title={post.title} />);
+    const svgString = renderToStaticMarkup(<OGCard {...post} />);
 
     // Convert SVG to PNG using ReSVG
     const resvg = new Resvg(svgString, {

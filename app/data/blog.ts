@@ -2,6 +2,7 @@ export type Post = {
   slug: string;
   title: string;
   titleMobileSizeRatio?: number;
+  cardTitleOffsetY?: number;
   date: string;
   description: string;
   content: any;
