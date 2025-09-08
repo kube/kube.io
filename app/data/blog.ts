@@ -1,6 +1,7 @@
 export type Post = {
   slug: string;
   title: string;
+  titleMobileSizeRatio?: number;
   date: string;
   description: string;
   content: any;

@@ -38,17 +38,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
 
   const Article: typeof MDXProvider = article.content;
 
-  // Calculate title size for mobile
-  const titleLongestWord = article.title
-    .split(/[\s-]/g)
-    .reduce(
-      (longest, word) => (word.length > longest.length ? word : longest),
-      ""
-    );
-  const titleFontSizeMobile =
-    titleLongestWord.length > 10
-      ? `${40 / titleLongestWord.length}rem`
-      : "4rem";
+  const titleFontSizeMobile = `${4 * (article.titleMobileSizeRatio ?? 1)}rem`;
 
   // Structured data for the article
   const structuredData = createStructuredData(article);
@@ -75,7 +65,9 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
         crossOrigin="anonymous"
       />
 
-      <h1 className={`text-[1.8rem] sm:text-[2rem] tracking-wide font-light`}>
+      <h1
+        className={`text-[1.8rem] sm:text-[2rem] tracking-wide font-light mb-1`}
+      >
         <Link to="/blog" viewTransition>
           <span
             style={{ viewTransitionName: "hero-title-blog" }}
@@ -87,7 +79,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
       </h1>
 
       <div style={{ viewTransitionName: `blog-article-container-${slug}` }}>
-        <div className="flex gap-8 mb-14">
+        <div className="flex gap-6 mb-14">
           <TimelineDateSquare
             style={{ viewTransitionName: `blog-article-date-${slug}` }}
             className="mt-[0.59rem]"
@@ -97,7 +89,7 @@ export default function BlogIndex({ params }: Route.ComponentProps) {
               day: date.getUTCDate(),
             }}
           />
-          <h1 className="text-(size:--titleFontSizeMobile) leading-(--titleFontSizeMobile) sm:text-[4rem] sm:leading-[4rem] lg:text-[5rem] lg:leading-[4.7rem] md:text-[4rem] md:leading-[3.9rem] tracking-wide font-bold">
+          <h1 className="text-(size:--titleFontSizeMobile) leading-(--titleFontSizeMobile) sm:text-[4rem] sm:leading-[4rem] lg:text-[5rem] lg:leading-[4.7rem] md:text-[4rem] md:leading-[3.9rem] tracking-wide font-bold mt-[3px]">
             <span
               style={{ viewTransitionName: `blog-article-title-${slug}` }}
               className="[view-transition-class:article-title]"
