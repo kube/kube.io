@@ -154,6 +154,17 @@ export const MagnifyingGlass: React.FC = () => {
               draggable={false}
             />
           </div>
+          {/* Discrete credit under photo */}
+          <div className="absolute right-3 bottom-1.5 hidden sm:block mt-1 text-right">
+            <a
+              href="https://unsplash.com/photos/green-frog-on-red-post-SVwOposMxHY"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-[9px] uppercase tracking-[0.15em] text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60 transition-colors"
+            >
+              Photo: Stephanie LeBlanc / Unsplash
+            </a>
+          </div>
         </div>
 
         {/* Draggable circular lens */}
