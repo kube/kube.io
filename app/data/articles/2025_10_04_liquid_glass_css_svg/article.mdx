@@ -462,8 +462,10 @@ It relies on the iTunes Search API to fetch album art and song details.
 
 # Conclusion
 
-This proof‑of‑concept recreates the essence of Apple’s Liquid Glass through refraction (with a simple highlight). It’s convincing and extensible, but currently Chrome‑only because Chrome is the only browser that allows SVG filters as `backdrop-filter`—there’s no practical cross‑browser fallback yet.
+This prototype distills Apple’s Liquid Glass into real‑time refraction plus a simple highlight. It’s flexible, but still Chrome‑bound—only Chromium exposes SVG filters as `backdrop-filter`. That said, it’s already viable inside Chromium‑based runtimes like Electron, elsewhere you could fake a softer fallback with layered blur.
 
-Treat it as an experiment rather than production code. It needs performance work, and dynamic sizes/shapes are expensive because any change (except the filter `scale`) currently requires regenerating the displacement map.
+Treat this strictly as experimental. Dynamic shape/size changes are currently costly because nearly every tweak (besides animating `<filter />` props, like `scale`) forces a full displacement map rebuild.
 
-The code isn’t published yet. If you’re interested, leave a comment and I’ll consider open‑sourcing it.
+The code needs a cleanup pass and perf work before any possible open‑source release.
+
+Thanks for reading my first post—I'd genuinely love any feedback, ideas, critiques, or suggestions. If it sparked a thought or you know someone who'd enjoy this kind of deep‑dive, feel free to pass it along.
