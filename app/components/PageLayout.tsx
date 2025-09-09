@@ -52,7 +52,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     >
       <div
         className={cn(
-          "fixed top-0 left-0 w-full z-10 contain-layout contain-style",
+          "fixed top-0 left-0 w-full z-10 contain-layout contain-style contain-paint",
           scrollDerivedVariables
         )}
       >
