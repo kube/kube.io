@@ -35,7 +35,7 @@ Instead of chasing pixel‑perfect parity, we’ll approximate Liquid Glass, rec
 
 We'll build up the effect from first principles, starting with how light bends when passing through different materials.
 
-<div className="relative my-16 contain-layout contain-style contain-paint">
+<div className="relative my-16 contain-layout contain-style">
   {/* Glow frame */}
   <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-lg opacity-60" />
   {/* Card */}
@@ -387,7 +387,7 @@ Now that we have all the pieces in place, we can create components that use this
 
 With our refraction math and displacement maps working, let's see how this translates to actual UI components you might use in an application.
 
-<div className="relative my-8 contain-layout contain-style contain-paint">
+<div className="relative my-8 contain-layout contain-style">
   {/* Glow frame */}
   <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-fuchsia-500/25 via-amber-400/25 to-sky-500/25 blur-lg opacity-60" />
   {/* Card */}
