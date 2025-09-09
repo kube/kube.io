@@ -208,7 +208,7 @@ export const DisplacementVectorField: React.FC = () => {
   return (
     <div
       ref={wrapperRef}
-      className="relative -ml-[15px] w-[calc(100%+30px)] my-10"
+      className="relative -ml-[15px] w-[calc(100%+30px)] my-10 contain-layout contain-style contain-paint"
     >
       <svg
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}

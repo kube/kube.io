@@ -181,7 +181,7 @@ export const Playground: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="-ml-[18px] w-[calc(100%+36px)] text-neutral-900 dark:text-neutral-100 select-none touch-pan-y"
+      className="-ml-[18px] w-[calc(100%+36px)] text-neutral-900 dark:text-neutral-100 select-none touch-pan-y contain-layout contain-style contain-paint"
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
         <div className={`flex flex-col ${panel}`}>

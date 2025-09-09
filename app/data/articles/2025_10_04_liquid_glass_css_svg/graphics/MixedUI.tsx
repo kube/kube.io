@@ -177,7 +177,7 @@ export const MixedUI: React.FC = ({}) => {
   return (
     <div>
       <motion.div
-        className="relative h-[640px] max-h-[70vh] rounded-xl -ml-[19px] w-[calc(100%+38px)] border border-black/15 dark:border-white/15 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#222222]"
+        className="relative h-[640px] max-h-[70vh] rounded-xl -ml-[19px] w-[calc(100%+38px)] border border-black/15 dark:border-white/15 overflow-hidden text-black/5 dark:text-white/5 bg-white dark:bg-black select-none [--glass-rgb:#FFFFFF] dark:[--glass-rgb:#222222] contain-layout contain-style contain-paint"
         style={
           {
             "--glass-bg-alpha": useTransform(

@@ -149,7 +149,7 @@ export const VectorToRedGreen: React.FC = () => {
     <>
       <div
         ref={wrapperRef}
-        className="relative h-full grid grid-cols-2 select-none -ml-[15px] w-[calc(100%+30px)]"
+        className="relative h-full grid grid-cols-2 select-none -ml-[15px] w-[calc(100%+30px)] contain-layout contain-style contain-paint"
       >
         <motion.svg
           viewBox={`0 0 ${width} ${height}`}
