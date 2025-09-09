@@ -12,9 +12,15 @@ import { GlobalInitialRenderContext } from "./contexts/GlobalInitialRenderContex
 import "./global.css";
 import { useIsInitialRender } from "./hooks/useIsInitialRender";
 import * as styles from "./root.css";
+import { createMetaTags } from "./utils/meta";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "KUBE : Software & Design" }];
+  return createMetaTags({
+    title: "KUBE — Software & Design",
+    description:
+      "Freelance Software Engineer specializing in frontend development, UI/UX design, and web technologies. Building modern, user-centered digital experiences.",
+    url: "https://kube.io",
+  });
 };
 
 export function HydrateFallback() {
@@ -43,13 +49,45 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-        <script
-          defer
-          data-domain="kube.io"
-          src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="kube.io — Blog"
+          href="/rss.xml"
         />
-        <script children="window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }" />
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title="kube.io — Blog (Atom)"
+          href="/atom.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/feed+json"
+          title="kube.io — Blog (JSON Feed)"
+          href="/feed.json"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+          rel="stylesheet"
+        />
+
+        {import.meta.env.PROD && (
+          <>
+            <script
+              defer
+              data-domain="kube.io"
+              src="https://plausible.io/js/script.outbound-links.tagged-events.js"
+            />
+            <script children="window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }" />
+          </>
+        )}
 
         <Favicons />
         <Meta />

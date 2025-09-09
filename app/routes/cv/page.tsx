@@ -4,7 +4,28 @@ import { Link } from "react-router";
 import { cv } from "../../data/cv";
 
 import { H1, H2 } from "../../components/Typography";
+import { createMetaTags } from "../../utils/meta";
 import { Timeline } from "./Timeline";
+
+export const meta = () => {
+  const tags = createMetaTags({
+    title: "Curriculum Vitae — kube.io",
+    description:
+      "Professional experience and background of kube, a freelance software engineer specializing in frontend development and UI/UX design.",
+    url: "https://kube.io/cv",
+    image: "https://kube.io/og-image.png",
+    type: "profile",
+  });
+
+  // Add profile-specific tags
+  tags.push(
+    { property: "profile:first_name", content: cv.firstName },
+    { property: "profile:last_name", content: cv.lastName },
+    { property: "profile:username", content: "kube" }
+  );
+
+  return tags;
+};
 
 const SectionTitle: React.FC<{ title: string }> = ({ title }) => (
   <Link id={title} to={`#${title}`}>
@@ -17,7 +38,7 @@ const SectionTitle: React.FC<{ title: string }> = ({ title }) => (
 export default function CVPage() {
   return (
     <div className="space-y-24">
-      <H1>
+      <H1 id="cv">
         Curiculum Vitae{" "}
         <Link
           to="/cv.pdf"

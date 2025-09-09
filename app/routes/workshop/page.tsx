@@ -1,4 +1,13 @@
 import { Logo } from "../../components/Logo";
+import { createMetaTags } from "../../utils/meta";
+
+export const meta = () => {
+  return createMetaTags({
+    title: "Workshop — kube.io",
+    description: "Creative experiments and interactive demos by kube.",
+    url: "https://kube.io/workshop",
+  });
+};
 
 export default function WorkshopPage() {
   return (

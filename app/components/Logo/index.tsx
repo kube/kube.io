@@ -6,7 +6,7 @@ import {
   useTransform,
   type SpringOptions,
 } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 
 import { cn } from "../../utils";
 import { facePath } from "./Face";
@@ -26,11 +26,68 @@ const SPRING_PARAMS: SpringOptions = { stiffness: 38, damping: 9 };
 type LogoProps = {
   ref?: React.Ref<SVGSVGElement>;
   className?: string;
+  style?: React.CSSProperties;
   width?: number;
   onMouseDown?: () => void;
+  gradientId?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
 };
 
-export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
+const cube = createCube(BASE_CUBE_TRANSFORMS);
+
+export const cubeStaticPath = (cube as any).map(facePath).join(" ");
+
+export const LogoStatic: React.FC<LogoProps> = ({
+  className,
+  style,
+  ref,
+  gradientId,
+  gradientFrom = "var(--palette-purple)",
+  gradientTo = "var(--palette-purple)",
+}) => {
+  const shadowId = useId();
+  return (
+    <motion.svg ref={ref} style={style} className={className} viewBox={VIEWBOX}>
+      <defs>
+        <filter
+          id={shadowId}
+          x="-200%"
+          y="-200%"
+          width="400%"
+          height="400%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feDropShadow
+            dx="0"
+            dy="3"
+            stdDeviation="5"
+            floodColor="black"
+            floodOpacity="0.13"
+          />
+        </filter>
+        {gradientId && (
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={gradientFrom} />
+            <stop offset="100%" stopColor={gradientTo} />
+          </linearGradient>
+        )}
+      </defs>
+      <motion.path
+        filter={`url(#${shadowId})`}
+        d={cubeStaticPath}
+        fill={gradientId ? `url(#${gradientId})` : gradientFrom}
+      />
+    </motion.svg>
+  );
+};
+
+export const Logo: React.FC<LogoProps> = ({
+  className,
+  style,
+  onMouseDown,
+  ref,
+}) => {
   const revolutions = useMotionValue(0);
 
   useEffect(() => {
@@ -63,7 +120,7 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
 
   const dragTransform = useTransform(dragVector, (dragVector) => {
     const rotationAxis = dragVector.rotateZ(Math.PI / 2).normalize();
-    const angle = dragVector.norm() / 100;
+    const angle = dragVector.norm() / 30;
     return Matrix.rotation(rotationAxis, angle);
   });
 
@@ -80,6 +137,7 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
   return (
     <motion.svg
       ref={ref}
+      style={style}
       className={cn(
         "hover:scale-105 active:scale-90 transition-transform",
         className
@@ -91,8 +149,11 @@ export const Logo: React.FC<LogoProps> = ({ className, onMouseDown, ref }) => {
         event.preventDefault();
       }}
       onPan={(_, { offset }) => {
-        dragX.set(offset.x);
-        dragY.set(offset.y);
+        const norm = Math.sqrt(offset.x ** 2 + offset.y ** 2);
+        // Make the drag square root of the distance
+        const ratio = (Math.sqrt(norm) / norm) * 10;
+        dragX.set(offset.x * ratio);
+        dragY.set(offset.y * ratio);
       }}
       onPanEnd={() => {
         dragX.set(0);
