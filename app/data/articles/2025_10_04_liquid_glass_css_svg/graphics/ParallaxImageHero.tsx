@@ -25,7 +25,7 @@ export const ParallaxImageHero: React.FC = () => {
   return (
     <div>
       <motion.div
-        className="relative h-[400px] w-full overflow-hidden rounded-xl bg-slate-600/20 flex items-center justify-center contain-layout contain-style contain-paint"
+        className="relative h-[400px] w-full overflow-hidden rounded-xl bg-slate-600/20 flex items-center justify-center contain-layout contain-style contain-paint [content-visibility:auto] [contain-intrinsic-size:400px]"
         style={{
           backgroundImage: `url(${imageUrl})`,
           backgroundSize: "700px auto",

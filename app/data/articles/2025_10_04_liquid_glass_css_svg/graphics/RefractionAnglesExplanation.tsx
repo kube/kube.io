@@ -143,7 +143,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const preventScroll = useRef(false);
 
   return (
-    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20 touch-pan-y contain-layout contain-style contain-paint">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none mb-20 touch-pan-y contain-layout contain-style contain-paint [content-visibility:auto]">
       <div className="relative select-none">
         <motion.svg
           ref={svgRef}

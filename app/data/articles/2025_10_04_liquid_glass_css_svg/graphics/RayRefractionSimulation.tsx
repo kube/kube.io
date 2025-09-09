@@ -359,7 +359,7 @@ export const RayRefractionSimulation: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none touch-pan-y contain-layout contain-style contain-paint">
+    <div className="relative h-full -ml-[15px] w-[calc(100%+30px)] select-none touch-pan-y contain-layout contain-style contain-paint [content-visibility:auto]">
       <motion.svg
         ref={svgRef}
         viewBox={`0 0 ${viewWidth} ${viewHeight}`}

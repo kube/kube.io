@@ -51,7 +51,10 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       }}
     >
       <div
-        className={cn("fixed top-0 left-0 w-full z-10", scrollDerivedVariables)}
+        className={cn(
+          "fixed top-0 left-0 w-full z-10 contain-layout contain-style",
+          scrollDerivedVariables
+        )}
       >
         <div
           style={{ viewTransitionName: "header-gradient-mask" }}

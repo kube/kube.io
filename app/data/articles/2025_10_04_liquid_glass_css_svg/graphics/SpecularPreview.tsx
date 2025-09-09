@@ -177,7 +177,7 @@ export const SpecularPreview: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)] flex flex-col items-center gap-6 touch-pan-y contain-layout contain-style contain-paint"
+      className="text-neutral-900 dark:text-neutral-100 select-none -ml-[15px] w-[calc(100%+30px)] flex flex-col items-center gap-6 touch-pan-y contain-layout contain-style contain-paint [content-visibility:auto]"
     >
       {/* Specular preview */}
       <div className="relative w-full bg-black h-105 overflow-hidden rounded-xl px-8 py-16 flex items-center justify-center border border-neutral-200/50 dark:border-neutral-700/60">

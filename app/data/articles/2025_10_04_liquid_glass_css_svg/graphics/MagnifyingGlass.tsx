@@ -114,7 +114,7 @@ export const MagnifyingGlass: React.FC = () => {
     <>
       <div
         ref={containerRef}
-        className="relative h-[440px] sm:h-[460px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black contain-layout contain-style contain-paint"
+        className="relative h-[440px] sm:h-[460px] rounded-xl -ml-[15px] w-[calc(100%+30px)] border border-black/10 dark:border-white/10 overflow-hidden select-none bg-white dark:bg-black contain-layout contain-style contain-paint [content-visibility:auto] [contain-intrinsic-size:440px] sm:[contain-intrinsic-size:460px]"
       >
         {/* Background content: left text, right image */}
         <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-[1fr_46%] gap-6 sm:gap-10 p-6 sm:p-10">

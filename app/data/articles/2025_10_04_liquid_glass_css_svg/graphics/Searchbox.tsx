@@ -93,7 +93,7 @@ export const Searchbox: React.FC = () => {
           "relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none",
           "text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef]",
           "dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10",
-          "contain-layout contain-style contain-paint"
+          "contain-layout contain-style contain-paint [content-visibility:auto]"
         )}
         style={containerStyle}
       >
