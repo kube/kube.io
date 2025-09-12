@@ -144,7 +144,8 @@ For this article, we will use four different height functions to demonstrate the
 <FunctionPlot fn={CONVEX_CIRCLE.fn} />
 <div className="min-w-0 h-full flex flex-col justify-center">
   <div className="font-semibold">Convex Circle</div>
-  <div className="mt-2 text-base my-1">$y = \sqrt{(1 - (1 - x)) ^ 2}$</div>
+  {/* prettier-ignore */}
+  <div className="mt-2 text-base my-1">$y = \sqrt{1 - (1 - x) ^ 2}$</div>
   <div className="text-sm opacity-80 mt-1">
     Simple circular arc → a spherical dome. Easier than the squircle, but the
     transition to the flat interior is harsher, producing sharper refraction
