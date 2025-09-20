@@ -5,6 +5,8 @@ import StackOverflowIcon from "./icons/StackOverflow";
 
 import React from "react";
 import { Link } from "react-router";
+import BlueskyIcon from "./icons/Bluesky";
+import TwitterIcon from "./icons/Twitter";
 
 const SocialLinkIcon: React.FC<{
   to: string;
@@ -37,6 +39,16 @@ export const SocialLinks: React.FC = () => (
       to="//stackoverflow.com/users/1914206/kube"
       icon={StackOverflowIcon}
       className="fill-[#ff9900]"
+    />
+    <SocialLinkIcon
+      to="//x.com/KubeKhrm"
+      icon={TwitterIcon}
+      className="fill-[#1DA1F2]"
+    />
+    <SocialLinkIcon
+      to="//bsky.app/profile/kubekhrm.bsky.social"
+      icon={BlueskyIcon}
+      className="fill-[#1185fe]"
     />
   </footer>
 );
