@@ -1,8 +1,10 @@
 import mdx from "@mdx-js/rollup";
 import { reactRouter } from "@react-router/dev/vite";
+import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
-import { readFileSync } from "fs";
+import { reactCompilerPreset } from "@vitejs/plugin-react";
+import { readFileSync } from "node:fs";
 import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import rehypePrettyCode from "rehype-pretty-code";
@@ -10,13 +12,18 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkMath from "remark-math";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import { defineConfig } from "vite";
-import babel from "vite-plugin-babel";
 
 import refractionDisplacementMapPlugin from "./app/data/articles/2025_10_04_liquid_glass_css_svg/vitePlugin.ts";
-import { createFavicon } from "./createFavicon";
-import faviconsPlugin from "./faviconsPlugin";
+import { createFavicon } from "./createFavicon.ts";
+import faviconsPlugin from "./faviconsPlugin.ts";
 
 export default defineConfig({
+  oxc: {
+    jsx: {
+      runtime: "automatic",
+      refresh: false,
+    },
+  },
   plugins: [
     tailwindcss(),
     mdx({
@@ -82,18 +89,7 @@ export default defineConfig({
     vanillaExtractPlugin(),
     reactRouter(),
     babel({
-      filter: /\.[jt]sx?$/,
-      babelConfig: {
-        presets: ["@babel/preset-typescript"], // if you use TypeScript
-        plugins: [
-          [
-            "babel-plugin-react-compiler",
-            {
-              compilationMode: "infer",
-            },
-          ],
-        ],
-      },
+      presets: [reactCompilerPreset()],
     }),
     faviconsPlugin(createFavicon(), {
       background: "#000000",

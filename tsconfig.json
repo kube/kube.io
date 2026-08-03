@@ -8,6 +8,10 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "types": [
+      "node",
+      "vite/client"
+    ],
     "skipLibCheck": true,
     "jsx": "preserve",
     /* Bundler mode */
@@ -34,7 +38,7 @@
   "include": [
     ".react-router/types/**/*",
     "app",
-    "app/components"
+    "*.ts"
   ],
   "mdx": {
     "checkMdx": true,

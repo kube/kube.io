@@ -133,7 +133,7 @@ const OGCard: React.FC<Post> = ({ title, cardTitleOffsetY }) => {
           PADDING_Y +
           PADDING_INTERNAL
         }
-        textAnchor="left"
+        textAnchor="start"
         fontSize={title.length > 30 ? 72 : 97}
         fontFamily="Inter"
         fontWeight={700}

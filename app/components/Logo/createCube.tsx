@@ -1,7 +1,7 @@
 import { Matrix } from "@kube/math";
 
-import { createCubeStripes } from "./createStripes";
-import { isFaceFacingCamera } from "./Face";
+import { createCubeStripes } from "./createStripes.ts";
+import { isFaceFacingCamera } from "./Face.ts";
 
 const STRIPES = createCubeStripes();
 

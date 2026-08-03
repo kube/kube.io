@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
-  renderToStream,
+  renderToBuffer,
 } from "@react-pdf/renderer";
 
 import {
@@ -326,9 +326,9 @@ const CV = () => (
 );
 
 export async function loader() {
-  const pdf = await renderToStream(<CV />);
+  const pdf = await renderToBuffer(<CV />);
 
-  return new Response(pdf, {
+  return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
       "Cache-Control": "no-cache",

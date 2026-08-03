@@ -1,5 +1,5 @@
 import { type FaviconOptions, favicons } from "favicons";
-import { extname, join, relative } from "path";
+import { extname, posix } from "node:path";
 import type { Plugin } from "vite";
 
 /**
@@ -39,8 +39,8 @@ export default async function faviconsPlugin(
     },
 
     load(id) {
-      if (id === resolvedModuleId)
-        return [
+      if (id === resolvedModuleId) {
+        const code = [
           "import React from 'react'",
           "export default () =>",
           "React.createElement(React.Fragment,null,",
@@ -52,6 +52,11 @@ export default async function faviconsPlugin(
             ),
           ");",
         ].join("\n");
+
+        // Vite 8 uses Rolldown, which needs an explicit module type for
+        // extensionless virtual modules.
+        return { code, moduleType: "js" };
+      }
     },
 
     // Only used in Build Mode
@@ -59,7 +64,7 @@ export default async function faviconsPlugin(
       for (const [name, content] of faviconsFiles.entries()) {
         this.emitFile({
           type: "asset",
-          fileName: join(options.path, name).replace(/^\//, ""),
+          fileName: posix.join(options.path, name).replace(/^\//, ""),
           source: content,
         });
       }
@@ -67,7 +72,7 @@ export default async function faviconsPlugin(
 
     // Only used in Dev Mode
     configureServer(server) {
-      const MIME_TYPES = {
+      const MIME_TYPES: Record<string, string> = {
         ".ico": "image/x-icon",
         ".png": "image/png",
         ".svg": "image/svg+xml",
@@ -75,8 +80,12 @@ export default async function faviconsPlugin(
         ".jpeg": "image/jpeg",
       };
       server.middlewares.use((req, res, next) => {
-        if (req.url?.startsWith(options.path)) {
-          const filename = relative(options.path, req.url);
+        const pathname = req.url
+          ? new URL(req.url, "http://vite.local").pathname
+          : undefined;
+
+        if (pathname?.startsWith(`${options.path.replace(/\/$/, "")}/`)) {
+          const filename = pathname.slice(options.path.length).replace(/^\//, "");
           const resource = faviconsFiles.get(filename);
 
           if (resource) {
@@ -98,15 +107,28 @@ export default async function faviconsPlugin(
 /**
  * Helper for parsing HTML tag attributes from favicons library
  */
-function parseTagAttributes(tag: string) {
-  const attrRegex = /(\w+)(?:="([^"]*)")?/g;
-  const attributes = {};
-  let match;
-  while ((match = attrRegex.exec(tag)) !== null) {
-    const [, key, value] = match;
-    if (key !== tag.split(" ")[0].slice(1)) {
-      attributes[key] = value || true;
-    }
+function parseTagAttributes(
+  tag: string
+): [tagName: string, attributes: Record<string, string | boolean>] {
+  const tagName = tag.match(/^<(\w+)/)?.[1];
+  if (!tagName) {
+    throw new Error(`Unable to parse favicon HTML tag: ${tag}`);
   }
-  return [`${tag.match(/^<(\w+)/)?.[1]}`, attributes];
+
+  const attrRegex = /([^\s=/>]+)(?:="([^"]*)")?/g;
+  const attributeSource = tag.slice(tagName.length + 1);
+  const reactAttributeNames: Record<string, string> = {
+    charset: "charSet",
+    class: "className",
+    crossorigin: "crossOrigin",
+    "http-equiv": "httpEquiv",
+    referrerpolicy: "referrerPolicy",
+  };
+  const attributes: Record<string, string | boolean> = {};
+  let match;
+  while ((match = attrRegex.exec(attributeSource)) !== null) {
+    const [, key, value] = match;
+    attributes[reactAttributeNames[key] ?? key] = value || true;
+  }
+  return [tagName, attributes];
 }

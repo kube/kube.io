@@ -4,10 +4,15 @@ import type { Plugin } from "vite";
 import {
   calculateDisplacementMap,
   calculateDisplacementMap2,
-} from "./lib/displacementMap";
-import { calculateMagnifyingDisplacementMap } from "./lib/magnifyingDisplacement";
-import { calculateRefractionSpecular } from "./lib/specular";
-import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations";
+} from "./lib/displacementMap.ts";
+import { calculateMagnifyingDisplacementMap } from "./lib/magnifyingDisplacement.ts";
+import { calculateRefractionSpecular } from "./lib/specular.ts";
+import {
+  CONCAVE,
+  CONVEX,
+  CONVEX_CIRCLE,
+  LIP,
+} from "./lib/surfaceEquations.ts";
 
 /**
  * A custom Vite plugin to generate refraction displacement map assets.
@@ -291,9 +296,10 @@ export default function refractionDisplacementMapPlugin(): Plugin {
         const filenameHash = paramsToHash(params);
         const filename = `displacement-map-${filenameHash}.png`;
 
-        return `export const url = "/assets/${filename}";
+        const code = `export const url = "/assets/${filename}";
 export const maxDisplacement = ${cachedResult.maxDisplacement};
 export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.maxDisplacement} };`;
+        return { code, moduleType: "js" };
       }
       if (id.startsWith("\0virtual:refractionSpecularMap")) {
         const params = parseParams(id.replace("\0", ""));
@@ -307,7 +313,10 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
 
         const filenameHash = paramsToHash(params);
         const filename = `specular-map-${filenameHash}.png`;
-        return `export default "/assets/${filename}";`;
+        return {
+          code: `export default "/assets/${filename}";`,
+          moduleType: "js",
+        };
       }
       if (id.startsWith("\0virtual:magnifying-scale")) {
         const params = parseParams(id.replace("\0", ""));
@@ -321,7 +330,10 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
 
         const filenameHash = paramsToHash(params);
         const filename = `magnifying-map-${filenameHash}.png`;
-        return `export default "/assets/${filename}";`;
+        return {
+          code: `export default "/assets/${filename}";`,
+          moduleType: "js",
+        };
       }
       if (id.startsWith("\0virtual:refractionFilter")) {
         const params = parseParams(id.replace("\0", "").replace(".tsx", ""));
@@ -360,7 +372,7 @@ export default { url: "/assets/${filename}", maxDisplacement: ${cachedResult.max
         const specularFilename = `specular-map-${filenameHash}.png`;
 
         // Return a React component that uses the generated assets
-        return `
+        const code = `
 /** @jsx React.createElement */
 import React from "react";
 import { motion, useTransform } from "motion/react";
@@ -491,6 +503,7 @@ export const Filter = ({
 
 export default Filter;
 `;
+        return { code, moduleType: "tsx" };
       }
     },
 

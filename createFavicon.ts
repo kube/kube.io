@@ -1,7 +1,7 @@
 import { Matrix } from "@kube/math";
 
-import { createCube } from "./app/components/Logo/createCube";
-import { facePath } from "./app/components/Logo/Face";
+import { createCube } from "./app/components/Logo/createCube.tsx";
+import { facePath } from "./app/components/Logo/Face.ts";
 
 export function createFavicon() {
   const VIEWBOX = [-50, -50, 100, 100].toString();
