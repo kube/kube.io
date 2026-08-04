@@ -48,7 +48,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      build
 
       # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
