@@ -15,7 +15,7 @@ export const Slider: React.FC = () => {
   const forceActive = useMotionValue(false);
 
   const isUp = useTransform((): number =>
-    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0
+    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0,
   );
 
   const thumbWidth = 90;
@@ -30,8 +30,8 @@ export const Slider: React.FC = () => {
   const scaleRatio = useSpring(
     useTransform(
       [pressMultiplier, refractionBase],
-      ([m, base]) => (Number(m) || 0) * (Number(base) || 0)
-    )
+      ([m, base]) => (Number(m) || 0) * (Number(base) || 0),
+    ),
   );
 
   const trackRef = useRef<HTMLDivElement>(null);
@@ -46,7 +46,7 @@ export const Slider: React.FC = () => {
     {
       damping: 80,
       stiffness: 2000,
-    }
+    },
   );
 
   const backgroundOpacity = useSpring(useTransform(isUp, [0, 1], [1, 0.1]), {
@@ -71,10 +71,10 @@ export const Slider: React.FC = () => {
 
   // Readouts for controls UI
   const specularOpacityText = useTransform(specularOpacity, (v) =>
-    v.toFixed(2)
+    v.toFixed(2),
   );
   const specularSaturationText = useTransform(specularSaturation, (v) =>
-    Math.round(v).toString()
+    Math.round(v).toString(),
   );
   const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
   const blurText = useTransform(blur, (v) => v.toFixed(1));
@@ -174,7 +174,7 @@ export const Slider: React.FC = () => {
               const ratio = (x - x0) / trackInsideWidth;
 
               value.set(
-                Math.max(min, Math.min(max, ratio * (max - min) + min))
+                Math.max(min, Math.min(max, ratio * (max - min) + min)),
               );
             }}
             onDragEnd={() => {
@@ -193,7 +193,7 @@ export const Slider: React.FC = () => {
 
               backgroundColor: useTransform(
                 backgroundOpacity,
-                (op) => `rgba(255, 255, 255, ${op})`
+                (op) => `rgba(255, 255, 255, ${op})`,
               ),
               boxShadow: "0 3px 14px rgba(0,0,0,0.1)",
             }}

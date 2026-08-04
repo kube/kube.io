@@ -2,10 +2,10 @@ import { createImageData } from "canvas";
 
 export function calculateMagnifyingDisplacementMap(
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
 ) {
   const devicePixelRatio =
-    typeof window !== "undefined" ? window.devicePixelRatio ?? 1 : 1;
+    typeof window !== "undefined" ? (window.devicePixelRatio ?? 1) : 1;
   const bufferWidth = canvasWidth * devicePixelRatio;
   const bufferHeight = canvasHeight * devicePixelRatio;
   const imageData = createImageData(bufferWidth, bufferHeight);

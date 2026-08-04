@@ -13,7 +13,7 @@ import { getRayColorDimmed } from "../lib/rayColor";
 function calculateRefractionAngle(
   n1: number,
   n2: number,
-  theta1: number
+  theta1: number,
 ): number | null {
   const ratio = n1 / n2;
   const s = ratio * Math.sin(theta1);
@@ -45,7 +45,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
         if (el.value === newV) return;
         el.value = newV;
       }),
-    [n2]
+    [n2],
   );
 
   const N2_MIN = 0.01;
@@ -70,14 +70,14 @@ export const RefractionAnglesExplanation: React.FC = () => {
   const arcAngleProgress = useMotionValue(0);
   const incidentRayAngle = useMotionValue(INITIAL_RAY_ANGLE);
   const incidentToNormalAngle = useTransform(
-    () => incidentRayAngle.get() - Math.PI / 2
+    () => incidentRayAngle.get() - Math.PI / 2,
   );
   const refractedToNormalAngle = useTransform(() =>
     calculateRefractionAngle(
       FIRST_MEDIUM_REFRACTIVE_INDEX,
       n2.get(),
-      incidentToNormalAngle.get()
-    )
+      incidentToNormalAngle.get(),
+    ),
   );
   const refractedRayAngle = useTransform(() => {
     const angle = refractedToNormalAngle.get();
@@ -88,7 +88,8 @@ export const RefractionAnglesExplanation: React.FC = () => {
     const angle = refractedToNormalAngle.get();
     if (angle === null) return incidentRayColor;
     return getRayColorDimmed(
-      (Math.abs(incidentRayAngle.get() - refractedRayAngle.get()) / Math.PI) * 4
+      (Math.abs(incidentRayAngle.get() - refractedRayAngle.get()) / Math.PI) *
+        4,
     );
   });
 
@@ -100,7 +101,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
   }
 
   const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
-    null
+    null,
   );
 
   const animationSequence: AnimationSequence = [
@@ -279,7 +280,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
               return `M ${startX} ${startY} A ${angleArcLength} ${angleArcLength} 0 0 ${largeArcFlag} ${endX} ${endY}`;
             })}
             display={useTransform(() =>
-              refractedRayAngle.get() === null ? "block" : "none"
+              refractedRayAngle.get() === null ? "block" : "none",
             )}
             fill="none"
             className="stroke-slate-400 dark:stroke-slate-600"
@@ -351,7 +352,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
             textAnchor="middle"
             fontSize="10"
             display={useTransform(() =>
-              refractedRayAngle.get() === null ? "block" : "none"
+              refractedRayAngle.get() === null ? "block" : "none",
             )}
             className="fill-slate-500 dark:fill-slate-400"
           >
@@ -377,7 +378,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
             })}
             fill="none"
             display={useTransform(() =>
-              refractedRayAngle.get() === null ? "none" : "block"
+              refractedRayAngle.get() === null ? "none" : "block",
             )}
             className="stroke-slate-400 dark:stroke-slate-600"
             strokeWidth="1"
@@ -409,7 +410,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
               return endY;
             })}
             display={useTransform(() =>
-              refractedRayAngle.get() === null ? "none" : "block"
+              refractedRayAngle.get() === null ? "none" : "block",
             )}
             dominantBaseline="central"
             textAnchor="middle"
@@ -425,32 +426,32 @@ export const RefractionAnglesExplanation: React.FC = () => {
           {/* Incident Ray */}
           <motion.line
             opacity={useTransform(() =>
-              incidentRayProgress.get() === 0 ? 0 : 1
+              incidentRayProgress.get() === 0 ? 0 : 1,
             )}
             markerEnd={useTransform(() =>
               incidentRayProgress.get() === 1
                 ? undefined
-                : "url(#ray-arrow-incident)"
+                : "url(#ray-arrow-incident)",
             )}
             x1={useTransform(
-              () => centerX + segmentLength * Math.cos(incidentRayAngle.get())
+              () => centerX + segmentLength * Math.cos(incidentRayAngle.get()),
             )}
             y1={useTransform(
-              () => centerY - segmentLength * Math.sin(incidentRayAngle.get())
+              () => centerY - segmentLength * Math.sin(incidentRayAngle.get()),
             )}
             x2={useTransform(
               () =>
                 centerX +
                 segmentLength *
                   Math.cos(incidentRayAngle.get()) *
-                  (1 - incidentRayProgress.get())
+                  (1 - incidentRayProgress.get()),
             )}
             y2={useTransform(
               () =>
                 centerY -
                 segmentLength *
                   Math.sin(incidentRayAngle.get()) *
-                  (1 - incidentRayProgress.get())
+                  (1 - incidentRayProgress.get()),
             )}
             stroke={incidentRayColor}
             strokeWidth={2}
@@ -459,7 +460,7 @@ export const RefractionAnglesExplanation: React.FC = () => {
           {/* Refracted Ray */}
           <motion.line
             opacity={useTransform(() =>
-              refractedRayProgress.get() === 0 ? 0 : 1
+              refractedRayProgress.get() === 0 ? 0 : 1,
             )}
             markerEnd="url(#ray-arrow-refracted)"
             x1={centerX}
@@ -519,14 +520,14 @@ export const RefractionAnglesExplanation: React.FC = () => {
                 centerX -
                 segmentLength *
                   Math.cos(incidentRayAngle.get()) *
-                  refractedRayProgress.get()
+                  refractedRayProgress.get(),
             )}
             y2={useTransform(
               () =>
                 centerY +
                 segmentLength *
                   Math.sin(incidentRayAngle.get()) *
-                  refractedRayProgress.get()
+                  refractedRayProgress.get(),
             )}
             className="stroke-cyan-500 dark:stroke-cyan-600 opacity-70"
             strokeWidth={1}

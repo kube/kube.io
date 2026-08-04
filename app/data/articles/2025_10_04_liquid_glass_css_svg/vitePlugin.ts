@@ -7,12 +7,7 @@ import {
 } from "./lib/displacementMap.ts";
 import { calculateMagnifyingDisplacementMap } from "./lib/magnifyingDisplacement.ts";
 import { calculateRefractionSpecular } from "./lib/specular.ts";
-import {
-  CONCAVE,
-  CONVEX,
-  CONVEX_CIRCLE,
-  LIP,
-} from "./lib/surfaceEquations.ts";
+import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "./lib/surfaceEquations.ts";
 
 /**
  * A custom Vite plugin to generate refraction displacement map assets.
@@ -57,11 +52,11 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       params.glassThickness = parseInt(url.searchParams.get("glassThickness")!);
     if (url.searchParams.has("refractiveIndex"))
       params.refractiveIndex = parseFloat(
-        url.searchParams.get("refractiveIndex")!
+        url.searchParams.get("refractiveIndex")!,
       );
     if (url.searchParams.has("specularSaturation"))
       params.specularSaturation = parseFloat(
-        url.searchParams.get("specularSaturation")!
+        url.searchParams.get("specularSaturation")!,
       );
     if (url.searchParams.has("blur"))
       params.blur = parseFloat(url.searchParams.get("blur")!);
@@ -159,7 +154,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       glassThickness,
       bezelWidth,
       surfaceFn,
-      refractiveIndex
+      refractiveIndex,
     );
 
     const maxDisplacement = Math.max(...precomputedMap.map((x) => Math.abs(x)));
@@ -173,7 +168,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       bezelWidth, // bezelWidth
       100, // maximumDisplacement
       precomputedMap,
-      2 // dpr (device pixel ratio)
+      2, // dpr (device pixel ratio)
     );
 
     // Convert ImageData to PNG buffer
@@ -210,7 +205,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       radius, // radius
       bezelWidth, // bezelWidth
       undefined, // specularAngle
-      2 // dpr (device pixel ratio)
+      2, // dpr (device pixel ratio)
     );
 
     // Convert ImageData to PNG buffer
@@ -258,7 +253,7 @@ export default function refractionDisplacementMapPlugin(): Plugin {
       if (!displacementMapCache.has(defaultKey)) {
         displacementMapCache.set(
           defaultKey,
-          generateDisplacementMap(defaultParams)
+          generateDisplacementMap(defaultParams),
         );
       }
       if (!specularMapCache.has(defaultKey)) {
@@ -659,7 +654,7 @@ export default Filter;
           .filter((id) => id.startsWith("\0virtual:refraction"))
           .map((id) => server.moduleGraph.getModuleById(id))
           .filter((module): module is NonNullable<typeof module> =>
-            Boolean(module)
+            Boolean(module),
           );
 
         for (const module of modules) {

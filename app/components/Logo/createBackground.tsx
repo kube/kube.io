@@ -21,7 +21,7 @@ export function createBackground(
   marginRatio = 0.11,
   innerMarginRatio = 0.27,
   rotationX = Math.PI / 4,
-  rotationY = Math.PI / 5
+  rotationY = Math.PI / 5,
 ) {
   const STRIPES = createCubeStripes(stripes, marginRatio, innerMarginRatio);
 
@@ -45,7 +45,7 @@ export function createBackground(
     Math.max(...allVectorsToEdges.map((_) => Math.abs(_[0]))) * 1.5;
 
   const PATTERN_HEIGHT = Math.max(
-    ...allVectorsToEdges.map((_) => Math.abs(_[1]))
+    ...allVectorsToEdges.map((_) => Math.abs(_[1])),
   );
 
   const VIEWBOX = [
@@ -56,11 +56,11 @@ export function createBackground(
   ].join(" ");
 
   const CUBES_STRIPES_SET = TRANSLATIONS.map((matrix) =>
-    STRIPES.map((face) => face.map((point) => point.multiplyByMatrix(matrix)))
+    STRIPES.map((face) => face.map((point) => point.multiplyByMatrix(matrix))),
   ).flat(1);
 
   const PATH_D = CUBES_STRIPES_SET.map((stripe) =>
-    stripe.map((vector) => vector.multiplyByMatrix(transformations))
+    stripe.map((vector) => vector.multiplyByMatrix(transformations)),
   )
     // @ts-expect-error
     .filter(isFaceFacingCamera)

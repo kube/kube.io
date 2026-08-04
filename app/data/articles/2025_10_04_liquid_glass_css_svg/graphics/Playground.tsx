@@ -44,13 +44,13 @@ export const Playground: React.FC = () => {
       surface.get() === "convex_circle"
         ? CONVEX_CIRCLE.fn
         : surface.get() === "convex_squircle"
-        ? CONVEX.fn
-        : surface.get() === "concave"
-        ? CONCAVE.fn
-        : LIP.fn,
+          ? CONVEX.fn
+          : surface.get() === "concave"
+            ? CONCAVE.fn
+            : LIP.fn,
       refractiveIndex,
-      512
-    )
+      512,
+    ),
   );
 
   const maximumDisplacement = useTransform(() => {
@@ -68,7 +68,7 @@ export const Playground: React.FC = () => {
       radius,
       bezelWidth.get(),
       (maximumDisplacement.get() as unknown as number) || 1,
-      (precomputedDisplacementMap.get() as unknown as number[]) || []
+      (precomputedDisplacementMap.get() as unknown as number[]) || [],
     ) as CanvasImageData;
   });
 
@@ -88,7 +88,7 @@ export const Playground: React.FC = () => {
       const browserImageData = new ImageData(
         new Uint8ClampedArray(canvasImageData.data),
         canvasImageData.width,
-        canvasImageData.height
+        canvasImageData.height,
       );
       ctx.putImageData(browserImageData, 0, 0);
     });
@@ -101,7 +101,7 @@ export const Playground: React.FC = () => {
     const initialBrowserImageData = new ImageData(
       new Uint8ClampedArray(initialCanvasImageData.data),
       initialCanvasImageData.width,
-      initialCanvasImageData.height
+      initialCanvasImageData.height,
     );
     ctx.putImageData(initialBrowserImageData, 0, 0);
 
@@ -134,7 +134,7 @@ export const Playground: React.FC = () => {
     const browserImageData = new ImageData(
       new Uint8ClampedArray(canvasImageData.data),
       canvasImageData.width,
-      canvasImageData.height
+      canvasImageData.height,
     );
     tempCtx.putImageData(browserImageData, 0, 0);
     return tempCanvas.toDataURL();
@@ -151,7 +151,7 @@ export const Playground: React.FC = () => {
   });
   const scaleMotion = useTransform(
     scaleRatio,
-    (ratio) => maximumDisplacement.get() * ratio
+    (ratio) => maximumDisplacement.get() * ratio,
   );
 
   // Color for the displacement indicator based on normalized intensity at currentX
@@ -166,10 +166,10 @@ export const Playground: React.FC = () => {
   });
   const displacementColor = useTransform(
     displacementIntensity,
-    getRayColorDimmed
+    getRayColorDimmed,
   );
   const showIndicator = useTransform(currentX, (v) =>
-    v == null || v < 0 || v > 1 ? "none" : "block"
+    v == null || v < 0 || v > 1 ? "none" : "block",
   );
 
   // Swiss-style panel + heading helpers

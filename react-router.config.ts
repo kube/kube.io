@@ -23,10 +23,10 @@ export default {
 
       "/blog",
       ...POSTS.filter((_) => _.published !== false).map(
-        (post) => `/blog/${post.slug}`
+        (post) => `/blog/${post.slug}`,
       ),
       ...POSTS.filter((_) => _.published !== false).map(
-        (post) => `/blog/${post.slug}/og-image.png`
+        (post) => `/blog/${post.slug}/og-image.png`,
       ),
 
       "/rss.xml",

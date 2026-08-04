@@ -1,44 +1,15 @@
 {
   "name": "kube-new-blog",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.20.0",
-  "engines": {
-    "node": ">=22.22.0"
-  },
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",
     "preview": "serve ./build/client",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "typecheck": "react-router typegen && tsc"
-  },
-  "devDependencies": {
-    "@babel/core": "8.0.1",
-    "@mdx-js/rollup": "3.1.1",
-    "@react-router/dev": "8.3.0",
-    "@rolldown/plugin-babel": "0.2.3",
-    "@types/babel__core": "7.20.5",
-    "@types/node": "24.13.3",
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "@vanilla-extract/css": "1.21.2",
-    "@vanilla-extract/vite-plugin": "5.2.6",
-    "@vitejs/plugin-react": "6.0.5",
-    "babel-plugin-react-compiler": "1.0.0",
-    "playwright": "1.62.1",
-    "postcss": "8.5.25",
-    "rehype-katex": "^7.0.1",
-    "rehype-mermaid": "^3.0.0",
-    "rehype-pretty-code": "^0.14.5",
-    "remark-frontmatter": "^5.0.0",
-    "remark-math": "^6.0.0",
-    "remark-mdx-frontmatter": "5.2.0",
-    "serve": "14.2.6",
-    "shiki": "4.4.1",
-    "tailwindcss": "4.3.3",
-    "typescript": "7.0.2",
-    "vite": "8.2.0"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",
@@ -60,5 +31,37 @@
     "react-icons": "5.7.0",
     "react-router": "8.3.0",
     "tailwind-merge": "3.6.0"
-  }
+  },
+  "devDependencies": {
+    "@babel/core": "8.0.1",
+    "@mdx-js/rollup": "3.1.1",
+    "@react-router/dev": "8.3.0",
+    "@rolldown/plugin-babel": "0.2.3",
+    "@types/babel__core": "7.20.5",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vanilla-extract/css": "1.21.2",
+    "@vanilla-extract/vite-plugin": "5.2.6",
+    "@vitejs/plugin-react": "6.0.5",
+    "babel-plugin-react-compiler": "1.0.0",
+    "oxfmt": "0.62.0",
+    "playwright": "1.62.1",
+    "postcss": "8.5.25",
+    "rehype-katex": "^7.0.1",
+    "rehype-mermaid": "^3.0.0",
+    "rehype-pretty-code": "^0.14.5",
+    "remark-frontmatter": "^5.0.0",
+    "remark-math": "^6.0.0",
+    "remark-mdx-frontmatter": "5.2.0",
+    "serve": "14.2.6",
+    "shiki": "4.4.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.2.0"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "packageManager": "pnpm@11.20.0"
 }

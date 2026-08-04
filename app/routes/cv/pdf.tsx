@@ -137,7 +137,7 @@ const DateSingle: React.FC<{ date: TimelineDate; showYear?: boolean }> = ({
         {[date.day < 10 ? "0" : null, ...date.day.toString().split("")].map(
           (digit, i) => (
             <span key={i}>{digit}</span>
-          )
+          ),
         )}
       </Text>
     )}

@@ -41,7 +41,7 @@ export const SpecularPreview: React.FC = () => {
       radius,
       bezelWidth,
       angle,
-      2 // device pixel ratio
+      2, // device pixel ratio
     );
   });
 
@@ -61,7 +61,7 @@ export const SpecularPreview: React.FC = () => {
       const browserImageData = new ImageData(
         new Uint8ClampedArray(canvasImageData.data),
         canvasImageData.width,
-        canvasImageData.height
+        canvasImageData.height,
       );
       ctx.putImageData(browserImageData, 0, 0);
     });
@@ -74,7 +74,7 @@ export const SpecularPreview: React.FC = () => {
     const initialBrowserImageData = new ImageData(
       new Uint8ClampedArray(initialCanvasImageData.data),
       initialCanvasImageData.width,
-      initialCanvasImageData.height
+      initialCanvasImageData.height,
     );
     ctx.putImageData(initialBrowserImageData, 0, 0);
 
@@ -83,7 +83,7 @@ export const SpecularPreview: React.FC = () => {
 
   // Use useTransform for reactive angle display
   const angleDegrees = useTransform(specularAngle, (angle) =>
-    Math.round((angle * 180) / Math.PI)
+    Math.round((angle * 180) / Math.PI),
   );
 
   // Reactive line end based on specular angle (centered in SVG viewBox)
@@ -146,7 +146,7 @@ export const SpecularPreview: React.FC = () => {
   // Animation
 
   const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
-    null
+    null,
   );
   const sequence: AnimationSequence = [
     [isDragging, 1, { duration: 0.01 }],
@@ -186,7 +186,7 @@ export const SpecularPreview: React.FC = () => {
             ref={canvasRef}
             className={twMerge(
               "rounded-lg h-60 sm:h-80 transition-opacity duration-500",
-              isCloseToView ? "opacity-100" : "opacity-0"
+              isCloseToView ? "opacity-100" : "opacity-0",
             )}
           />
           <svg
@@ -219,14 +219,14 @@ export const SpecularPreview: React.FC = () => {
                   centerX +
                   lineLength *
                     Math.cos(specularAngle.get()) *
-                    vectorVisibility.get()
+                    vectorVisibility.get(),
               )}
               y2={useTransform(
                 () =>
                   centerY -
                   lineLength *
                     Math.sin(specularAngle.get()) *
-                    vectorVisibility.get()
+                    vectorVisibility.get(),
               )}
               stroke="#334455"
               opacity={vectorVisibility}

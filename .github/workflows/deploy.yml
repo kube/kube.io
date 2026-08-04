@@ -21,11 +21,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install
         run: |
           pnpm install --frozen-lockfile --ignore-scripts=false
+
+      - name: Check formatting
+        run: pnpm run format:check
 
       - name: Typecheck
         run: pnpm run typecheck
@@ -47,10 +50,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
 
-     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+      # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
 
     steps:
       - name: Deploy to GitHub Pages

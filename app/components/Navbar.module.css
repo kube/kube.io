@@ -5,7 +5,9 @@
   opacity: 0.8;
   letter-spacing: 1.7px;
   color: var(--palette-medium-grey);
-  transition: font-weight 0.3s ease, letter-spacing 0.3s ease;
+  transition:
+    font-weight 0.3s ease,
+    letter-spacing 0.3s ease;
 
   &.active {
     opacity: 1;

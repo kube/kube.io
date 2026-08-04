@@ -102,7 +102,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   const springRotationY = useSpring(
     useTransform(revolutions, (r) => r * 2 * Math.PI),
-    SPRING_PARAMS
+    SPRING_PARAMS,
   );
 
   const dragX = useMotionValue(0);
@@ -115,7 +115,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   const dragVector = useTransform(
     [springDragX, springDragY],
-    ([x, y]) => new Vector([x as number, y as number, 0, 1])
+    ([x, y]) => new Vector([x as number, y as number, 0, 1]),
   );
 
   const dragTransform = useTransform(dragVector, (dragVector) => {
@@ -130,8 +130,8 @@ export const Logo: React.FC<LogoProps> = ({
     // @ts-expect-error
     ([revolutionTransform, dragTransform]) =>
       createCube(
-        BASE_CUBE_TRANSFORMS.dot(revolutionTransform).dot(dragTransform)
-      )
+        BASE_CUBE_TRANSFORMS.dot(revolutionTransform).dot(dragTransform),
+      ),
   );
 
   return (
@@ -140,7 +140,7 @@ export const Logo: React.FC<LogoProps> = ({
       style={style}
       className={cn(
         "hover:scale-105 active:scale-90 transition-transform",
-        className
+        className,
       )}
       viewBox={VIEWBOX}
       onClick={rotate}

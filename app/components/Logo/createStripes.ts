@@ -3,7 +3,7 @@ import { Matrix, Vector } from "@kube/math";
 export function createCubeStripes(
   STRIPES_COUNT = 3,
   MARGIN_RATIO = 0.11,
-  INNER_MARGIN_RATIO = 0.27
+  INNER_MARGIN_RATIO = 0.27,
 ) {
   const WIDTH = 1 - MARGIN_RATIO;
   const STRIPE_WIDTH = (WIDTH / STRIPES_COUNT) * (1 - INNER_MARGIN_RATIO);
@@ -37,7 +37,7 @@ export function createCubeStripes(
         .dot(Matrix.rotationZ(Math.PI * angleZ));
 
       return FACE_STRIPES.map((face) =>
-        face.map((_) => _.multiplyByMatrix(transformMatrix))
+        face.map((_) => _.multiplyByMatrix(transformMatrix)),
       );
     })
     .reduce((a, b) => a.concat(b));

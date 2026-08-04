@@ -20,71 +20,71 @@ export const MagnifyingGlass: React.FC = () => {
   const refractionBase = useMotionValue(1); // 0..1
   // Readouts
   const specularOpacityText = useTransform(specularOpacity, (v) =>
-    v.toFixed(2)
+    v.toFixed(2),
   );
   const specularSaturationText = useTransform(specularSaturation, (v) =>
-    Math.round(v).toString()
+    Math.round(v).toString(),
   );
   const refractionLevelText = useTransform(refractionBase, (v) => v.toFixed(2));
   // Animate effective refraction level on drag (snaps stronger while dragging)
   const dragMultiplier = useTransform(isDragging, (d): number => (d ? 1 : 0.8));
   const refractionLevel = useSpring(
     useTransform(() => refractionBase.get() * dragMultiplier.get()),
-    { stiffness: 250, damping: 14 }
+    { stiffness: 250, damping: 14 },
   );
   const magnifyingScale = useSpring(
     useTransform(isDragging, (d): number => (d ? 48 : 24)),
     {
       stiffness: 250,
       damping: 14,
-    }
+    },
   );
 
   const objectScale = useSpring(
     useTransform(isDragging, (d): number => (d ? 1 : 0.8)),
-    { stiffness: 340, damping: 20 }
+    { stiffness: 340, damping: 20 },
   );
   const objectScaleY = useSpring(
     useTransform(
       (): number =>
-        objectScale.get() * Math.max(0.7, 1 - Math.abs(velocityX.get()) / 5000)
+        objectScale.get() * Math.max(0.7, 1 - Math.abs(velocityX.get()) / 5000),
     ),
-    { stiffness: 340, damping: 30 }
+    { stiffness: 340, damping: 30 },
   );
   const objectScaleX = useSpring(
     useTransform((): number => objectScale.get() + (1 - objectScaleY.get())),
-    { stiffness: 340, damping: 30 }
+    { stiffness: 340, damping: 30 },
   );
 
   // This could be done with only one spring (derived from ) and multiple transforms
   const shadowSx = useSpring(
     useTransform(isDragging, (d): number => (d ? 4 : 0)),
-    { stiffness: 340, damping: 30 }
+    { stiffness: 340, damping: 30 },
   );
   const shadowSy = useSpring(
     useTransform(isDragging, (d): number => (d ? 16 : 4)),
-    { stiffness: 340, damping: 30 }
+    { stiffness: 340, damping: 30 },
   );
   const shadowAlpha = useSpring(
     useTransform(isDragging, (d): number => (d ? 0.22 : 0.16)),
     {
       stiffness: 220,
       damping: 24,
-    }
+    },
   );
   const insetShadowAlpha = useSpring(
     useTransform(isDragging, (d): number => (d ? 0.27 : 0.2)),
     {
       stiffness: 220,
       damping: 24,
-    }
+    },
   );
   const shadowBlur = useSpring(
     useTransform(isDragging, (d): number => (d ? 24 : 9)),
     {
       stiffness: 340,
       damping: 30,
-    }
+    },
   );
   const boxShadow = useTransform(
     () =>
@@ -94,7 +94,7 @@ export const MagnifyingGlass: React.FC = () => {
       }px 24px rgba(0,0,0,${insetShadowAlpha.get()}),
       inset ${-shadowSx.get() / 2}px ${
         -shadowSy.get() / 2
-      }px 24px rgba(255,255,255,${insetShadowAlpha.get()})`
+      }px 24px rgba(255,255,255,${insetShadowAlpha.get()})`,
   );
 
   // Reset dragging on any global pointer/mouse/touch end

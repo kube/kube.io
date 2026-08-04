@@ -4,7 +4,7 @@ import { CONCAVE, CONVEX, CONVEX_CIRCLE, LIP } from "../lib/surfaceEquations";
 // Reusable path generator for icons or plots
 export function generateFunctionPath(
   fn: (x: number) => number,
-  options?: { size?: number; pad?: number; samples?: number }
+  options?: { size?: number; pad?: number; samples?: number },
 ): string {
   const size = options?.size ?? 24;
   const pad = options?.pad ?? Math.max(1, Math.floor(size / 12));
@@ -51,7 +51,7 @@ export const FunctionPlot: React.FC<{
 
   const path = useMemo(
     () => generateFunctionPath(fn, { size, pad, samples }),
-    [fn, size, pad, samples]
+    [fn, size, pad, samples],
   );
 
   return (

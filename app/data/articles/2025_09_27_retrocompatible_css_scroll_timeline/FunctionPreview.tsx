@@ -170,7 +170,7 @@ export const FunctionPreview: React.FC<FunctionPreviewProps> = ({
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             className={cn(
               "w-full select-none touch-pan-y",
-              isPanning ? "cursor-grabbing" : "cursor-grab"
+              isPanning ? "cursor-grabbing" : "cursor-grab",
             )}
             onPanStart={(e, info) => {
               setIsPanning(true);
@@ -210,7 +210,7 @@ export const FunctionPreview: React.FC<FunctionPreviewProps> = ({
               strokeWidth={1}
               d={`M${pSvg(vX1, y1)} L${pSvg(x1, y1)} L${pSvg(x2, y2)} L${pSvg(
                 vX2,
-                y2
+                y2,
               )}`}
             />
 
@@ -221,7 +221,7 @@ export const FunctionPreview: React.FC<FunctionPreviewProps> = ({
             <motion.div
               className={cn(
                 "rounded-full absolute left-0 bg-cyan-500 z-20 transition-[width,height] duration-200 ease-in-out",
-                isPanning ? "w-6 h-6" : "w-4 h-4"
+                isPanning ? "w-6 h-6" : "w-4 h-4",
               )}
               style={{
                 left: useTransform(currentX, (x) => `${pDiv(x, f(x))[0]}%`),
@@ -234,18 +234,18 @@ export const FunctionPreview: React.FC<FunctionPreviewProps> = ({
             <motion.div
               className={cn(
                 "rounded absolute top-0 left-0 bg-slate-500 z-20 px-2 text-sm text-white -m-2 transition-[opacity,transform]",
-                isPanning ? "opacity-100" : "opacity-0"
+                isPanning ? "opacity-100" : "opacity-0",
               )}
               style={{
                 left: useTransform(currentX, (x) => `${pDiv(x, f(x))[0]}%`),
                 // @ts-expect-error
                 "--currentXDisplay": useTransform(
                   currentX,
-                  (x) => `"${Math.round(x)}"`
+                  (x) => `"${Math.round(x)}"`,
                 ),
                 "--currentYDisplay": useTransform(
                   currentY,
-                  (y) => `"${Math.round(y)}"`
+                  (y) => `"${Math.round(y)}"`,
                 ),
               }}
             >

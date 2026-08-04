@@ -100,7 +100,7 @@ export const MixedUI: React.FC = ({}) => {
     (scrollYValue: number) => {
       // Start at full opacity, fade out over first 100px of scroll
       return Math.min(1, 0.2 + (scrollYValue / 200) * 0.8);
-    }
+    },
   );
 
   // Transform scroll distance to bottom for player shadow opacity (fade in when close to bottom)
@@ -109,7 +109,7 @@ export const MixedUI: React.FC = ({}) => {
     (distanceToBottom) => {
       // Start at reduced opacity, fade in as user gets closer to bottom
       return Math.min(1, 0.2 + (distanceToBottom / 300) * 0.8);
-    }
+    },
   );
 
   // Sync colorScheme with prefers-color-scheme
@@ -182,7 +182,7 @@ export const MixedUI: React.FC = ({}) => {
           {
             "--glass-bg-alpha": useTransform(
               glassBackgroundOpacity,
-              (x) => `${Math.round(x * 100)}%`
+              (x) => `${Math.round(x * 100)}%`,
             ),
           } as React.CSSProperties
         }
@@ -247,7 +247,7 @@ export const MixedUI: React.FC = ({}) => {
                 () =>
                   `0 4px 20px rgba(0, 0, 0, ${
                     0.4 * searchboxShadowOpacity.get()
-                  })`
+                  })`,
               ),
             }}
           />
@@ -285,10 +285,11 @@ export const MixedUI: React.FC = ({}) => {
                   `blur(${
                     Math.sqrt(
                       Math.sqrt(
-                        progressiveBlurStrength.get() * topGradientOpacity.get()
-                      )
+                        progressiveBlurStrength.get() *
+                          topGradientOpacity.get(),
+                      ),
                     ) / 2
-                  }px)`
+                  }px)`,
               ),
             }}
           />
@@ -298,8 +299,8 @@ export const MixedUI: React.FC = ({}) => {
               backdropFilter: useTransform(
                 () =>
                   `blur(${Math.sqrt(
-                    progressiveBlurStrength.get() * topGradientOpacity.get()
-                  )}px)`
+                    progressiveBlurStrength.get() * topGradientOpacity.get(),
+                  )}px)`,
               ),
             }}
           />
@@ -310,7 +311,7 @@ export const MixedUI: React.FC = ({}) => {
                 () =>
                   `blur(${
                     progressiveBlurStrength.get() * topGradientOpacity.get()
-                  }px)`
+                  }px)`,
               ),
             }}
           />
@@ -351,7 +352,7 @@ export const MixedUI: React.FC = ({}) => {
                 : `url(#mixed-ui-player-filter)`,
               boxShadow: useTransform(
                 () =>
-                  `0 4px 19px rgba(0, 0, 0, ${0.4 * playerShadowOpacity.get()})`
+                  `0 4px 19px rgba(0, 0, 0, ${0.4 * playerShadowOpacity.get()})`,
               ),
             }}
           />

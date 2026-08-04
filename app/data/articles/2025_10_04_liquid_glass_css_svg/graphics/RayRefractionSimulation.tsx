@@ -37,7 +37,7 @@ type BezelFn = (x: number) => number;
 function refract(
   normalX: number,
   normalY: number,
-  refractiveIndex: number
+  refractiveIndex: number,
 ): [number, number] | null {
   const dot = normalY * normalY; // Normal vector squared
   const eta = 1 / refractiveIndex;
@@ -60,7 +60,7 @@ function getHitAndNormal(
   glassWidth: number,
   glassY: number,
   bezelWidth: number,
-  bezelHeightFn: BezelFn
+  bezelHeightFn: BezelFn,
 ): { point: [number, number]; normal: [number, number] } | null {
   if (rayX < glassX || rayX >= glassX + glassWidth) return null;
 
@@ -70,8 +70,8 @@ function getHitAndNormal(
   const x = isLeftSide
     ? (rayX - glassX) / bezelWidth
     : isRightSide
-    ? (glassX + glassWidth - rayX) / bezelWidth
-    : 1;
+      ? (glassX + glassWidth - rayX) / bezelWidth
+      : 1;
 
   const y = bezelHeightFn(x);
   const point: [number, number] = [rayX, glassY + (1 - y) * bezelWidth];
@@ -99,7 +99,7 @@ function computeRefractionAtX(
   glassWidth: number,
   glassY: number,
   bezelWidth: number,
-  bezelHeightFn: BezelFn
+  bezelHeightFn: BezelFn,
 ): Ray {
   const hit = getHitAndNormal(
     rayX,
@@ -107,7 +107,7 @@ function computeRefractionAtX(
     glassWidth,
     glassY,
     bezelWidth,
-    bezelHeightFn
+    bezelHeightFn,
   );
   if (!hit) {
     return {
@@ -141,7 +141,7 @@ function buildGlassOutlinePath(
   glassHeight: number,
   bezelWidth: number,
   bezelHeightFn: BezelFn,
-  samples: number
+  samples: number,
 ): string {
   const head = `M ${glassX} ${glassY + glassHeight}`;
   const leftBezel = Array.from({ length: samples }, (_, i) => {
@@ -225,11 +225,11 @@ export const RayRefractionSimulation: React.FC = () => {
       glassWidth,
       glassY,
       bezelWidth.get(),
-      bezelHeightFn.get()
+      bezelHeightFn.get(),
     );
 
   const ray = useTransform(() =>
-    calculateRefraction(currentX.get(), refractionIndex.get())
+    calculateRefraction(currentX.get(), refractionIndex.get()),
   );
 
   // Sample across the viewport to estimate the maximum displacement on the background
@@ -257,11 +257,11 @@ export const RayRefractionSimulation: React.FC = () => {
 
   const displacementColor = useTransform(
     displacementIntensity,
-    getRayColorDimmed
+    getRayColorDimmed,
   );
   const displacementThickness = useTransform(
     displacementIntensity,
-    (intensity) => 0.3 + intensity * 4
+    (intensity) => 0.3 + intensity * 4,
   );
 
   const surfacePath = useTransform(() =>
@@ -272,15 +272,15 @@ export const RayRefractionSimulation: React.FC = () => {
       glassHeight,
       bezelWidth.get(),
       bezelHeightFn.get(),
-      NUMBER_OF_SAMPLES
-    )
+      NUMBER_OF_SAMPLES,
+    ),
   );
 
   // Derived bindings for JSX readability (MotionValues)
   const yGlassLabel = useTransform(
     () =>
       glassY +
-      (glassHeight + (1 - bezelHeightFn.get()(1)) * bezelWidth.get()) / 2
+      (glassHeight + (1 - bezelHeightFn.get()(1)) * bezelWidth.get()) / 2,
   );
   const incidentY2 = useTransform(ray, (r) => r.hitPoint[1]);
   const refractX1 = useTransform(ray, (r) => r.hitPoint[0]);
@@ -288,7 +288,7 @@ export const RayRefractionSimulation: React.FC = () => {
   const refractX2 = useTransform(ray, (r) => r.refracted?.x2 ?? 0);
   const refractY2 = useTransform(ray, (r) => r.refracted?.y2 ?? 0);
   const showRefracted = useTransform(ray, (r) =>
-    r.refracted ? "block" : "none"
+    r.refracted ? "block" : "none",
   );
 
   // Handlers
@@ -310,7 +310,7 @@ export const RayRefractionSimulation: React.FC = () => {
   }
 
   const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
-    null
+    null,
   );
 
   const animationSequence: AnimationSequence = [
@@ -374,7 +374,7 @@ export const RayRefractionSimulation: React.FC = () => {
             e.stopPropagation();
             handlePointer(
               e.touches[0].clientX,
-              svgRef.current!.getBoundingClientRect()
+              svgRef.current!.getBoundingClientRect(),
             );
           }
         }}

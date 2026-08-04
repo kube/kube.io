@@ -125,7 +125,7 @@ function SurfaceButtonBase({
       className={cx(
         baseBtn,
         activeBool && "ring-2 ring-blue-400/70",
-        className
+        className,
       )}
     >
       {(ringOpacity || activeOpacity) && (

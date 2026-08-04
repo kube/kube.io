@@ -43,7 +43,7 @@ export const VectorToRedGreen: React.FC = () => {
       angle.set(newAngle);
       magnitude.set(newMag);
     },
-    [angle, magnitude, vectorCenterX, vectorCenterY, width, height]
+    [angle, magnitude, vectorCenterX, vectorCenterY, width, height],
   );
 
   const onPointerDown: React.PointerEventHandler<SVGSVGElement> = (e) => {
@@ -69,11 +69,11 @@ export const VectorToRedGreen: React.FC = () => {
   // Normalized components derived from motion values
   const nx = useTransform(
     [magnitude, angle],
-    ([m, a]: number[]) => (m * Math.cos(a)) / radius
+    ([m, a]: number[]) => (m * Math.cos(a)) / radius,
   );
   const ny = useTransform(
     [magnitude, angle],
-    ([m, a]: number[]) => (m * Math.sin(a)) / radius
+    ([m, a]: number[]) => (m * Math.sin(a)) / radius,
   );
   // Text-friendly, rounded to two decimals
   const nxText = useTransform(nx, (v: number) => v.toFixed(2));
@@ -91,31 +91,31 @@ export const VectorToRedGreen: React.FC = () => {
       const r = Math.round(ri * 255);
       const g = Math.round(gi * 255);
       return `rgb(${r},${g},0)`;
-    }
+    },
   );
 
   // Endpoint of vector line
   const endX = useTransform(
     [magnitude, angle],
-    ([m, a]: number[]) => vectorCenterX + m * Math.cos(a)
+    ([m, a]: number[]) => vectorCenterX + m * Math.cos(a),
   );
   const endY = useTransform(
     [magnitude, angle],
-    ([m, a]: number[]) => vectorCenterY + m * Math.sin(a)
+    ([m, a]: number[]) => vectorCenterY + m * Math.sin(a),
   );
 
   // Vector properties
   const vectorColor = useTransform(
-    () => `hsl(${180 + (magnitude.get() / radius) * 100},95%,45%)`
+    () => `hsl(${180 + (magnitude.get() / radius) * 100},95%,45%)`,
   );
   const vectorStrokeWidth = useTransform(
-    () => 1.5 + (magnitude.get() / radius) * 4
+    () => 1.5 + (magnitude.get() / radius) * 4,
   );
 
   // Animation
 
   const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
-    null
+    null,
   );
 
   function startAnimation() {

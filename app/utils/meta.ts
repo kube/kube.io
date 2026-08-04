@@ -70,7 +70,7 @@ export function createMetaTags(config: MetaConfig) {
         content: `https://${DEFAULT_META.siteName}`,
       },
       { property: "article:section", content: "Technology" },
-      { property: "article:tag", content: "Web Development" }
+      { property: "article:tag", content: "Web Development" },
     );
 
     if (modifiedDate) {

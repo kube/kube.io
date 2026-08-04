@@ -21,7 +21,7 @@ export const meta = () => {
   tags.push(
     { property: "profile:first_name", content: cv.firstName },
     { property: "profile:last_name", content: cv.lastName },
-    { property: "profile:username", content: "kube" }
+    { property: "profile:username", content: "kube" },
   );
 
   return tags;

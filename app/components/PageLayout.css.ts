@@ -3,7 +3,7 @@ import { style } from "@vanilla-extract/css";
 function map(
   [o1, o2]: [number, number], // origin
   [d1, d2]: [number, number], // destination
-  unit = ""
+  unit = "",
 ) {
   const s = (d2 - d1) / (o2 - o1); // scale
   const expr = `calc(((var(--scroll-progress) - ${o1}) * ${s} + ${d1}) * 1${unit})`; // transform expression

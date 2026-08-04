@@ -39,7 +39,7 @@ export const Switch: React.FC = () => {
   const pointerDown = useMotionValue(0);
   const forceActive = useMotionValue(false);
   const active = useTransform(() =>
-    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0
+    forceActive.get() || pointerDown.get() > 0.5 ? 1 : 0,
   );
 
   //
@@ -82,21 +82,21 @@ export const Switch: React.FC = () => {
         return c ? 1 : 0;
       }
     }),
-    { damping: 80, stiffness: 1000 }
+    { damping: 80, stiffness: 1000 },
   );
   const backgroundOpacity = useSpring(
     useTransform(active, (v) => 1 - 0.9 * v),
-    { damping: 80, stiffness: 2000 }
+    { damping: 80, stiffness: 2000 },
   );
   const thumbScale = useSpring(
     useTransform(
       active,
-      (v) => THUMB_REST_SCALE + (THUMB_ACTIVE_SCALE - THUMB_REST_SCALE) * v
+      (v) => THUMB_REST_SCALE + (THUMB_ACTIVE_SCALE - THUMB_REST_SCALE) * v,
     ),
-    { damping: 80, stiffness: 2000 }
+    { damping: 80, stiffness: 2000 },
   );
   const scaleRatio = useSpring(
-    useTransform(() => (0.4 + 0.5 * active.get()) * refractionBase.get())
+    useTransform(() => (0.4 + 0.5 * active.get()) * refractionBase.get()),
   );
   const considerChecked = useTransform(() => {
     const x = xDragRatio.get();
@@ -106,7 +106,7 @@ export const Switch: React.FC = () => {
 
   const backgroundColor = useTransform(
     useSpring(considerChecked, { damping: 80, stiffness: 1000 }),
-    mix("#94949F77", "#3BBF4EEE")
+    mix("#94949F77", "#3BBF4EEE"),
   );
 
   const initialPointerX = useMotionValue(0);
@@ -203,7 +203,7 @@ export const Switch: React.FC = () => {
               scale: thumbScale,
               backgroundColor: useTransform(
                 backgroundOpacity,
-                (op) => `rgba(255, 255, 255, ${op})`
+                (op) => `rgba(255, 255, 255, ${op})`,
               ),
               boxShadow: useTransform(() => {
                 const isPressed = pointerDown.get() > 0.5;

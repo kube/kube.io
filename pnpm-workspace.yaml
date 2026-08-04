@@ -1,5 +1,5 @@
 allowBuilds:
-  '@tailwindcss/oxide': false
+  "@tailwindcss/oxide": false
   canvas: true
   esbuild: true
   sharp: false

@@ -66,12 +66,12 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(glassThickness),
       getValueOrMotion(bezelWidth),
       bezelHeightFn,
-      getValueOrMotion(refractiveIndex)
+      getValueOrMotion(refractiveIndex),
     );
   });
 
   const maximumDisplacement = useTransform(() =>
-    Math.max(...map.get().map((v) => Math.abs(v)))
+    Math.max(...map.get().map((v) => Math.abs(v))),
   );
 
   const displacementMap = useTransform(() => {
@@ -84,7 +84,7 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(bezelWidth),
       getValueOrMotion(maximumDisplacement),
       getValueOrMotion(map),
-      dpr
+      dpr,
     );
   });
 
@@ -95,7 +95,7 @@ export const Filter: React.FC<FilterProps> = ({
       getValueOrMotion(radius),
       50,
       undefined,
-      dpr
+      dpr,
     );
   });
 
@@ -103,7 +103,7 @@ export const Filter: React.FC<FilterProps> = ({
     return magnifyingScale !== undefined
       ? calculateMagnifyingDisplacementMap(
           getValueOrMotion(canvasWidth ?? width),
-          getValueOrMotion(canvasHeight ?? height)
+          getValueOrMotion(canvasHeight ?? height),
         )
       : undefined;
   });
@@ -120,7 +120,7 @@ export const Filter: React.FC<FilterProps> = ({
     return imageDataToUrl(specularLayer.get());
   });
   const scale = useTransform(
-    () => maximumDisplacement.get() * (scaleRatio?.get() ?? 1)
+    () => maximumDisplacement.get() * (scaleRatio?.get() ?? 1),
   );
 
   const content = (
@@ -160,7 +160,7 @@ export const Filter: React.FC<FilterProps> = ({
             useTransform(() =>
               getValueOrMotion(colorScheme) === "dark"
                 ? "0.9 0 0 0 -0.3 0 0.9 0 0 -0.3 0 0 0.9 0 -0.3 0 0 0 1 0"
-                : "1.03 0 0 0 0.2 0 1.03 0 0 0.2 0 0 1.03 0 0.2 0 0 0 1 0"
+                : "1.03 0 0 0 0.2 0 1.03 0 0 0.2 0 0 1.03 0 0.2 0 0 0 1 0",
             ) as any
           }
           result="brightened_source"
@@ -172,8 +172,8 @@ export const Filter: React.FC<FilterProps> = ({
           colorScheme
             ? "brightened_source"
             : magnifyingDisplacementMapDataUrl
-            ? "magnified_source"
-            : "SourceGraphic"
+              ? "magnified_source"
+              : "SourceGraphic"
         }
         stdDeviation={blur}
         result="blurred_source"
@@ -202,7 +202,7 @@ export const Filter: React.FC<FilterProps> = ({
         type="saturate"
         values={
           useTransform(() =>
-            getValueOrMotion(specularSaturation).toString()
+            getValueOrMotion(specularSaturation).toString(),
           ) as any
         }
         result="displaced_saturated"

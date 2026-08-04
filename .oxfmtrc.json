@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": ["docs/**", "public/fonts/inter/inter.css"],
+  "printWidth": 80
+}

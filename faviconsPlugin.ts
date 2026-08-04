@@ -7,7 +7,7 @@ import type { Plugin } from "vite";
  */
 export default async function faviconsPlugin(
   source: string | Buffer,
-  options: FaviconOptions & { path: string }
+  options: FaviconOptions & { path: string },
 ): Promise<Plugin> {
   // Create cache for all generated files
   const faviconsFiles = new Map<string, string | Buffer>();
@@ -48,7 +48,7 @@ export default async function faviconsPlugin(
             .map(parseTagAttributes)
             .map(
               ([tag, attrs]) =>
-                `React.createElement("${tag}",${JSON.stringify(attrs)})`
+                `React.createElement("${tag}",${JSON.stringify(attrs)})`,
             ),
           ");",
         ].join("\n");
@@ -85,7 +85,9 @@ export default async function faviconsPlugin(
           : undefined;
 
         if (pathname?.startsWith(`${options.path.replace(/\/$/, "")}/`)) {
-          const filename = pathname.slice(options.path.length).replace(/^\//, "");
+          const filename = pathname
+            .slice(options.path.length)
+            .replace(/^\//, "");
           const resource = faviconsFiles.get(filename);
 
           if (resource) {
@@ -108,7 +110,7 @@ export default async function faviconsPlugin(
  * Helper for parsing HTML tag attributes from favicons library
  */
 function parseTagAttributes(
-  tag: string
+  tag: string,
 ): [tagName: string, attributes: Record<string, string | boolean>] {
   const tagName = tag.match(/^<(\w+)/)?.[1];
   if (!tagName) {

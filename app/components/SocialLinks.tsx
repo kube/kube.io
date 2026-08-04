@@ -17,7 +17,7 @@ const SocialLinkIcon: React.FC<{
     <Icon
       className={cn(
         "h-10 w-10 hover:scale-105 transition-all active:scale-90 active:brightness-100 hover:brightness-90 dark:hover:brightness-150",
-        className
+        className,
       )}
     />
   </Link>

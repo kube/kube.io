@@ -3,15 +3,8 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "node",
-      "vite/client"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"],
     "skipLibCheck": true,
     "jsx": "preserve",
     /* Bundler mode */
@@ -30,22 +23,11 @@
         "name": "@react-router/dev"
       }
     ],
-    "rootDirs": [
-      ".",
-      "./.react-router/types"
-    ]
+    "rootDirs": [".", "./.react-router/types"]
   },
-  "include": [
-    ".react-router/types/**/*",
-    "app",
-    "*.ts"
-  ],
+  "include": [".react-router/types/**/*", "app", "*.ts"],
   "mdx": {
     "checkMdx": true,
-    "plugins": [
-      "remark-frontmatter",
-      "remark-math",
-      "remark-mdx-frontmatter"
-    ]
+    "plugins": ["remark-frontmatter", "remark-math", "remark-mdx-frontmatter"]
   }
 }

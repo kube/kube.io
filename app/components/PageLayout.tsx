@@ -53,7 +53,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       <div
         className={cn(
           "fixed top-0 left-0 w-full z-10 contain-layout contain-style contain-paint",
-          scrollDerivedVariables
+          scrollDerivedVariables,
         )}
       >
         <div
@@ -73,7 +73,7 @@ export const PageLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
             "bg-[#F7F7F7]/[var(--bg-opacity)] dark:bg-[#0A0A0A]/[var(--bg-opacity)]",
             "border-b-2 border-[#DADADA]/[var(--border-opacity)] dark:border-[#303031]/[var(--border-opacity)]",
             "backdrop-blur-(--header-blur)",
-            "focus:outline-none"
+            "focus:outline-none",
           )}
         >
           <div

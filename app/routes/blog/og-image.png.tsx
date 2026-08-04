@@ -177,7 +177,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
     // Local Inter font files (ensure `pnpm fonts:inter` has been run)
     const interFontFiles = [100, 200, 300, 400, 500, 600, 700, 800, 900].map(
-      (w) => `public/fonts/inter/Inter-${w}.ttf`
+      (w) => `public/fonts/inter/Inter-${w}.ttf`,
     );
 
     // Convert SVG to PNG using ReSVG (font embedded via @font-face + fontFiles for shaping)

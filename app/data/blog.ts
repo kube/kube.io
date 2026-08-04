@@ -17,7 +17,7 @@ export function getAllPosts() {
 
   // Resolve posts only when needed and cache them.
   posts = Object.values(
-    import.meta.glob("./articles/**/article.mdx", { eager: true })
+    import.meta.glob("./articles/**/article.mdx", { eager: true }),
   )
     .map<Post>((article: any) => ({
       ...article.frontmatter,

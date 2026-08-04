@@ -56,12 +56,12 @@ export const DisplacementVectorField: React.FC = () => {
       glassThickness,
       bezelWidth,
       bezelHeightFn.get(),
-      refractiveIndex
-    )
+      refractiveIndex,
+    ),
   );
 
   const maximumDisplacement = useTransform(() =>
-    Math.max(...displacementMap.get().map(Math.abs))
+    Math.max(...displacementMap.get().map(Math.abs)),
   );
 
   const NUMBER_OF_RADIUSES = 44;
@@ -107,7 +107,7 @@ export const DisplacementVectorField: React.FC = () => {
   // Animation
 
   const animation = useMotionValue<AnimationPlaybackControlsWithThen | null>(
-    null
+    null,
   );
 
   function startAnimation() {
@@ -152,17 +152,17 @@ export const DisplacementVectorField: React.FC = () => {
           Math.min(
             1,
             (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
-              (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
-          )
-        )
+              (1 - i / NUMBER_OF_VECTORS_PER_RADIUS),
+          ),
+        ),
       );
       const refractedRayProgress = transformValue(() =>
-        Math.max(0, Math.min(1, currentVectorProgress.get() * 2 - 0.5))
+        Math.max(0, Math.min(1, currentVectorProgress.get() * 2 - 0.5)),
       );
       const index =
         ((displacementMap.get().length * i) / NUMBER_OF_VECTORS_PER_RADIUS) | 0;
       const magnitude = transformValue(
-        () => refractedRayProgress.get() * displacementMap.get()[index]
+        () => refractedRayProgress.get() * displacementMap.get()[index],
       );
       const magnitudeScaled = transformValue(() => {
         const scale =
@@ -172,13 +172,13 @@ export const DisplacementVectorField: React.FC = () => {
         return (magnitude.get() * scale * plot) / 2;
       });
       const display = transformValue(() =>
-        refractedRayProgress.get() > 0 ? "block" : "none"
+        refractedRayProgress.get() > 0 ? "block" : "none",
       );
       const color = transformValue(() =>
-        getRayColor(magnitude.get() / maximumDisplacement.get())
+        getRayColor(magnitude.get() / maximumDisplacement.get()),
       );
       const strokeWidth = transformValue(
-        () => 0.8 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3
+        () => 0.8 + Math.abs(magnitude.get() / maximumDisplacement.get()) * 1.3,
       );
       const x1 = borderX + plot * i;
       const y1 = transformValue(
@@ -186,11 +186,11 @@ export const DisplacementVectorField: React.FC = () => {
           centerY -
           bezelWidth *
             bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS) *
-            (1 - projectRayOnSurfaceProgress.get())
+            (1 - projectRayOnSurfaceProgress.get()),
       );
       const x2 = transformValue(() => x1 + magnitudeScaled.get());
       const y2 = transformValue(
-        () => y1.get() + (borderY - y1.get()) * refractedRayProgress.get()
+        () => y1.get() + (borderY - y1.get()) * refractedRayProgress.get(),
       );
       return {
         color,
@@ -202,7 +202,7 @@ export const DisplacementVectorField: React.FC = () => {
         strokeWidth,
         display,
       };
-    }
+    },
   );
 
   return (
@@ -279,7 +279,7 @@ export const DisplacementVectorField: React.FC = () => {
               const rotation = clamp(
                 0,
                 1,
-                revolutionProgress.get() / (j / NUMBER_OF_RADIUSES)
+                revolutionProgress.get() / (j / NUMBER_OF_RADIUSES),
               );
               return Math.PI * 2 * (j / NUMBER_OF_RADIUSES) * rotation;
             });
@@ -289,7 +289,7 @@ export const DisplacementVectorField: React.FC = () => {
                 href="#radiusOfVectors"
                 style={{
                   display: transformValue(() =>
-                    radiusProgress.get() === 1 ? "block" : "none"
+                    radiusProgress.get() === 1 ? "block" : "none",
                   ),
                   rotate: transformValue(() => `${angle.get()}rad`),
                   transformOrigin: `${centerX}px ${centerY}px`,
@@ -327,12 +327,12 @@ export const DisplacementVectorField: React.FC = () => {
                   Math.min(
                     1,
                     (radiusProgress.get() - i / NUMBER_OF_VECTORS_PER_RADIUS) /
-                      (1 - i / NUMBER_OF_VECTORS_PER_RADIUS)
-                  )
-                )
+                      (1 - i / NUMBER_OF_VECTORS_PER_RADIUS),
+                  ),
+                ),
               );
               const incidentRayProgress = transformValue(() =>
-                Math.min(1, currentVectorProgress.get() * 2)
+                Math.min(1, currentVectorProgress.get() * 2),
               );
 
               const x1 = borderX + plot * i;
@@ -342,10 +342,10 @@ export const DisplacementVectorField: React.FC = () => {
                 () =>
                   centerY -
                   bezelWidth *
-                    bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS)
+                    bezelHeightFn.get()(i / NUMBER_OF_VECTORS_PER_RADIUS),
               );
               const incidentRayLength = transformValue(() =>
-                Math.sqrt((x2 - x1) ** 2 + (y2.get() - y1) ** 2)
+                Math.sqrt((x2 - x1) ** 2 + (y2.get() - y1) ** 2),
               );
 
               return (
@@ -357,14 +357,14 @@ export const DisplacementVectorField: React.FC = () => {
                   y2={y2}
                   stroke={getRayColor(0)}
                   display={transformValue(() =>
-                    currentVectorProgress.get() > 0 ? "block" : "none"
+                    currentVectorProgress.get() > 0 ? "block" : "none",
                   )}
                   strokeWidth={1}
                   strokeDasharray={incidentRayLength}
                   strokeDashoffset={transformValue(
                     () =>
                       incidentRayLength.get() *
-                      (1 - incidentRayProgress.get() * 2)
+                      (1 - incidentRayProgress.get() * 2),
                   )}
                   opacity={currentVectorProgress}
                 />

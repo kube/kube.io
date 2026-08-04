@@ -24,12 +24,12 @@ export const Searchbox: React.FC = () => {
   const backgroundFromFocus = useTransform(focused, [0, 1], [0.05, 0.2]);
   const backgroundOpacity = useSpring(
     useTransform([backgroundFromPointer, backgroundFromFocus], (vals) =>
-      Math.max(vals[0] as number, vals[1] as number)
+      Math.max(vals[0] as number, vals[1] as number),
     ),
     {
       damping: 80,
       stiffness: 2000,
-    }
+    },
   );
   const scale = useSpring(
     useTransform(() => {
@@ -40,17 +40,17 @@ export const Searchbox: React.FC = () => {
     {
       damping: 40,
       stiffness: 800,
-    }
+    },
   );
   // Readouts
   const specularOpacityText = useTransform(specularOpacity, (v) =>
-    v.toFixed(2)
+    v.toFixed(2),
   );
   const specularSaturationText = useTransform(specularSaturation, (v) =>
-    Math.round(v).toString()
+    Math.round(v).toString(),
   );
   const refractionLevelText = useTransform(refractionLevel, (v) =>
-    v.toFixed(2)
+    v.toFixed(2),
   );
   const blurText = useTransform(blur, (v) => v.toFixed(1));
 
@@ -93,7 +93,7 @@ export const Searchbox: React.FC = () => {
           "relative h-96 flex justify-center items-center rounded-xl -ml-[15px] w-[calc(100%+30px)] select-none",
           "text-black/5 dark:text-white/5 [--bg1:#f8fafc] [--bg2:#e7eeef]",
           "dark:[--bg1:#1b1b22] dark:[--bg2:#0f0f14] border border-black/10 dark:border-white/10",
-          "contain-layout contain-style contain-paint [content-visibility:auto]"
+          "contain-layout contain-style contain-paint [content-visibility:auto]",
         )}
         style={containerStyle}
       >
@@ -104,7 +104,7 @@ export const Searchbox: React.FC = () => {
             rel="noopener noreferrer"
             className={twMerge(
               "absolute left-3 top-3 inline-block [line-height:1.1]",
-              "text-[9px] uppercase tracking-[0.1em]"
+              "text-[9px] uppercase tracking-[0.1em]",
             )}
             style={{ color: "rgba(255, 255, 255, 0.4)" }}
           >
@@ -137,7 +137,7 @@ export const Searchbox: React.FC = () => {
               borderRadius: radius,
               backdropFilter: `url(#searchbox-filter)`,
               backgroundColor: useTransform(
-                () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`
+                () => `rgba(255, 255, 255, ${backgroundOpacity.get()})`,
               ),
               boxShadow: "0 4px 16px rgba(0, 0, 0, 0.16)",
               transform: "translateZ(0)", // Create a new layer to improve performance
@@ -148,7 +148,7 @@ export const Searchbox: React.FC = () => {
           <div
             className={twMerge(
               "absolute inset-0 flex items-center gap-3 px-5",
-              useImageBg ? "text-white/90" : "text-black/90 dark:text-white/90"
+              useImageBg ? "text-white/90" : "text-black/90 dark:text-white/90",
             )}
             style={{ borderRadius: radius, zIndex: 1 }}
           >
@@ -166,7 +166,7 @@ export const Searchbox: React.FC = () => {
                 "flex-1 min-w-0 bg-transparent outline-none border-0 text-[15px] leading-none selection:bg-blue-500/30 selection:text-inherit select-text",
                 useImageBg
                   ? "text-white/70"
-                  : "text-black/70 dark:text-white/70"
+                  : "text-black/70 dark:text-white/70",
               )}
               style={{ padding: 0 }}
               onFocus={() => focused.set(1)}
@@ -184,7 +184,7 @@ export const Searchbox: React.FC = () => {
             "absolute bottom-2 left-1/2 -translate-x-1/2 text-xs backdrop-blur px-2 py-1 rounded-md flex items-center gap-2 text-black/80 dark:text-white/80",
             useImageBg
               ? "text-white/90 bg-black/10"
-              : "text-black/90 dark:text-white/90 bg-white/10 dark:bg-black/10"
+              : "text-black/90 dark:text-white/90 bg-white/10 dark:bg-black/10",
           )}
         >
           <input
